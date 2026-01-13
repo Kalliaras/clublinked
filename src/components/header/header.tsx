@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur dark:bg-slate-900/80">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur dark:bg-slate-900/80 border-b border-gray-200">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
@@ -16,7 +16,7 @@ export default function Header() {
             height={36}
             className="object-contain"
           />
-          <span className="text-lg font-bold">ClubLinked</span>
+          <span className="text-lg font-bold text-[#1d56d8]">ClubLinked</span>
         </Link>
 
         {/* Nav */}

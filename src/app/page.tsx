@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#1f66e5] via-[#2e86f5] to-[#4db7ff] text-white">
+    <div className="min-h-screen w-full bg-white text-[#1f66e5]">
       <main className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-10">
         {/* Top: logo + wordmark */}
         <header className="flex items-center justify-center gap-4">
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="mt-14 w-full">
             <Button
               asChild
-              className="h-16 w-full rounded-full bg-[#1d56d8] text-2xl font-semibold text-white shadow-lg shadow-black/20 hover:bg-[#1a4fc7]"
+              className="h-16 w-full rounded-full bg-white text-2xl font-semibold text-[#1d56d8] shadow-lg shadow-black/20 hover:bg-[#1d56d8] hover:text-white border border-[#1d56d8]"
             >
               <Link href="/user/signup">Get Started</Link>
             </Button>
@@ -49,7 +49,7 @@ export default function Home() {
         </section>
 
         {/* Bottom spacing / optional footer (kept minimal like the image) */}
-        <footer className="pb-2 text-center text-xs text-white/70">
+        <footer className="pb-2 text-center text-xs text-[#1f66e5]/70">
           © 2025 ClubLinked
         </footer>
       </main>

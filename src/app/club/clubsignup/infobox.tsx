@@ -14,10 +14,10 @@ import { ComboboxDemo } from "./combobox"
 
 export function Infobox() {
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm bg-white text-black border-gray-200">
       <CardHeader>
-        <CardTitle className="mb-2">Make your Club an official member of Clublinked!</CardTitle>
-        <CardDescription>
+        <CardTitle className="mb-2 text-black">Make your Club an official member of Clublinked!</CardTitle>
+        <CardDescription className="text-black">
           Fill out your club details to get started
         </CardDescription>
       </CardHeader>
@@ -31,15 +31,17 @@ export function Infobox() {
                 type="text"
                 placeholder="Club Name"
                 required
+                className="bg-white text-black"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="members">Current amount of registered members</Label>
+              <Label htmlFor="members">Total amount of registered members</Label>
               <Input
                 id="members"
                 type="text"
                 placeholder="e.g. 10"
                 required
+                className="bg-white text-black"
               />
             </div>
             <div className="grid gap-2">
@@ -50,7 +52,7 @@ export function Infobox() {
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full bg-[#0E4AE6] text-white hover:bg-[#0E4AE6]/80">
           Create
         </Button>
       </CardFooter>

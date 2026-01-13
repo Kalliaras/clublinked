@@ -47,7 +47,7 @@ export default function Clubsearch() {
     : clubs.filter(club => club.tag === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0E4AE6] via-[#0B78D7] to-[#16C6C1]">
+    <div className="min-h-screen bg-gradient-to-br bg-white">
       <main className="mx-auto w-full max-w-md px-5 pb-10 pt-8">
         {/* Header */}
         <header className="flex items-center gap-3">
@@ -60,13 +60,13 @@ export default function Clubsearch() {
               priority
             />
           </div>
-          <span className="text-lg font-semibold tracking-wide text-white">
+          <span className="text-lg font-semibold tracking-wide text-[#1d56d8]">
             CLUBLINKED
           </span>
         </header>
 
         {/* Title */}
-        <h1 className="mt-6 text-5xl font-extrabold tracking-tight text-white">
+        <h1 className="mt-6 text-5xl font-extrabold tracking-tight text-[#1d56d8]">
           Explore Clubs
         </h1>
 

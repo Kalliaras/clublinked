@@ -58,7 +58,7 @@ function CategoryCombobox({ selectedCategory, setSelectedCategory }: {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between bg-white/90 text-slate-900 border-white/60 hover:bg-white"
+          className="w-full justify-between bg-white/90 text-slate-900 border-gray-200 hover:bg-white"
         >
           {selectedCategory
             ? clubTypes.find((type) => type.value === selectedCategory)?.label
