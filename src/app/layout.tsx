@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import  Header from "@/components/header/header";
 import Footer from "@/components/footer/footer";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
 const gabarito = Gabarito({
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body
         className={`${gabarito.className} antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen`}
       >
+        <SpeedInsights />
         <Header />
         <Toaster />
         {children}
