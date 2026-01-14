@@ -1,6 +1,6 @@
 import { Infobox } from "@/app/user/login/infobox";
 
-export default function UserSignupPage() {
+export default function UserLoginPage() {
   return (
     <div className="min-h-screen bg-white">
       <main className="mx-auto flex min-h-screen max-w-6xl items-center px-6 py-12">

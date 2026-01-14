@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../public/logo.png";
-import { Button } from "@/components/ui/button";
+import SignupButton from "@/components/ui/signupbutton";
 
 export default function Header() {
   return (
@@ -30,9 +30,7 @@ export default function Header() {
         </nav>
 
         {/* CTA */}
-        <Button asChild size="sm">
-          <Link href="/user/signup">Get Started</Link>
-        </Button>
+        <SignupButton />
       </div>
     </header>
   );
