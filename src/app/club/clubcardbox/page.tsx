@@ -78,7 +78,7 @@ export default function ClubPage() {
             <div className="rounded-3xl bg-[#0E4AE6]/60 p-6 shadow-xl ring-1 ring-[#0E4AE6]/10">
               <div className="space-y-6">
                 <div>
-                  <div className="text-white/90">Membrs</div>
+                  <div className="text-white/90">Members</div>
                   <div className="mt-3 h-10 w-20 rounded bg-white/20" />
                 </div>
                 <div>
