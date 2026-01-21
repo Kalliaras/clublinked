@@ -1,6 +1,35 @@
-import { Infobox } from "@/app/user/login/infobox";
+'use client';
+
+import { Infobox } from "@/app/user/signup/infobox";
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { SignUpAction } from "../actions/user";
 
 export default function UserSignupPage() {
+
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const handleSubmit = (formData: FormData) => {
+    startTransition(async () => {
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const firstName = formData.get("firstName") as string;
+      const lastName = formData.get("lastName") as string;
+      const major = formData.get("major") as string | undefined;
+      const year = formData.get("year") as string | undefined;
+      const result = await SignUpAction(firstName, lastName, email, password, year, major);
+      const errorMessage = result?.errorMessage;
+
+      if (errorMessage) {
+        toast.error("Error: " + errorMessage);
+        return;
+      }
+
+      toast.success("Signed Up: Please check your email to verify your account.");
+      router.refresh();
+    });
+  };
   return (
     <div className="min-h-screen bg-white">
       <main className="mx-auto flex min-h-screen max-w-6xl items-center px-6 py-12">
@@ -27,7 +56,7 @@ export default function UserSignupPage() {
           {/* RIGHT: INFOBOX */}
           <section className="flex justify-center lg:justify-end">
             <div className="w-full max-w-sm">
-              <Infobox />
+              <Infobox onSubmitProp={handleSubmit} />
             </div>
           </section>
 

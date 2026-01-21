@@ -2,8 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import profilePic from "../../public/logo.png";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const userResult = await supabase.auth.getUser();
+  const user = userResult?.data?.user ?? null;
   return (
     <div className="min-h-screen w-full bg-white text-[#1f66e5]">
       <main className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-10">
@@ -43,7 +47,7 @@ export default function Home() {
               asChild
               className="h-16 w-full rounded-full bg-white text-2xl font-semibold text-[#1d56d8] shadow-lg shadow-black/20 hover:bg-[#1d56d8] hover:text-white border border-[#1d56d8]"
             >
-              <Link href="/user/signup">Get Started</Link>
+              {user ? <Link href="/club/clubsearch">Get Started</Link> : <Link href="/user/signup">Get Started</Link>}
             </Button>
           </div>
         </section>
