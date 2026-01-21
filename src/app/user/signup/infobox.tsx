@@ -24,7 +24,7 @@ type InfoboxProps = {
 export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
   // Track combobox selection so we can include it in FormData
   const [year, setYear] = React.useState("");
-  const _comboboxProps = { value: year, onValueChange: setYear } as any;
+  const _comboboxProps: { value: string; onValueChange: (value: string) => void } = { value: year, onValueChange: setYear };
 
   return (
     <Card className="w-full max-w-sm bg-white text-[#0E4AE6] border-gray-200">
@@ -93,7 +93,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
 
             {/* Year combobox */}
             <div className="grid gap-2">
-              <Label>Year you're in</Label>
+              <Label>Year you&apos;re in</Label>
 
               {/* ✅ Combobox must tell us the selected value */}
               <ComboboxDemo {..._comboboxProps} />

@@ -9,7 +9,7 @@ import { SignUpAction } from "../actions/user";
 export default function UserSignupPage() {
 
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
       const email = formData.get("email") as string;
