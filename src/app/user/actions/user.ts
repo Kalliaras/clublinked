@@ -30,42 +30,38 @@ export const SignUpAction = async (
   try {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.auth.signUp({
+    // Step 1: Create auth user with email and password only
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          firstName,
-          lastName,
-          year,
-          major,
-        },
-      },
     });
 
-    if (error) throw error;
+    if (signUpError) throw signUpError;
 
     // Check if signup succeeded but user has no identities (duplicate email case)
-    if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
+    if (signUpData?.user && (!signUpData.user.identities || signUpData.user.identities.length === 0)) {
       return { errorMessage: "This email is already in use. Please use a different email or log in." };
     }
 
-    // If a user object is returned, create a corresponding profiles row.
-    const user = data?.user;
-    if (user?.id) {
-      try {
-        await supabase.from("profiles").insert({
-          id: user.id,
-          email,
-          first_name: firstName,
-          last_name: lastName,
-          major: major ?? null,
-          year: year ?? null,
-          created_at: new Date().toISOString(),
-        });
-      } catch (insertError) {
-        console.error("Failed to insert profile:", insertError);
-      }
+    const userId = signUpData?.user?.id;
+    if (!userId) {
+      return { errorMessage: "Failed to create user account." };
+    }
+
+    // Step 2: Insert profile data into database with the newly created user ID
+    const { error: insertError } = await supabase.from("profile").upsert({
+      id: userId,
+      email,
+      first_name: firstName,
+      last_name: lastName,
+      major: major ?? null,
+      year: year ?? null,
+      created_at: new Date().toISOString(),
+    });
+
+    if (insertError) {
+      console.error("Failed to insert profile:", insertError);
+      return { errorMessage: `Failed to store profile data: ${insertError.message}` };
     }
 
     return null;

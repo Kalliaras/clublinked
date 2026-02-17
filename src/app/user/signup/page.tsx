@@ -27,7 +27,7 @@ export default function UserSignupPage() {
       }
 
       toast.success("Signed Up: Please check your email to verify your account.");
-      router.refresh();
+      router.push("/club/clubsearch");
     });
   };
   return (

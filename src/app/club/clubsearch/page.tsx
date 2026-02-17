@@ -5,6 +5,9 @@ import { Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import * as React from "react";
 import { CategoryCombobox } from './combobox';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 const clubs = [
   {
@@ -41,10 +44,31 @@ const clubs = [
 
 export default function Clubsearch() {
   const [selectedCategory, setSelectedCategory] = React.useState("all");
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        router.push("/");
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const filteredClubs = selectedCategory === "all" 
     ? clubs 
     : clubs.filter(club => club.tag === selectedCategory);
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-white" />; // Loading state
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br bg-white">
