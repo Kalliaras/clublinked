@@ -5,11 +5,25 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { SignUpAction } from "../actions/user";
+import { useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function UserSignupPage() {
 
   const router = useRouter();
   const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push('/');
+      }
+    };
+    checkUser();
+  }, [router]);
+
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
       const email = formData.get("email") as string;

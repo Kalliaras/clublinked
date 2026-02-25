@@ -23,11 +23,25 @@ type Profile = {
   last_name: string;
   major: string | null;
   year: string | null;
+  bio: string | null;
   created_at: string;
 };
 
-export default function ProfileClient({ profile }: { profile: Profile }) {
-  const [showMoreAbout, setShowMoreAbout] = React.useState(false);
+type Role = {
+  id: string;
+  title: string;
+  club_name: string;
+};
+
+type Interest = {
+  name: string;
+};
+
+type Skill = {
+  name: string;
+};
+
+export default function ProfileClient({ profile, roles, interests, skills }: { profile: Profile; roles: Role[]; interests: Interest[]; skills: Skill[] }) {
   const [showMoreRoles, setShowMoreRoles] = React.useState(false);
   const [showMoreInterests, setShowMoreInterests] = React.useState(false);
   const [showMoreSkills, setShowMoreSkills] = React.useState(false);
@@ -36,39 +50,24 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
   const name = `${profile.first_name} ${profile.last_name}`;
   const headline = `${profile.major || 'Unknown Major'} • ${profile.year || 'Unknown Year'}`;
 
-  // Mock data for now (can be fetched separately later)
-  const roles: Chip[] = [
-    { label: "Code Club — President" },
-    { label: "Women in Tech — Vice President" },
-    { label: "Startup Lab — Mentor" },
-    { label: "Research Group — Member" },
-  ];
+  // Real data from props
+  const rolesData: Chip[] = roles.map(role => ({
+    label: `${role.club_name} — ${role.title}`
+  }));
 
-  const interests: Chip[] = [
-    { label: "Full-stack Development" },
-    { label: "Machine Learning" },
-    { label: "Product Design" },
-    { label: "Open Source" },
-    { label: "Entrepreneurship" },
-  ];
+  const interestsData: Chip[] = interests.map(interest => ({
+    label: interest.name
+  }));
 
-  const skills: Chip[] = [
-    { label: "React" },
-    { label: "TypeScript" },
-    { label: "Node.js" },
-    { label: "PostgreSQL" },
-    { label: "Python" },
-    { label: "Next.js" },
-  ];
+  const skillsData: Chip[] = skills.map(skill => ({
+    label: skill.name
+  }));
 
-  const aboutShort =
-    "Full-stack developer passionate about building scalable applications and mentoring junior developers. Always learning, a...";
-  const aboutFull =
-    "Full-stack developer passionate about building scalable applications and mentoring junior developers. Always learning, and currently focused on building community tools for campus clubs. I love shipping clean UI, designing systems, and collaborating on impactful projects.";
+  const about = profile.bio || "No bio available.";
 
-  const rolesVisible = showMoreRoles ? roles : roles.slice(0, 3);
-  const interestsVisible = showMoreInterests ? interests : interests.slice(0, 4);
-  const skillsVisible = showMoreSkills ? skills : skills.slice(0, 4);
+  const rolesVisible = showMoreRoles ? rolesData : rolesData.slice(0, 3);
+  const interestsVisible = showMoreInterests ? interestsData : interestsData.slice(0, 4);
+  const skillsVisible = showMoreSkills ? skillsData : skillsData.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -153,7 +152,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
               </Badge>
             ))}
 
-            {roles.length > 3 && (
+            {rolesData.length > 3 && (
               <button
                 type="button"
                 onClick={() => setShowMoreRoles((s) => !s)}
@@ -176,24 +175,8 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
               </h2>
 
               <div className="mt-4 text-sm leading-6 text-slate-700">
-                {showMoreAbout ? aboutFull : aboutShort}{" "}
-                <button
-                  type="button"
-                  onClick={() => setShowMoreAbout((s) => !s)}
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Read more
-                </button>
+                {about}
               </div>
-
-              {/* optional second "Read more" like screenshot */}
-              <button
-                type="button"
-                onClick={() => setShowMoreAbout(true)}
-                className="mt-3 inline-flex font-medium text-blue-600 hover:underline"
-              >
-                Read more
-              </button>
             </Card>
 
             {/* Interests & focus */}
@@ -213,7 +196,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                   </span>
                 ))}
 
-                {interests.length > 4 && (
+                {interestsData.length > 4 && (
                   <button
                     type="button"
                     onClick={() => setShowMoreInterests((s) => !s)}
@@ -253,7 +236,7 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
                       </span>
                     ))}
 
-                    {skills.length > 4 && (
+                    {skillsData.length > 4 && (
                       <button
                         type="button"
                         onClick={() => setShowMoreSkills((v) => !v)}

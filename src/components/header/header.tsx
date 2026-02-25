@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../public/logo.png";
-import LogOutButton from "@/components/ui/logoutbutton";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import UserAvatarMenu from "@/components/ui/user-avatar-menu";
 
 export default async function Header() {
   const supabase = await createClient();
@@ -20,6 +20,7 @@ export default async function Header() {
             alt="ClubLinked logo"
             width={36}
             height={36}
+            sizes="36px"
             className="object-contain"
           />
           <span className="text-lg font-bold text-[#1d56d8]">ClubLinked</span>
@@ -37,7 +38,7 @@ export default async function Header() {
 
         {/* CTA */}
         {user ? (
-          <LogOutButton />
+          <UserAvatarMenu userId={user.id} />
         ) : (
           <div className="flex gap-3">
             <Link href="/user/signup">
