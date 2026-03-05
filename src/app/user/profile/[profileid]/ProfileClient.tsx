@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { createClient } from "@/lib/supabase/client";
 import {
   Linkedin,
   Instagram,
@@ -21,6 +22,8 @@ type Profile = {
   email: string;
   first_name: string;
   last_name: string;
+  club_id: string;
+  university_id: string;
   major: string | null;
   year: string | null;
   bio: string | null;
@@ -45,10 +48,28 @@ export default function ProfileClient({ profile, roles, interests, skills }: { p
   const [showMoreRoles, setShowMoreRoles] = React.useState(false);
   const [showMoreInterests, setShowMoreInterests] = React.useState(false);
   const [showMoreSkills, setShowMoreSkills] = React.useState(false);
+  const [universityName, setUniversityName] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchUniversity = async () => {
+      if (profile.university_id) {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('universities')
+          .select('name')
+          .eq('id', profile.university_id)
+          .single();
+        if (!error && data) {
+          setUniversityName(data.name);
+        }
+      }
+    };
+    fetchUniversity();
+  }, [profile.university_id]);
 
   // Use real profile data
   const name = `${profile.first_name} ${profile.last_name}`;
-  const headline = `${profile.major || 'Unknown Major'} • ${profile.year || 'Unknown Year'}`;
+  const headline = `${profile.major || 'Unknown Major'} • ${profile.year || 'Unknown Year'} • ${universityName || 'Unknown University'}`;
 
   // Real data from props
   const rolesData: Chip[] = roles.map(role => ({

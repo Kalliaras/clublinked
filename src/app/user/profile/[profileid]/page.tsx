@@ -7,6 +7,8 @@ type Profile = {
   email: string;
   first_name: string;
   last_name: string;
+  club_id: string;
+  university_id: string;
   major: string | null;
   year: string | null;
   bio: string | null;

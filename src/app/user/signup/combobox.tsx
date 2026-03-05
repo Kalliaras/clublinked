@@ -3,10 +3,10 @@
 import { Combobox } from "@/components/ui/combobox";
 
 const years = [
-  { value: "freshman", label: "Freshman" },
-  { value: "sophomore", label: "Sophomore" },
-  { value: "junior", label: "Junior" },
-  { value: "senior", label: "Senior" },
+  { value: "Freshman", label: "Freshman" },
+  { value: "Sophomore", label: "Sophomore" },
+  { value: "Junior", label: "Junior" },
+  { value: "Senior", label: "Senior" },
 ];
 
 type ComboboxDemoProps = {
