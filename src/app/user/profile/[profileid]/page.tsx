@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getUser } from '@/lib/supabase/server';
 import ProfileClient from './ProfileClient';
 
 type Profile = {
@@ -33,6 +33,10 @@ export default async function ProfilePage({ params }: { params: Promise<{ profil
   const { profileid } = await params;
 
   const supabase = await createClient();
+
+  // Determine current user to know if we're viewing our own profile
+  const currentUser = await getUser();
+  const isOwner = currentUser?.id === profileid;
 
   // Fetch profile
   const { data: profile, error: profileError } = await supabase
@@ -98,5 +102,5 @@ export default async function ProfilePage({ params }: { params: Promise<{ profil
     name: skillsMap.get(skill.skill_id) || 'Unknown Skill'
   })) || [];
 
-  return <ProfileClient profile={profile as Profile} roles={roles} interests={interests} skills={skills} />;
+  return <ProfileClient profile={profile as Profile} roles={roles} interests={interests} skills={skills} isOwner={isOwner} />;
 }

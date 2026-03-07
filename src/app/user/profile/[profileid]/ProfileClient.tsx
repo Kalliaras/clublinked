@@ -6,6 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { UpdateBioAction, UpdateInterestsAction, UpdateSkillsAction } from "@/app/user/actions/user";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import {
   Linkedin,
   Instagram,
@@ -44,12 +54,24 @@ type Skill = {
   name: string;
 };
 
-export default function ProfileClient({ profile, roles, interests, skills }: { profile: Profile; roles: Role[]; interests: Interest[]; skills: Skill[] }) {
+export default function ProfileClient({ profile, roles, interests, skills, isOwner }: { profile: Profile; roles: Role[]; interests: Interest[]; skills: Skill[]; isOwner: boolean }) {
   const [showMoreRoles, setShowMoreRoles] = React.useState(false);
   const [showMoreInterests, setShowMoreInterests] = React.useState(false);
   const [showMoreSkills, setShowMoreSkills] = React.useState(false);
   const [universityName, setUniversityName] = React.useState<string | null>(null);
 
+  const router = useRouter();
+
+  // editing state
+  const [isEditingBio, setIsEditingBio] = React.useState(false);
+  const [bioInput, setBioInput] = React.useState(profile.bio || "");
+
+  // dialog for tags (interests/skills)
+  const [tagDialogOpen, setTagDialogOpen] = React.useState(false);
+  const [tagDialogType, setTagDialogType] = React.useState<"interests" | "skills" | null>(null);
+  const [availableTags, setAvailableTags] = React.useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+  const [tagSearch, setTagSearch] = React.useState("");
   React.useEffect(() => {
     const fetchUniversity = async () => {
       if (profile.university_id) {
@@ -86,9 +108,54 @@ export default function ProfileClient({ profile, roles, interests, skills }: { p
 
   const about = profile.bio || "No bio available.";
 
+  // handlers for saves
+  const handleBioSave = async () => {
+    await UpdateBioAction(profile.id, bioInput || "");
+    setIsEditingBio(false);
+    router.refresh();
+  };
+
+
   const rolesVisible = showMoreRoles ? rolesData : rolesData.slice(0, 3);
   const interestsVisible = showMoreInterests ? interestsData : interestsData.slice(0, 4);
   const skillsVisible = showMoreSkills ? skillsData : skillsData.slice(0, 4);
+
+  // when dialog opens, load tags and initial selection
+  React.useEffect(() => {
+    if (tagDialogOpen && tagDialogType) {
+      const load = async () => {
+        const supabase = createClient();
+        const table = tagDialogType === "interests" ? "interest_tags" : "skill_tags";
+        const { data } = await supabase
+          .from(table)
+          .select("name");
+        setAvailableTags((data || []).map((d) => d?.name || ""));
+        setSelectedTags(
+          tagDialogType === "interests"
+            ? interests.map(i => i.name)
+            : skills.map(s => s.name)
+        );
+        setTagSearch("");
+      };
+      load();
+    }
+  }, [tagDialogOpen, tagDialogType, interests, skills]);
+
+  const handleTagSave = async () => {
+    if (tagDialogType === "interests") {
+      await UpdateInterestsAction(profile.id, selectedTags);
+    } else if (tagDialogType === "skills") {
+      await UpdateSkillsAction(profile.id, selectedTags);
+    }
+    setTagDialogOpen(false);
+    router.refresh();
+  };
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -191,20 +258,67 @@ export default function ProfileClient({ profile, roles, interests, skills }: { p
           <div className="space-y-6">
             {/* At a glance */}
             <Card className="border-slate-200 p-6">
-              <h2 className="text-lg font-semibold text-slate-900">
-                At a glance
-              </h2>
-
-              <div className="mt-4 text-sm leading-6 text-slate-700">
-                {about}
+                  <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  At a glance
+                </h2>
+                {isOwner && (
+                  <Button size="sm" variant="outline" onClick={() => setIsEditingBio(true)}>
+                    Edit
+                  </Button>
+                )}
               </div>
+
+              {isEditingBio ? (
+                <div className="flex flex-col gap-3">
+                  <textarea
+                    className="w-full rounded border p-2"
+                    rows={4}
+                    value={bioInput}
+                    onChange={(e) => setBioInput(e.target.value)}
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleBioSave}>
+                      Save
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditingBio(false);
+                        setBioInput(profile.bio || "");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-4 text-sm leading-6 text-slate-700">
+                  {about}
+                </div>
+              )}
             </Card>
 
             {/* Interests & focus */}
             <Card className="border-slate-200 p-6">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Interests &amp; focus
-              </h2>
+<div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Interests &amp; focus
+                </h2>
+                {isOwner && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setTagDialogType("interests");
+                      setTagDialogOpen(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                )}
+              </div>
 
               <div className="mt-4 flex flex-wrap gap-3">
                 {interestsVisible.map((i) => (
@@ -231,16 +345,29 @@ export default function ProfileClient({ profile, roles, interests, skills }: { p
                     />
                   </button>
                 )}
-              </div>
-            </Card>
+              </div>            </Card>
 
             {/* Bottom row: Key highlights + Campus activity */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {/* Key highlights (wider) */}
               <Card className="border-slate-200 p-6 lg:col-span-2">
-                <h2 className="text-lg font-semibold text-slate-900">
-                  Key highlights
-                </h2>
+<div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      Key highlights
+                    </h2>
+                    {isOwner && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setTagDialogType("skills");
+                          setTagDialogOpen(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </div>
 
                 <div className="mt-5">
                   <div className="text-sm font-medium text-slate-700">
@@ -266,8 +393,7 @@ export default function ProfileClient({ profile, roles, interests, skills }: { p
                         {showMoreSkills ? "Show less" : "+1 more"}
                       </button>
                     )}
-                  </div>
-                </div>
+                  </div>                </div>
               </Card>
 
               {/* Campus activity (smaller) */}
@@ -286,6 +412,51 @@ export default function ProfileClient({ profile, roles, interests, skills }: { p
             </div>
           </div>
         </Card>
+
+        {/* tag selection dialog */}
+        <Dialog open={tagDialogOpen} onOpenChange={setTagDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Edit {tagDialogType === "interests" ? "Interests" : "Skills"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <input
+                className="w-full rounded border p-2"
+                placeholder="Search tags..."
+                value={tagSearch}
+                onChange={(e) => setTagSearch(e.target.value)}
+              />
+              <div className="flex flex-wrap gap-2 max-h-40 overflow-auto">
+                {availableTags
+                  .filter((t) =>
+                    t.toLowerCase().includes(tagSearch.toLowerCase())
+                  )
+                  .map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      className={`px-2 py-1 rounded-full text-sm border ${
+                        selectedTags.includes(t)
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100"
+                      }`}
+                      onClick={() => toggleTag(t)}
+                    >
+                      {t}
+                    </button>
+                  ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={handleTagSave}>Save</Button>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
