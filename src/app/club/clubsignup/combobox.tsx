@@ -23,6 +23,20 @@ const clubTypes = [
   },
 ]
 
-export function ComboboxDemo() {
-  return <Combobox options={clubTypes} placeholder="Select club type..." searchPlaceholder="Search club type..." buttonClassName="text-[#0E4AE6]" />
+type ClubTypeComboboxProps = {
+  selected: string;
+  onChange: (value: string) => void;
+};
+
+export function ComboboxDemo({ selected, onChange }: ClubTypeComboboxProps) {
+  return (
+    <Combobox
+      options={clubTypes}
+      placeholder="Select club type..."
+      searchPlaceholder="Search club type..."
+      value={selected}
+      onValueChange={onChange}
+      buttonClassName="text-[#0E4AE6]"
+    />
+  );
 }

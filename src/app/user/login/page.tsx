@@ -36,7 +36,7 @@ export default function UserLoginPage() {
       }
 
       toast.success("Logged in successfully!");
-      router.push("/club/clubsearch");
+      router.push("/club/");
     });
   };
 
