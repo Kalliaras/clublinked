@@ -41,8 +41,17 @@ export function Infobox() {
   React.useEffect(() => {
     const loadTags = async () => {
       const supabase = createClient();
-      const { data } = await supabase.from("interest_tags").select("name");
-      setInterestTags((data || []).map((tag: any) => tag?.name).filter(Boolean));
+      const { data } = await supabase
+        .from("interest_tags")
+        .select("name");
+
+      const tags = (data ?? []) as Array<{ name: string | null }>;
+
+      setInterestTags(
+        tags
+          .map((tag) => tag.name)
+          .filter((name): name is string => Boolean(name))
+      );
     };
     loadTags();
   }, []);
@@ -304,7 +313,7 @@ export function Infobox() {
                           setIsInterestDialogOpen(false);
                         }}
                       >
-                        Create "{search.trim()}"
+                        {`Create "${search.trim()}"`}
                       </CommandItem>
                     )}
                 </CommandList>

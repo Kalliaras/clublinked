@@ -3,15 +3,6 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ClubDashboardClient from "./ClubDashboardClient";
 
-type Club = {
-  id: string;
-  name: string;
-  created_at: string;
-  university_id: string | null;
-  members: number | null;
-  about: string | null;
-};
-
 export default async function ClubDashboardLayout({
   children,
   params,

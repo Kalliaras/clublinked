@@ -6,8 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Users, CalendarDays, Building2 } from "lucide-react";
+import { Users, CalendarDays } from "lucide-react";
 
 function StatPill({
   icon,

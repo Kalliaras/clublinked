@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FolderKanban, Lightbulb, ChevronDown } from "lucide-react";
+import { FolderKanban, ChevronDown } from "lucide-react";
 
 type Club = {
   id: string;
@@ -47,9 +47,13 @@ export default function ClubOverviewPage() {
         .select("interest_id")
         .eq("club_id", clubId);
 
-      const interestIds = (clubInterests || [])
-        .map((row: any) => row?.interest_id)
-        .filter(Boolean);
+      const interests = (clubInterests ?? []) as Array<{
+        interest_id: string | null;
+      }>;
+
+      const interestIds = interests
+        .map((row) => row.interest_id)
+        .filter((id): id is string => Boolean(id));
 
       const { data: interestTags } = interestIds.length > 0
         ? await supabase
@@ -58,9 +62,14 @@ export default function ClubOverviewPage() {
             .in("id", interestIds)
         : { data: [] };
 
-      const names = (interestTags || [])
-        .map((tag: any) => tag?.name)
-        .filter(Boolean);
+      const tags = (interestTags ?? []) as Array<{
+        id: string | null;
+        name: string | null;
+      }>;
+
+      const names = tags
+        .map((tag) => tag.name)
+        .filter((name): name is string => Boolean(name));
       setHighlights(names);
 
       setLoading(false);
