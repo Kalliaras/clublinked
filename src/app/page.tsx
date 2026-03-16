@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const ctaLink = user ? "/club/clubsearch" : "/user/signup";
+  const ctaLink = user ? "/club/" : "/user/signup";
 
   return (
     <div className="min-h-screen w-full bg-white text-[#1f66e5]">
