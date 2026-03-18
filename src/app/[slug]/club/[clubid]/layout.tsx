@@ -33,6 +33,19 @@ export default async function ClubDashboardLayout({
     universityName = university?.name ?? null;
   }
 
+  // Check if user is a member of this club
+  let isMember = false;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: membership } = await supabase
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("club_id", clubid)
+      .maybeSingle();
+    isMember = !!membership;
+  }
+
   return (
     <ClubDashboardClient
       clubId={club.id}
@@ -41,6 +54,7 @@ export default async function ClubDashboardLayout({
       createdAt={club.created_at}
       universityName={universityName}
       slug={slug}
+      isMember={isMember}
     >
       {children}
     </ClubDashboardClient>

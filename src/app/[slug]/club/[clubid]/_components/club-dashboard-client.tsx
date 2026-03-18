@@ -56,6 +56,7 @@ export default function ClubDashboardClient({
   createdAt,
   universityName,
   slug,
+  isMember,
   children,
 }: {
   clubId: string;
@@ -64,6 +65,7 @@ export default function ClubDashboardClient({
   createdAt: string;
   universityName: string | null;
   slug: string;
+  isMember: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -125,29 +127,31 @@ export default function ClubDashboardClient({
               </div>
             </div>
 
-            <div className="flex items-center justify-end">
-              <Button
-                className="rounded-xl px-10"
-                disabled={joining}
-                onClick={async () => {
-                  setJoining(true);
-                  try {
-                    const result = await joinClubAction(clubId);
-                    if (result?.errorMessage) {
-                      toast.error(result.errorMessage);
-                    } else {
-                      toast.success("You joined the club!");
+            {!isMember && (
+              <div className="flex items-center justify-end">
+                <Button
+                  className="rounded-xl px-10"
+                  disabled={joining}
+                  onClick={async () => {
+                    setJoining(true);
+                    try {
+                      const result = await joinClubAction(clubId);
+                      if (result?.errorMessage) {
+                        toast.error(result.errorMessage);
+                      } else {
+                        toast.success("You joined the club!");
+                      }
+                    } catch {
+                      toast.error("Failed to join club");
+                    } finally {
+                      setJoining(false);
                     }
-                  } catch {
-                    toast.error("Failed to join club");
-                  } finally {
-                    setJoining(false);
-                  }
-                }}
-              >
-                {joining ? "Joining..." : "Join"}
-              </Button>
-            </div>
+                  }}
+                >
+                  {joining ? "Joining..." : "Join"}
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Tabs */}
