@@ -54,6 +54,11 @@ Use the proxy Supabase client in middleware to check session validity and redire
 3. **Implement with security**: Always verify server-side, never trust client claims
 4. **Handle edge cases**: Expired sessions, missing roles, unauthorized access
 
+## Handoffs
+- For RLS policies, Supabase Auth config, or database-level auth changes → hand off to **supabase** agent
+- After implementing auth changes → suggest **code-reviewer** agent to review security
+- After changes are ready → hand off to **git** agent to commit/push
+
 ## What NOT to Do
 - Don't check auth only on the client — always verify server-side
 - Don't store sensitive auth data in localStorage

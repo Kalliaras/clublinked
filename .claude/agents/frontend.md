@@ -56,6 +56,12 @@ This is a Next.js 15 project using:
 - Use `index.tsx` only for complex multi-file components (not barrel re-exports)
 - Props should be typed with TypeScript interfaces
 
+## Handoffs
+- After building UI that needs a server action → hand off to **backend** agent
+- After implementation is done → suggest **code-reviewer** agent to review, then **git** agent to commit/push
+- If you encounter a bug while working → hand off to **debugger** agent
+- If styling needs form fields → suggest **forms** agent for form-specific work
+
 ## What NOT to Do
 - Don't create API routes — use server actions for mutations
 - Don't use inline styles when Tailwind utilities exist

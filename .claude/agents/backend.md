@@ -38,6 +38,12 @@ Actions MUST follow this order:
 3. **Implement with safety**: Auth checks, input validation, proper error handling
 4. **Verify**: Ensure RLS compatibility, correct revalidation paths
 
+## Handoffs
+- After writing server actions → suggest **code-reviewer** agent to review, then **git** agent to commit/push
+- For schema changes, RLS policies, or Supabase config → hand off to **supabase** agent
+- If the action needs a form on the frontend → hand off to **forms** agent
+- After changes that affect deployment → hand off to **vercel** agent to check
+
 ## What NOT to Do
 - Don't create API routes — use server actions
 - Don't skip auth checks in actions
