@@ -29,7 +29,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
   return (
     <Card className="w-full max-w-sm bg-white text-primary border-gray-200">
       <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
+        <CardTitle>Create your account</CardTitle>
         <CardDescription>
           Fill out the following information to access your account.
         </CardDescription>
