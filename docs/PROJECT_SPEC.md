@@ -108,7 +108,7 @@ Clublinked is **the operating system for student organizations**. It is a multi-
 | `url` | TEXT | nullable | University website URL |
 | `created_at` | TIMESTAMPTZ | default `now()` | Row creation time |
 
-Index: `idx_universities_slug` on `slug`.
+**Note:** The redundant `idx_universities_slug` index was dropped (the UNIQUE constraint on `slug` already provides an index).
 
 ### `profile`
 
@@ -118,14 +118,14 @@ Index: `idx_universities_slug` on `slug`.
 | `email` | TEXT | NOT NULL | User email |
 | `first_name` | TEXT | NOT NULL | First name |
 | `last_name` | TEXT | NOT NULL | Last name |
-| `university_id` | TEXT | nullable | University this user belongs to |
+| `university_id` | UUID | nullable, FK to `universities.id` | University this user belongs to |
 | `major` | TEXT | nullable | Academic major |
 | `year` | TEXT | nullable | Class year |
 | `bio` | TEXT | nullable | User bio |
 | `club_id` | TEXT | nullable | Legacy column |
 | `created_at` | TIMESTAMPTZ | | Row creation time |
 
-**Note:** `university_id` is TEXT, not a UUID FK -- there is no foreign key constraint to `universities`.
+**Note:** `profile.email` has no default value (a previous broken `'NULL'::text` default was removed).
 
 ### `clubs`
 
@@ -136,11 +136,9 @@ Index: `idx_universities_slug` on `slug`.
 | `about` | TEXT | nullable | Description |
 | `club_type` | TEXT | nullable | Category (e.g., "Academic", "Social") |
 | `access_code` | TEXT | | 6-char random invite code |
-| `university_id` | TEXT | nullable | University this club belongs to |
+| `university_id` | UUID | nullable, FK to `universities.id` | University this club belongs to |
 | `members` | INTEGER | default 0 | Member count (denormalized) |
 | `created_at` | TIMESTAMPTZ | default `now()` | Row creation time |
-
-**Note:** `university_id` is TEXT, not a UUID FK.
 
 ### `user_roles`
 
@@ -150,7 +148,9 @@ Index: `idx_universities_slug` on `slug`.
 | `user_id` | UUID | FK to `profile.id` | User |
 | `club_id` | UUID | FK to `clubs.id` | Club |
 | `title` | TEXT | | Role title (e.g., "President", "Member") |
-| `is_owner` | BOOLEAN | default `false` | Whether user is a club owner |
+| `is_owner` | BOOLEAN | NOT NULL, default `false` | Whether user is a club owner |
+
+Index: `idx_user_roles_club_id` on `club_id`.
 
 ### `interest_tags`
 
@@ -168,31 +168,35 @@ Index: `idx_universities_slug` on `slug`.
 
 ### `user_interests`
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `user_id` | UUID | FK to `profile.id` |
-| `interest_id` | UUID | FK to `interest_tags.id` |
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `user_id` | UUID | FK to `profile.id` | User |
+| `interest_id` | UUID | FK to `interest_tags.id` | Interest tag |
+
+Index: `idx_user_interests_interest_id` on `interest_id`.
 
 ### `user_skills`
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `user_id` | UUID | FK to `profile.id` |
-| `skill_id` | UUID | FK to `skill_tags.id` |
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `user_id` | UUID | FK to `profile.id` | User |
+| `skill_id` | UUID | FK to `skill_tags.id` | Skill tag |
+
+Index: `idx_user_skills_skill_id` on `skill_id`.
 
 ### `club_interests`
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `club_id` | UUID | FK to `clubs.id` |
-| `interest_id` | UUID | FK to `interest_tags.id` |
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `club_id` | UUID | FK to `clubs.id` | Club |
+| `interest_id` | UUID | FK to `interest_tags.id` | Interest tag |
 
 ### `club_skills`
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `club_id` | UUID | FK to `clubs.id` |
-| `skill_id` | UUID | FK to `skill_tags.id` |
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `club_id` | UUID | FK to `clubs.id` | Club (previously misspelled as `clud_id`, now corrected) |
+| `skill_id` | UUID | FK to `skill_tags.id` | Skill tag |
 
 ---
 
@@ -219,7 +223,7 @@ The `[slug]/layout.tsx` is the multi-tenancy boundary:
 - **Supabase Auth** with email/password (`signUp`, `signInWithPassword`)
 - **Email domain validation** on signup: if the university has `email_domain` set, the signup action rejects emails that don't match
 - **Magic link support**: middleware handles `?code=...&type=email` by exchanging the code for a session
-- **No RLS policies** currently -- all queries run with the anon key's default permissions
+- **RLS enabled** on all tables with 29 policies (see Security section below)
 - **Session management**: cookie-based via `@supabase/ssr`
 
 ### Server Action Pattern
@@ -283,6 +287,22 @@ Three client variants in `src/lib/supabase/`:
 | `server.ts` | Server components, server actions | Cookie-based authenticated client |
 | `client.ts` | Browser/client components | Browser-side client |
 | `proxy.ts` | Middleware | Lightweight client for middleware context |
+
+### Security (Row Level Security)
+
+RLS is enabled on all 10 tables with 29 policies. The general pattern:
+
+| Table | SELECT | INSERT | UPDATE | DELETE |
+|-------|--------|--------|--------|--------|
+| `universities` | Public | Authenticated users | -- | -- |
+| `profile` | Public | Own row only (`id = auth.uid()`) | Own row only | -- |
+| `clubs` | Public | Authenticated users | Owner only | Owner only |
+| `user_roles` | Public | Self-join or club owner | Club owner only | Self-remove or club owner |
+| `interest_tags` / `skill_tags` | Public | Authenticated users | -- | -- |
+| `user_interests` / `user_skills` | Public | Own rows only | -- | Own rows only |
+| `club_interests` / `club_skills` | Public | Club owner only | -- | Club owner only |
+
+"Owner" means the authenticated user has a row in `user_roles` with `is_owner = true` for that club.
 
 ---
 
@@ -407,7 +427,7 @@ src/
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL (public, embedded in client bundle) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous/public API key (public, embedded in client bundle) |
 
-Both are `NEXT_PUBLIC_` prefixed because they are needed on both server and client. Row Level Security (RLS) should protect data -- but **RLS is not currently configured**.
+Both are `NEXT_PUBLIC_` prefixed because they are needed on both server and client. Row Level Security (RLS) policies are configured on all tables to protect data.
 
 ---
 
@@ -472,8 +492,6 @@ bunx supabase link --project-ref <REF>     # Link CLI to Supabase project
 
 | Issue | Severity | Details |
 |-------|----------|---------|
-| No RLS policies | High | No Row Level Security on any table. All data is accessible to anyone with the anon key. |
-| `university_id` is TEXT not UUID FK | Medium | `profile.university_id` and `clubs.university_id` are TEXT columns with no foreign key constraint to `universities.id`. No referential integrity. |
 | No TypeScript types from schema | Medium | No `supabase gen types` output. All DB types are manually defined or cast with `as`. |
 | No tests | Medium | No unit tests, integration tests, or e2e tests. |
 | Build warning on /500 | Low | Prerendering of `/500` error page may produce warnings. |

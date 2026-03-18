@@ -55,13 +55,15 @@ Add two columns:
 - `slug` (TEXT, UNIQUE, NOT NULL) — URL identifier, e.g., "uchicago"
 - `email_domain` (TEXT) — Allowed email domain, e.g., "uchicago.edu"
 
-### Existing tables (unchanged)
+### Existing tables
 
-- `profile` — already has `university_id` FK
-- `clubs` — already has `university_id` FK
-- `user_roles` — links users to clubs with title/is_owner
+- `profile` — `university_id` is UUID with FK to `universities.id`
+- `clubs` — `university_id` is UUID with FK to `universities.id`
+- `user_roles` — links users to clubs with title/is_owner (NOT NULL, defaults to false)
 - `interest_tags`, `skill_tags` — tag lookup tables
-- `user_interests`, `user_skills`, `club_interests` — many-to-many joins
+- `user_interests`, `user_skills`, `club_interests`, `club_skills` — many-to-many joins (all have FK constraints)
+
+**Security:** RLS is enabled on all tables with 29 policies. Public read access is granted for discovery; write operations are scoped to authenticated users, self-owned rows, or club owners as appropriate.
 
 ### Key: University scoping
 
