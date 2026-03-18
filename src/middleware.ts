@@ -1,6 +1,17 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+function createResponseWithPathname(request: NextRequest) {
+  return NextResponse.next({
+    request: {
+      headers: new Headers({
+        ...Object.fromEntries(request.headers),
+        'x-pathname': request.nextUrl.pathname,
+      }),
+    },
+  });
+}
+
 export async function middleware(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
@@ -8,7 +19,7 @@ export async function middleware(request: NextRequest) {
 
   // Handle email confirmation via magic link
   if (code && type === 'email') {
-    const response = NextResponse.next()
+    const response = createResponseWithPathname(request)
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -37,7 +48,7 @@ export async function middleware(request: NextRequest) {
 
   // Handle other code types (if any)
   if (code) {
-    const response = NextResponse.next()
+    const response = createResponseWithPathname(request)
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -64,7 +75,7 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  return NextResponse.next()
+  return createResponseWithPathname(request)
 }
 
 export const config = {

@@ -5,7 +5,7 @@ import logo from "../../../public/logo.png";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { LogOutAction } from "@/app/user/actions/user";
+import { LogOutAction } from "@/lib/actions/auth";
 import { Loader2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function UserAvatarMenu({ userId }: { userId: string }) {
+export default function UserAvatarMenu({ userId, slug }: { userId: string; slug?: string }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -31,11 +31,11 @@ export default function UserAvatarMenu({ userId }: { userId: string }) {
     }
 
     toast.success("Logged out successfully");
-    router.push("/");
+    router.push(slug ? `/${slug}` : "/");
   };
 
   const handleProfileClick = () => {
-    router.push(`/user/profile/${userId}`);
+    router.push(slug ? `/${slug}/profile/${userId}` : `/profile/${userId}`);
   };
 
   return (
