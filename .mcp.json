@@ -7,6 +7,10 @@
     "magicuidesign-mcp": {
       "command": "npx",
       "args": ["-y", "@magicuidesign/mcp@latest"]
+    },
+    "supabase": {
+      "command": "sh",
+      "args": ["-c", "set -a && . ./.env.local && set +a && exec npx -y @supabase/mcp-server-supabase@latest"]
     }
   }
 }
