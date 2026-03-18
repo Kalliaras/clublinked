@@ -12,13 +12,52 @@ The only things you do directly are: git operations, answering questions, and co
 
 ### Available Agents
 
+#### Core Implementation Agents
+
 | Agent | When to use |
 |-------|-------------|
 | **frontend** | Any UI work — new pages, components, layouts, styling, responsive fixes, shadcn/ui components |
 | **backend** | Server actions, Supabase queries, auth logic, data fetching, API-layer work |
-| **supabase** | Schema changes, new tables, RLS policies, migrations, auth config, SDK queries |
+| **supabase** | Schema changes, new tables, RLS policies, migrations, auth config, SDK queries, storage |
 | **playwright** | Visual checks, e2e testing, screenshots — after UI changes or to verify pages work correctly |
+
+#### Quality & Review Agents
+
+| Agent | When to use |
+|-------|-------------|
 | **reviewer** | After any significant changes are made — run this automatically before telling the user something is "done" |
+| **code-reviewer** | Deep review against a plan and coding standards — use after completing a major project step (use `superpowers:code-reviewer` subagent type) |
+| **debugger** | Investigate and fix bugs, errors, and unexpected behavior across the full stack |
+
+#### Optimization & Maintenance Agents
+
+| Agent | When to use |
+|-------|-------------|
+| **refactor** | Restructure code for better readability and maintainability without changing behavior |
+| **perf** | Performance optimization — bundle size, rendering, database queries, caching, Core Web Vitals |
+
+#### Infrastructure & Deployment Agents
+
+| Agent | When to use |
+|-------|-------------|
+| **git** | Git operations — commits, pushes, branches, PRs, merge conflicts, repo cleanup |
+| **vercel** | Deployments, env vars, build logs, and troubleshooting Vercel hosting issues |
+
+#### Research & Planning Agents
+
+| Agent | When to use |
+|-------|-------------|
+| **Explore** | Fast codebase exploration — find files by patterns, search code, answer architecture questions |
+| **Plan** | Design implementation plans — step-by-step strategies, critical file identification, trade-off analysis |
+| **general-purpose** | Complex multi-step research, broad searches, or tasks that don't fit other agents |
+
+#### Communication & Documentation Agents
+
+| Agent | When to use |
+|-------|-------------|
+| **explainer** | Explain code, concepts, and technical decisions in plain, non-technical language |
+| **docs** | Write and update documentation — READMEs, inline comments, guides, onboarding docs |
+| **claude-code-guide** | Answer questions about Claude Code features, hooks, slash commands, MCP servers, settings |
 
 ### Orchestration Rules
 
@@ -144,3 +183,59 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY
 - shadcn/ui config: new-york style, neutral base color, CSS variables, lucide-react icons
 - Tailwind utility helper: `cn()` from `@/lib/utils/tailwind`
 - TypeScript build errors are currently ignored in `next.config.ts`
+
+## Skills & Plugins
+
+This project uses the **superpowers** and **frontend-design** plugins (enabled in `.claude/settings.json`). Skills are structured workflows that guide Claude through tasks with discipline and consistency.
+
+### How Skills Work
+
+Skills are invoked automatically when relevant, or manually via `/skill-name`. They provide step-by-step workflows for common development patterns. **Skills run before any code is written** — they shape the approach, not just the execution.
+
+### Active Plugins
+
+| Plugin | Purpose |
+|--------|---------|
+| **superpowers** | Core development workflows — planning, debugging, TDD, code review, parallel agents |
+| **frontend-design** | High-quality, distinctive UI design — avoids generic AI aesthetics |
+
+### Key Skills (from superpowers)
+
+| Skill | When it's used |
+|-------|---------------|
+| `/brainstorming` | Before building any new feature — explores requirements and design |
+| `/writing-plans` | Before multi-step implementations — creates a structured plan |
+| `/executing-plans` | When working through an implementation plan step by step |
+| `/test-driven-development` | Before writing implementation code — tests first |
+| `/systematic-debugging` | When encountering bugs or unexpected behavior |
+| `/dispatching-parallel-agents` | When 2+ independent tasks can run simultaneously |
+| `/requesting-code-review` | After completing work, before merging |
+| `/verification-before-completion` | Before claiming work is done — runs verification |
+| `/finishing-a-development-branch` | When implementation is complete — guides merge/PR/cleanup |
+| `/using-git-worktrees` | For isolated feature work that shouldn't affect the main workspace |
+
+### Skill Priority with Orchestrator
+
+Skills and orchestration rules work together:
+
+1. **User instructions** (this CLAUDE.md) — highest priority
+2. **Skills** — guide how to approach and execute work
+3. **Default behavior** — lowest priority
+
+Skills do NOT override the orchestrator rules above. The orchestrator still delegates all code work to agents. Skills guide *how* those agents are coordinated and *what workflow* is followed (e.g., brainstorm → plan → implement → review).
+
+### Creating Custom Skills
+
+To add a project-specific skill:
+
+1. Create a directory: `.claude/skills/my-skill/`
+2. Add a `SKILL.md` file with YAML frontmatter:
+   ```yaml
+   ---
+   name: my-skill
+   description: When to use this skill
+   ---
+
+   Instructions here...
+   ```
+3. Commit to git — skills are auto-discovered from `.claude/skills/`
