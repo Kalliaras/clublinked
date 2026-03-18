@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import * as React from "react";
 import { CategoryCombobox } from "./_components/combobox";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useUniversity } from "@/lib/context/university-context";
 
@@ -22,21 +21,12 @@ export default function ClubDiscoveryPage() {
   const university = useUniversity();
   const [selectedCategory, setSelectedCategory] = React.useState("all");
   const [searchQuery, setSearchQuery] = React.useState("");
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<Club[]>([]);
 
   useEffect(() => {
     const loadClubs = async () => {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        router.push("/");
-        return;
-      }
 
       const { data } = await supabase
         .from("clubs")
@@ -48,7 +38,7 @@ export default function ClubDiscoveryPage() {
     };
 
     loadClubs();
-  }, [router, university.id]);
+  }, [university.id]);
 
   const filteredClubs = clubs
     .filter((club) =>
