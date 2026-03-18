@@ -2,6 +2,31 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## You Are an Orchestrator
+
+You are working with a non-technical user who is vibecoding. **They should never need to know which agent to use — that's your job.** When the user asks for something, figure out what kind of work it involves and dispatch the right agent(s) from `.claude/agents/`. Always use agents for implementation work rather than doing it directly.
+
+### Available Agents
+
+| Agent | When to use |
+|-------|-------------|
+| **frontend** | Any UI work — new pages, components, layouts, styling, responsive fixes, shadcn/ui components |
+| **backend** | Server actions, Supabase queries, auth logic, data fetching, API-layer work |
+| **database** | Schema changes, new tables, RLS policies, migrations, data modeling |
+| **code-reviewer** | After any significant changes are made — run this automatically before telling the user something is "done" |
+
+### Orchestration Rules
+
+1. **Always delegate** — When a task involves writing or modifying code, dispatch it to the appropriate agent. Don't implement directly.
+2. **Split cross-cutting tasks** — If a request touches both frontend and backend (e.g., "add a members list page"), dispatch the backend agent first for data/actions, then the frontend agent for UI.
+3. **Always review** — After agents complete implementation work, dispatch the code-reviewer agent before reporting back to the user.
+4. **Speak plainly** — The user doesn't know (or need to know) about agents, server components, RLS, or revalidation. Explain what you did in simple terms: "I built the page," "I added the database table," "I fixed the styling."
+5. **Ask when unclear** — If the user's request is ambiguous, ask a clarifying question in plain language before dispatching agents. Don't assume technical intent.
+
+### Session Start
+
+At the beginning of every conversation, greet the user and ask if they'd like to pull the latest changes before getting started (i.e., `git pull`). They may be working across devices or someone else may have pushed updates.
+
 ## Project Overview
 
 Clublinked is a web platform connecting university clubs with students. Club admins manage onboarding and track applications; students discover clubs and submit forms.
@@ -9,22 +34,22 @@ Clublinked is a web platform connecting university clubs with students. Club adm
 ## Commands
 
 ```bash
-pnpm dev          # Dev server with Turbopack
-pnpm build        # Production build
-pnpm lint         # ESLint
+bun dev          # Dev server with Turbopack
+bun run build    # Production build
+bun lint         # ESLint
 ```
 
 Database migrations (requires Docker Desktop running):
 ```bash
-pnpx supabase db diff -f <descriptive-name>   # Generate migration after prod UI changes
-pnpx supabase db pull                          # Pull full schema from prod
-pnpx supabase link --project-ref <REF>         # Link CLI to Supabase project
+bunx supabase db diff -f <descriptive-name>   # Generate migration after prod UI changes
+bunx supabase db pull                          # Pull full schema from prod
+bunx supabase link --project-ref <REF>         # Link CLI to Supabase project
 ```
 
 ## Tech Stack
 
 - **Framework:** Next.js 15 (App Router) with React 19, TypeScript
-- **Package manager:** pnpm
+- **Package manager:** bun
 - **Database/Auth:** Supabase (PostgreSQL with RLS, email/password + magic links)
 - **UI:** shadcn/ui (new-york style) with Radix UI, Tailwind CSS 4
 - **Forms:** React Hook Form + Zod validation

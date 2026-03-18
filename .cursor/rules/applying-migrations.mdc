@@ -20,7 +20,7 @@ Admins make changes directly in the **Supabase Web UI (prod)**, then generate mi
 Install Supabase CLI _locally inside the project_:
 
 ```bash
-pnpm install supabase --save-dev
+bun add -d supabase
 ```
 
 Install Docker Desktop (from https://www.docker.com/) and ensure it is running.
@@ -34,7 +34,7 @@ Install Docker Desktop (from https://www.docker.com/) and ensure it is running.
 In the root of the project, run:
 
 ```bash
-pnpx supabase init
+bunx supabase init
 ```
 
 This creates a `supabase/` folder (if it does not already exist).
@@ -44,7 +44,7 @@ This creates a `supabase/` folder (if it does not already exist).
 You may be unauthorized on your device, make sure to login:
 
 ```jsx
-pnpx supabase login
+bunx supabase login
 ```
 
 ### **Link CLI to Project**
@@ -52,7 +52,7 @@ pnpx supabase login
 Find your Supabase **project ref** in the dashboard URL and link the CLI:
 
 ```bash
-pnpx supabase link --project-ref <YOUR_PROD_PROJECT_REF>
+bunx supabase link --project-ref <YOUR_PROD_PROJECT_REF>
 ```
 
 This tells the CLI: “when I run `db diff`, compare against this prod project.”
@@ -64,13 +64,13 @@ _Have Docker Desktop running before performing any of these actions. You will ge
 If the project already has tables created in the Supabase UI and no migrations have been generated yet, capture the entire schema once:
 
 ```bash
-pnpx supabase db pull
+bunx supabase db pull
 ```
 
 Useful to know here:
 
 ```jsx
-pnpx supabase stop --all --no-backup || true
+bunx supabase stop --all --no-backup || true
 ```
 
 This creates a migration file under `supabase/migrations/`.
@@ -94,14 +94,14 @@ This becomes your baseline.
 2. When finished with a meaningful batch of changes, generate a migration:
 
 ```bash
-pnpx supabase db diff -f <descriptive-name>
+bunx supabase db diff -f <descriptive-name>
 ```
 
 Examples:
 
 ```bash
-pnpx supabase db diff -f add-campaign-fields
-pnpx supabase db diff -f update-task-status-enum
+bunx supabase db diff -f add-campaign-fields
+bunx supabase db diff -f update-task-status-enum
 ```
 
 1. Commit and push:
