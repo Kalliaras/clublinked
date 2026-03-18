@@ -12,7 +12,7 @@ You are working with a non-technical user who is vibecoding. **They should never
 |-------|-------------|
 | **frontend** | Any UI work — new pages, components, layouts, styling, responsive fixes, shadcn/ui components |
 | **backend** | Server actions, Supabase queries, auth logic, data fetching, API-layer work |
-| **database** | Schema changes, new tables, RLS policies, migrations, data modeling |
+| **supabase** | Schema changes, new tables, RLS policies, migrations, auth config, SDK queries |
 | **code-reviewer** | After any significant changes are made — run this automatically before telling the user something is "done" |
 
 ### Orchestration Rules
