@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { LogOutAction } from "@/app/user/actions/user";
+import { LogOutAction } from "@/lib/actions/auth";
 
 function LogOutButton() {
   const [loading, setLoading] = useState(false);
