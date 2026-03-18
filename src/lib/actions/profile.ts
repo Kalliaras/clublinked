@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 export const UpdateBioAction = async (
@@ -8,11 +9,16 @@ export const UpdateBioAction = async (
 ): Promise<{ errorMessage?: string } | null> => {
   try {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || user.id !== userId) {
+      return { errorMessage: "Unauthorized" };
+    }
     const { error } = await supabase
-      .from("profile")
+      .from("profiles")
       .update({ bio })
       .eq("id", userId);
     if (error) throw error;
+    revalidatePath("/", "layout");
     return null;
   } catch (error) {
     console.error("Error updating bio:", error);
@@ -26,6 +32,10 @@ export const UpdateInterestsAction = async (
 ): Promise<{ errorMessage?: string } | null> => {
   try {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || user.id !== userId) {
+      return { errorMessage: "Unauthorized" };
+    }
 
     // remove old interests
     const { error: delError } = await supabase
@@ -46,13 +56,15 @@ export const UpdateInterestsAction = async (
       if (tagError) throw tagError;
       const tag = data as { id: string } | null;
       if (tag && tag.id) {
-        await supabase.from("user_interests").insert({
+        const { error: insertError } = await supabase.from("user_interests").insert({
           user_id: userId,
           interest_id: tag.id,
         });
+        if (insertError) throw insertError;
       }
 
     }
+    revalidatePath("/", "layout");
     return null;
   } catch (error) {
     console.error("Error updating interests:", error);
@@ -66,6 +78,10 @@ export const UpdateSkillsAction = async (
 ): Promise<{ errorMessage?: string } | null> => {
   try {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || user.id !== userId) {
+      return { errorMessage: "Unauthorized" };
+    }
 
     // remove old skills
     const { error: delError } = await supabase
@@ -85,12 +101,14 @@ export const UpdateSkillsAction = async (
       if (tagError) throw tagError;
       const tag = data as { id: string } | null;
       if (tag && tag.id) {
-        await supabase.from("user_skills").insert({
+        const { error: insertError } = await supabase.from("user_skills").insert({
           user_id: userId,
           skill_id: tag.id,
         });
+        if (insertError) throw insertError;
       }
     }
+    revalidatePath("/", "layout");
     return null;
   } catch (error) {
     console.error("Error updating skills:", error);

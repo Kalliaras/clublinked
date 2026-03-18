@@ -21,7 +21,7 @@ Clublinked is **the operating system for student organizations**. It is a multi-
 1. Visits `/` (marketing landing page)
 2. Clicks "Get Started" -> navigates to `/setup`
 3. Fills institution form: university name, URL slug (auto-generated, editable), email domain (optional), admin account (first name, last name, email, password)
-4. Submits -> `SetupInstitutionAction` validates slug (not reserved, not taken), creates Supabase auth account, inserts `universities` row, inserts `profile` row with `university_id`
+4. Submits -> `SetupInstitutionAction` validates slug (not reserved, not taken), creates Supabase auth account, inserts `universities` row, inserts `profiles` row with `university_id`
 5. On success, redirected to `/{slug}` (university hub)
 
 ### Student/Officer Signup
@@ -29,7 +29,7 @@ Clublinked is **the operating system for student organizations**. It is a multi-
 1. Visits `/{slug}/signup`
 2. If already logged in, auto-redirected to `/{slug}`
 3. Fills signup form: first name, last name, email, password, year (optional), major (optional)
-4. Submits -> `SignUpAction` validates email domain against university's `email_domain` (if set), creates Supabase auth account, inserts `profile` row with `university_id`
+4. Submits -> `SignUpAction` validates email domain against university's `email_domain` (if set), creates Supabase auth account, inserts `profiles` row with `university_id`
 5. Sees toast: "Please check your email to verify your account"
 6. Redirected to `/{slug}`
 
@@ -60,7 +60,7 @@ Clublinked is **the operating system for student organizations**. It is a multi-
 1. Authenticated user visits `/{slug}` (university hub)
 2. Enters invite code in the form
 3. Client-side lookup: `clubs` table filtered by `access_code`
-4. If found and user is not already a member, inserts `user_roles` row (title: "Member", `is_owner: false`) and increments `clubs.members` count
+4. If found and user is not already a member, inserts `user_roles` row (title: "Member", `is_owner: false`) and increments `clubs.member_count`
 5. Redirected to `/{slug}/club/{clubid}`
 
 ### Profile
@@ -105,12 +105,12 @@ Clublinked is **the operating system for student organizations**. It is a multi-
 | `slug` | TEXT | UNIQUE, NOT NULL | URL-safe identifier (e.g., "uchicago") |
 | `email_domain` | TEXT | nullable | Allowed signup domain (e.g., "uchicago.edu") |
 | `country` | TEXT | nullable | Country |
-| `url` | TEXT | nullable | University website URL |
+| `website_url` | TEXT | nullable | University website URL |
 | `created_at` | TIMESTAMPTZ | default `now()` | Row creation time |
 
 **Note:** The redundant `idx_universities_slug` index was dropped (the UNIQUE constraint on `slug` already provides an index).
 
-### `profile`
+### `profiles`
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
@@ -120,12 +120,13 @@ Clublinked is **the operating system for student organizations**. It is a multi-
 | `last_name` | TEXT | NOT NULL | Last name |
 | `university_id` | UUID | nullable, FK to `universities.id` | University this user belongs to |
 | `major` | TEXT | nullable | Academic major |
-| `year` | TEXT | nullable | Class year |
+| `academic_year` | TEXT | nullable | Class year |
 | `bio` | TEXT | nullable | User bio |
 | `club_id` | TEXT | nullable | Legacy column |
 | `created_at` | TIMESTAMPTZ | | Row creation time |
+| `updated_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Last update time (auto-updated via trigger) |
 
-**Note:** `profile.email` has no default value (a previous broken `'NULL'::text` default was removed).
+**Note:** `profiles.email` has no default value (a previous broken `'NULL'::text` default was removed). An `updated_at` trigger automatically sets this column on every row update.
 
 ### `clubs`
 
@@ -133,22 +134,25 @@ Clublinked is **the operating system for student organizations**. It is a multi-
 |--------|------|-------------|-------------|
 | `id` | UUID | PK, default `gen_random_uuid()` | Club ID |
 | `name` | TEXT | NOT NULL | Club name |
-| `about` | TEXT | nullable | Description |
-| `club_type` | TEXT | nullable | Category (e.g., "Academic", "Social") |
+| `description` | TEXT | nullable | Club description |
+| `type` | TEXT | nullable | Category (e.g., "Academic", "Social") |
 | `access_code` | TEXT | | 6-char random invite code |
 | `university_id` | UUID | nullable, FK to `universities.id` | University this club belongs to |
-| `members` | INTEGER | default 0 | Member count (denormalized) |
+| `member_count` | INTEGER | default 0 | Member count (denormalized) |
 | `created_at` | TIMESTAMPTZ | default `now()` | Row creation time |
+| `updated_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Last update time (auto-updated via trigger) |
 
 ### `user_roles`
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
 | `id` | UUID | PK | Role record ID |
-| `user_id` | UUID | FK to `profile.id` | User |
+| `user_id` | UUID | FK to `profiles.id` | User |
 | `club_id` | UUID | FK to `clubs.id` | Club |
 | `title` | TEXT | | Role title (e.g., "President", "Member") |
 | `is_owner` | BOOLEAN | NOT NULL, default `false` | Whether user is a club owner |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Row creation time |
+| `updated_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Last update time (auto-updated via trigger) |
 
 Index: `idx_user_roles_club_id` on `club_id`.
 
@@ -170,8 +174,9 @@ Index: `idx_user_roles_club_id` on `club_id`.
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
-| `user_id` | UUID | FK to `profile.id` | User |
+| `user_id` | UUID | FK to `profiles.id` | User |
 | `interest_id` | UUID | FK to `interest_tags.id` | Interest tag |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Row creation time |
 
 Index: `idx_user_interests_interest_id` on `interest_id`.
 
@@ -179,8 +184,9 @@ Index: `idx_user_interests_interest_id` on `interest_id`.
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
-| `user_id` | UUID | FK to `profile.id` | User |
+| `user_id` | UUID | FK to `profiles.id` | User |
 | `skill_id` | UUID | FK to `skill_tags.id` | Skill tag |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Row creation time |
 
 Index: `idx_user_skills_skill_id` on `skill_id`.
 
@@ -190,6 +196,9 @@ Index: `idx_user_skills_skill_id` on `skill_id`.
 |--------|------|-------------|-------------|
 | `club_id` | UUID | FK to `clubs.id` | Club |
 | `interest_id` | UUID | FK to `interest_tags.id` | Interest tag |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Row creation time |
+
+**Note:** The previously broken `gen_random_uuid()` default on the FK columns was removed.
 
 ### `club_skills`
 
@@ -197,6 +206,9 @@ Index: `idx_user_skills_skill_id` on `skill_id`.
 |--------|------|-------------|-------------|
 | `club_id` | UUID | FK to `clubs.id` | Club (previously misspelled as `clud_id`, now corrected) |
 | `skill_id` | UUID | FK to `skill_tags.id` | Skill tag |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Row creation time |
+
+**Note:** The previously broken `gen_random_uuid()` default on the FK columns was removed.
 
 ---
 
@@ -284,9 +296,10 @@ Three client variants in `src/lib/supabase/`:
 
 | File | Context | Usage |
 |------|---------|-------|
-| `server.ts` | Server components, server actions | Cookie-based authenticated client |
-| `client.ts` | Browser/client components | Browser-side client |
-| `proxy.ts` | Middleware | Lightweight client for middleware context |
+| `server.ts` | Server components, server actions | Cookie-based authenticated client, typed with `Database` generic |
+| `client.ts` | Browser/client components | Browser-side client, typed with `Database` generic |
+| `proxy.ts` | Middleware | Lightweight client for middleware context, typed with `Database` generic |
+| `database.types.ts` | All clients | Generated TypeScript types — run `supabase gen types` to regenerate after schema changes |
 
 ### Security (Row Level Security)
 
@@ -295,7 +308,7 @@ RLS is enabled on all 10 tables with 29 policies. The general pattern:
 | Table | SELECT | INSERT | UPDATE | DELETE |
 |-------|--------|--------|--------|--------|
 | `universities` | Public | Authenticated users | -- | -- |
-| `profile` | Public | Own row only (`id = auth.uid()`) | Own row only | -- |
+| `profiles` | Public | Own row only (`id = auth.uid()`) | Own row only | -- |
 | `clubs` | Public | Authenticated users | Owner only | Owner only |
 | `user_roles` | Public | Self-join or club owner | Club owner only | Self-remove or club owner |
 | `interest_tags` / `skill_tags` | Public | Authenticated users | -- | -- |
@@ -303,6 +316,8 @@ RLS is enabled on all 10 tables with 29 policies. The general pattern:
 | `club_interests` / `club_skills` | Public | Club owner only | -- | Club owner only |
 
 "Owner" means the authenticated user has a row in `user_roles` with `is_owner = true` for that club.
+
+**Note:** RLS policies on `profiles` were recreated with corrected names during the schema migration.
 
 ---
 
@@ -387,9 +402,10 @@ src/
 │   ├── hooks/
 │   │   └── use-mobile.ts               # Mobile viewport detection hook
 │   ├── supabase/
-│   │   ├── server.ts                    # Server-side Supabase client
-│   │   ├── client.ts                    # Browser-side Supabase client
-│   │   └── proxy.ts                     # Middleware Supabase client
+│   │   ├── server.ts                    # Server-side Supabase client (uses Database generic)
+│   │   ├── client.ts                    # Browser-side Supabase client (uses Database generic)
+│   │   ├── proxy.ts                     # Middleware Supabase client (uses Database generic)
+│   │   └── database.types.ts            # Generated TypeScript types from Supabase schema
 │   └── utils/
 │       └── tailwind.ts                  # cn() utility for class merging
 ├── fonts/
@@ -492,11 +508,10 @@ bunx supabase link --project-ref <REF>     # Link CLI to Supabase project
 
 | Issue | Severity | Details |
 |-------|----------|---------|
-| No TypeScript types from schema | Medium | No `supabase gen types` output. All DB types are manually defined or cast with `as`. |
 | No tests | Medium | No unit tests, integration tests, or e2e tests. |
 | Build warning on /500 | Low | Prerendering of `/500` error page may produce warnings. |
-| `members` count is denormalized | Low | `clubs.members` is a manually-incremented integer, not derived from `user_roles` count. Can drift. |
+| `member_count` is denormalized | Low | `clubs.member_count` is a manually-incremented integer, not derived from `user_roles` count. Can drift. |
 | TypeScript errors ignored | Low | `next.config.ts` has `typescript: { ignoreBuildErrors: true }`. |
 | Some client-side DB writes | Low | Club creation and join-via-code do Supabase inserts directly from client components instead of server actions. |
 | Reserved slug list incomplete | Low | `setup.ts` reserves some slugs but the list may not cover all future routes. |
-| Legacy `club_id` on profile | Low | `profile.club_id` column appears unused (roles are in `user_roles`). |
+| Legacy `club_id` on profiles | Low | `profiles.club_id` column appears unused (roles are in `user_roles`). |

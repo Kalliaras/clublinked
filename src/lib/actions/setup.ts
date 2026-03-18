@@ -75,7 +75,7 @@ export const SetupInstitutionAction = async (
       };
     }
 
-    const { error: profileError } = await supabase.from("profile").upsert({
+    const { error: profileError } = await supabase.from("profiles").upsert({
       id: userId,
       email,
       first_name: firstName,

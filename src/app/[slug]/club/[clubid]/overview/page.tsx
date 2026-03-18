@@ -10,8 +10,8 @@ import { FolderKanban, ChevronDown } from "lucide-react";
 type Club = {
   id: string;
   name: string;
-  about: string | null;
-  members: number | null;
+  description: string | null;
+  member_count: number | null;
   created_at: string;
   university_id: string | null;
 };
@@ -34,7 +34,7 @@ export default function ClubOverviewPage() {
 
       const { data: clubData } = await supabase
         .from("clubs")
-        .select("id, name, about, members, created_at, university_id")
+        .select("id, name, description, member_count, created_at, university_id")
         .eq("id", clubId)
         .single();
 
@@ -99,7 +99,7 @@ export default function ClubOverviewPage() {
       <Card className="border-slate-200 p-6">
         <h2 className="text-lg font-semibold text-slate-900">About</h2>
         <p className="mt-4 text-sm leading-6 text-slate-700">
-          {club?.about || "This club has no description yet."}
+          {club?.description || "This club has no description yet."}
         </p>
       </Card>
 
@@ -137,14 +137,14 @@ export default function ClubOverviewPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="border-slate-200 p-6">
-          <div className="text-sm font-semibold text-slate-900">Featured</div>
+          <div className="text-sm font-semibold text-slate-900">Featured Events</div>
           <p className="mt-4 text-sm leading-6 text-slate-700">
             This club has no featured events yet.
           </p>
         </Card>
 
         <Card className="border-slate-200 p-6">
-          <div className="text-sm font-semibold text-slate-900">Featured</div>
+          <div className="text-sm font-semibold text-slate-900">Featured Projects</div>
           <p className="mt-4 text-sm leading-6 text-slate-700">
             This club has no featured projects yet.
           </p>

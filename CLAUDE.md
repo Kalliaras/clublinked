@@ -82,13 +82,17 @@ Agent teams spawn multiple full Claude instances that work independently and com
 
 At the beginning of every conversation:
 1. Greet the user and ask if they'd like to pull the latest changes (`git pull`). They may be working across devices or someone else may have pushed updates.
-2. Check if the dev server is running. If not, offer to start it (`bun dev`) so they can see changes live.
+2. Remind the user to start the dev server (`bun dev`) if they haven't already.
+
+### Dev Server
+
+**NEVER start the dev server yourself.** The user always runs `bun dev` on their own. Do not run `bun dev`, `npm run dev`, or any localhost server commands. If you need to verify something visually, ask the user to check it or use `bun run build` to catch compile errors.
 
 ### After Completing Work
 
 After finishing a feature or fix, always offer to:
 1. **Commit and push** the changes so their work is saved.
-2. **Start/check the dev server** so they can see the result.
+2. **Remind them to check the dev server** so they can see the result.
 
 Don't assume the user knows to do these things — proactively offer.
 

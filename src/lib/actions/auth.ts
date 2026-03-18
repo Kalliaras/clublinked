@@ -58,13 +58,13 @@ export const SignUpAction = async (
       return { errorMessage: "Failed to create user account." };
     }
 
-    const { error: insertError } = await supabase.from("profile").upsert({
+    const { error: insertError } = await supabase.from("profiles").upsert({
       id: userId,
       email,
       first_name: firstName,
       last_name: lastName,
       major: major ?? null,
-      year: year ?? null,
+      academic_year: year ?? null,
       university_id: universityId ?? null,
       created_at: new Date().toISOString(),
     });

@@ -11,6 +11,10 @@
     "supabase": {
       "command": "sh",
       "args": ["-c", "set -a && . ./.env.local && set +a && exec npx -y @supabase/mcp-server-supabase@latest"]
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
     }
   }
 }

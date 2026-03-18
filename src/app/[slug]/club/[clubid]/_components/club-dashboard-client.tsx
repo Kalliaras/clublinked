@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Users, CalendarDays } from "lucide-react";
+import { toast } from "sonner";
+import { joinClubAction } from "../actions";
 
 function StatPill({
   icon,
@@ -65,6 +67,7 @@ export default function ClubDashboardClient({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [joining, setJoining] = React.useState(false);
   const basePath = `/${slug}/club/${clubId}`;
 
   const isActive = (path: string) => {
@@ -123,7 +126,27 @@ export default function ClubDashboardClient({
             </div>
 
             <div className="flex items-center justify-end">
-              <Button className="rounded-xl px-10">Join</Button>
+              <Button
+                className="rounded-xl px-10"
+                disabled={joining}
+                onClick={async () => {
+                  setJoining(true);
+                  try {
+                    const result = await joinClubAction(clubId);
+                    if (result?.errorMessage) {
+                      toast.error(result.errorMessage);
+                    } else {
+                      toast.success("You joined the club!");
+                    }
+                  } catch {
+                    toast.error("Failed to join club");
+                  } finally {
+                    setJoining(false);
+                  }
+                }}
+              >
+                {joining ? "Joining..." : "Join"}
+              </Button>
             </div>
           </div>
 

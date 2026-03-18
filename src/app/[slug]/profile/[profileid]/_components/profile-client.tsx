@@ -24,6 +24,7 @@ import {
   Globe,
   ChevronDown,
 } from "lucide-react";
+import { toast } from "sonner";
 
 type Chip = { label: string };
 
@@ -32,16 +33,14 @@ type Profile = {
   email: string;
   first_name: string;
   last_name: string;
-  club_id: string;
   university_id: string;
   major: string | null;
-  year: string | null;
+  academic_year: string | null;
   bio: string | null;
   created_at: string;
 };
 
 type Role = {
-  id: string;
   title: string;
   club_name: string;
 };
@@ -91,7 +90,7 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
 
   // Use real profile data
   const name = `${profile.first_name} ${profile.last_name}`;
-  const headline = `${profile.major || 'Unknown Major'} • ${profile.year || 'Unknown Year'} • ${universityName || 'Unknown University'}`;
+  const headline = `${profile.major || 'Unknown Major'} • ${profile.academic_year || 'Unknown Year'} • ${universityName || 'Unknown University'}`;
 
   // Real data from props
   const rolesData: Chip[] = roles.map(role => ({
@@ -110,9 +109,18 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
 
   // handlers for saves
   const handleBioSave = async () => {
-    await UpdateBioAction(profile.id, bioInput || "");
-    setIsEditingBio(false);
-    router.refresh();
+    try {
+      const result = await UpdateBioAction(profile.id, bioInput || "");
+      if (result?.errorMessage) {
+        toast.error(result.errorMessage);
+        return;
+      }
+      toast.success("Bio updated");
+      setIsEditingBio(false);
+      router.refresh();
+    } catch {
+      toast.error("Failed to update bio");
+    }
   };
 
 
@@ -124,31 +132,45 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
   React.useEffect(() => {
     if (tagDialogOpen && tagDialogType) {
       const load = async () => {
-        const supabase = createClient();
-        const table = tagDialogType === "interests" ? "interest_tags" : "skill_tags";
-        const { data } = await supabase
-          .from(table)
-          .select("name");
-        setAvailableTags((data || []).map((d) => d?.name || ""));
-        setSelectedTags(
-          tagDialogType === "interests"
-            ? interests.map(i => i.name)
-            : skills.map(s => s.name)
-        );
-        setTagSearch("");
+        try {
+          const supabase = createClient();
+          const table = tagDialogType === "interests" ? "interest_tags" : "skill_tags";
+          const { data } = await supabase
+            .from(table)
+            .select("name");
+          setAvailableTags((data || []).map((d) => d?.name || ""));
+          setSelectedTags(
+            tagDialogType === "interests"
+              ? interests.map(i => i.name)
+              : skills.map(s => s.name)
+          );
+          setTagSearch("");
+        } catch {
+          toast.error("Failed to load tags");
+        }
       };
       load();
     }
   }, [tagDialogOpen, tagDialogType, interests, skills]);
 
   const handleTagSave = async () => {
-    if (tagDialogType === "interests") {
-      await UpdateInterestsAction(profile.id, selectedTags);
-    } else if (tagDialogType === "skills") {
-      await UpdateSkillsAction(profile.id, selectedTags);
+    try {
+      let result: { errorMessage?: string } | null = null;
+      if (tagDialogType === "interests") {
+        result = await UpdateInterestsAction(profile.id, selectedTags);
+      } else if (tagDialogType === "skills") {
+        result = await UpdateSkillsAction(profile.id, selectedTags);
+      }
+      if (result?.errorMessage) {
+        toast.error(result.errorMessage);
+        return;
+      }
+      toast.success(`${tagDialogType === "interests" ? "Interests" : "Skills"} updated`);
+      setTagDialogOpen(false);
+      router.refresh();
+    } catch {
+      toast.error("Failed to save changes");
     }
-    setTagDialogOpen(false);
-    router.refresh();
   };
 
   const toggleTag = (tag: string) => {
@@ -403,10 +425,10 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
                 </h2>
 
                 <div className="mt-4 text-5xl font-bold text-primary">
-                  24
+                  {roles.length}
                 </div>
                 <div className="mt-2 text-sm text-slate-600">
-                  Opportunities engaged
+                  Clubs joined
                 </div>
               </Card>
             </div>

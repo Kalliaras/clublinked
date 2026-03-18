@@ -7,7 +7,6 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -98,7 +97,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
 
               <ComboboxDemo {..._comboboxProps} />
 
-              <input type="hidden" name="year" value={year} />
+              <input type="hidden" name="academic_year" value={year} />
             </div>
 
             {/* Email */}
@@ -136,8 +135,6 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
           </div>
         </form>
       </CardContent>
-
-      <CardFooter className="flex-col gap-2" />
     </Card>
   );
 }

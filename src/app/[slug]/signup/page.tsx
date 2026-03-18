@@ -34,7 +34,7 @@ export default function UniversitySignupPage() {
       const firstName = formData.get("firstName") as string;
       const lastName = formData.get("lastName") as string;
       const major = formData.get("major") as string | undefined;
-      const year = formData.get("year") as string | undefined;
+      const year = formData.get("academic_year") as string | undefined;
       const result = await SignUpAction(
         firstName,
         lastName,

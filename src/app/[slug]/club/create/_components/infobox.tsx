@@ -101,9 +101,9 @@ export function Infobox() {
         .from("clubs")
         .insert({
           name: name.trim(),
-          about: description.trim() || null,
-          club_type: clubType || null,
-          members: 1,
+          description: description.trim() || null,
+          type: clubType || null,
+          member_count: 1,
           access_code: accessCode,
           university_id: university.id,
         })

@@ -1,7 +1,6 @@
 'use client'
 
-import Image from "next/image";
-import logo from "../../../public/logo.png";
+import { Logo } from "@/components/logo";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -41,14 +40,8 @@ export default function UserAvatarMenu({ userId, slug }: { userId: string; slug?
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="relative h-10 w-10 overflow-hidden rounded-full border border-slate-200 hover:border-slate-300 transition-colors">
-          <Image
-            src={logo}
-            alt="User avatar"
-            fill
-            sizes="40px"
-            className="object-cover"
-          />
+        <button className="relative h-10 w-10 overflow-hidden rounded-full border border-slate-200 hover:border-slate-300 transition-colors flex items-center justify-center">
+          <Logo size={28} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

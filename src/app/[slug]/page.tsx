@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useUniversity } from "@/lib/context/university-context";
@@ -52,7 +52,7 @@ export default function UniversityHub() {
 
       const { data: club, error: clubError } = await supabase
         .from("clubs")
-        .select("id, members")
+        .select("id, member_count")
         .eq("access_code", trimmedCode)
         .single();
 
@@ -63,7 +63,7 @@ export default function UniversityHub() {
 
       const { data: existingRole } = await supabase
         .from("user_roles")
-        .select("id")
+        .select("user_id")
         .eq("user_id", user.id)
         .eq("club_id", club.id)
         .single();
@@ -85,10 +85,10 @@ export default function UniversityHub() {
         return;
       }
 
-      const newMemberCount = (club.members ?? 0) + 1;
+      const newMemberCount = (club.member_count ?? 0) + 1;
       const { error: updateError } = await supabase
         .from("clubs")
-        .update({ members: newMemberCount })
+        .update({ member_count: newMemberCount })
         .eq("id", club.id);
 
       if (updateError) {
@@ -111,15 +111,7 @@ export default function UniversityHub() {
           {/* Left section - hidden on mobile */}
           <section className="hidden text-primary lg:block">
             <div className="flex items-center gap-3 mb-8">
-              <div className="relative h-10 w-10">
-                <Image
-                  src="/logo.png"
-                  alt="ClubLinked logo"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
+              <Logo size={40} />
               <span className="text-2xl font-bold tracking-wide">ClubLinked</span>
             </div>
 

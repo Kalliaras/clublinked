@@ -1,4 +1,4 @@
-import { Gabarito } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import  Header from "@/components/header/header";
@@ -6,9 +6,19 @@ import Footer from "@/components/footer/footer";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
-const gabarito = Gabarito({
-  variable: "--font-gabarito",
-  subsets: ["latin"],
+const openSauceSans = localFont({
+  src: [
+    {
+      path: "../fonts/OpenSauceSansVF.ttf",
+      style: "normal",
+    },
+    {
+      path: "../fonts/OpenSauceSansVF-Italic.ttf",
+      style: "italic",
+    },
+  ],
+  variable: "--font-open-sauce-sans",
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -19,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${gabarito.className} antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen`}
+        className={`${openSauceSans.className} ${openSauceSans.variable} antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen`}
       >
         <SpeedInsights />
         <Header />

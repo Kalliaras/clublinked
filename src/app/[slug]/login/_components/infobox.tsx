@@ -6,7 +6,6 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -77,7 +76,6 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
           </div>
         </form>
       </CardContent>
-      <CardFooter className="flex-col gap-2" />
     </Card>
   );
 }

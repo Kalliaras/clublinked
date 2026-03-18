@@ -1,8 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { Database } from './database.types'
 export async function createClient() {
   const cookieStore = await cookies()
-  const client = createServerClient(
+  const client = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -15,7 +16,7 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
           } catch {
             // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
+            // This can be ignored if you have a proxy refreshing
             // user sessions.
           }
         },
@@ -29,7 +30,7 @@ export async function getUser() {
     const {auth} = await createClient();
     const userObject = await auth.getUser();
     if (userObject.error || !userObject.data.user) {
-        console.log("No user found" + userObject.error);
+        console.error("No user found", userObject.error);
         return null;
     }
 

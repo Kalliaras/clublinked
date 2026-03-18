@@ -15,7 +15,7 @@ export default async function ClubDashboardLayout({
 
   const { data: club, error: clubError } = await supabase
     .from("clubs")
-    .select("id, name, created_at, university_id, members, about")
+    .select("id, name, created_at, university_id, member_count, description")
     .eq("id", clubid)
     .single();
 
@@ -37,7 +37,7 @@ export default async function ClubDashboardLayout({
     <ClubDashboardClient
       clubId={club.id}
       clubName={club.name}
-      members={club.members ?? 0}
+      members={club.member_count ?? 0}
       createdAt={club.created_at}
       universityName={universityName}
       slug={slug}

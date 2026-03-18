@@ -13,8 +13,8 @@ import { useUniversity } from "@/lib/context/university-context";
 type Club = {
   id: string;
   name: string;
-  about: string | null;
-  club_type: string | null;
+  description: string | null;
+  type: string | null;
 };
 
 export default function ClubDiscoveryPage() {
@@ -30,7 +30,7 @@ export default function ClubDiscoveryPage() {
 
       const { data } = await supabase
         .from("clubs")
-        .select("id, name, about, club_type")
+        .select("id, name, description, type")
         .eq("university_id", university.id);
 
       setClubs((data as Club[]) ?? []);
@@ -42,12 +42,12 @@ export default function ClubDiscoveryPage() {
 
   const filteredClubs = clubs
     .filter((club) =>
-      selectedCategory === "all" ? true : club.club_type === selectedCategory
+      selectedCategory === "all" ? true : club.type === selectedCategory
     )
     .filter((club) =>
       searchQuery.trim()
         ? club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (club.club_type ?? "").toLowerCase().includes(searchQuery.toLowerCase())
+          (club.type ?? "").toLowerCase().includes(searchQuery.toLowerCase())
         : true
     );
 
@@ -107,12 +107,12 @@ export default function ClubDiscoveryPage() {
                       {club.name}
                     </h3>
                     <p className="mt-1 text-sm text-slate-600">
-                      {club.about || "No description"}
+                      {club.description || "No description"}
                     </p>
 
-                    {club.club_type && (
+                    {club.type && (
                       <span className="mt-3 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                        {club.club_type}
+                        {club.type}
                       </span>
                     )}
                   </div>

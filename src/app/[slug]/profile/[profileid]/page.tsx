@@ -7,16 +7,14 @@ type Profile = {
   email: string;
   first_name: string;
   last_name: string;
-  club_id: string;
   university_id: string;
   major: string | null;
-  year: string | null;
+  academic_year: string | null;
   bio: string | null;
   created_at: string;
 };
 
 type Role = {
-  id: string;
   title: string;
   club_name: string;
 };
@@ -40,7 +38,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
 
   // Fetch profile
   const { data: profile, error: profileError } = await supabase
-    .from('profile')
+    .from('profiles')
     .select('*')
     .eq('id', profileid)
     .single();
@@ -52,7 +50,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
   // Fetch user roles
   const { data: userRoles } = await supabase
     .from('user_roles')
-    .select('id, title, club_id')
+    .select('title, club_id')
     .eq('user_id', profileid);
 
   const clubIds = userRoles?.map(r => r.club_id).filter(Boolean) || [];
@@ -63,7 +61,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
 
   const clubsMap = new Map(clubsData?.map(c => [c.id, c.name]) || []);
   const roles: Role[] = userRoles?.map(role => ({
-    id: role.id,
     title: role.title,
     club_name: clubsMap.get(role.club_id) || 'Unknown Club'
   })) || [];

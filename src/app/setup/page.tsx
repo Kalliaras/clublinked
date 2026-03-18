@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,8 +16,6 @@ import {
 } from "@/components/ui/card";
 import { SetupInstitutionAction } from "@/lib/actions/setup";
 import { toast } from "sonner";
-import logo from "../../../public/logo.png";
-
 export default function SetupPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,13 +97,7 @@ export default function SetupPage() {
         {/* Header */}
         <div className="mb-10 text-center">
           <Link href="/" className="mb-6 inline-flex items-center gap-3">
-            <Image
-              src={logo}
-              alt="ClubLinked logo"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
+            <Logo size={40} />
             <span className="text-xl font-bold text-primary">ClubLinked</span>
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900">
