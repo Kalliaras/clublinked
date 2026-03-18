@@ -88,7 +88,7 @@ const { data: role } = await supabase
 
 ## Handoffs
 - After schema changes that affect env vars or deployment → hand off to **vercel** agent to verify env vars and check deployment
-- After writing new queries or auth logic → suggest **code-reviewer** agent to review
+- After writing new queries or auth logic → suggest **reviewer** agent to review
 
 ## What NOT to Do
 - Don't skip RLS policies on new tables

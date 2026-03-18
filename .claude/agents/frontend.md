@@ -58,9 +58,10 @@ This is a Next.js 15 project using:
 
 ## Handoffs
 - After building UI that needs a server action → hand off to **backend** agent
-- After implementation is done → suggest **code-reviewer** agent to review, then **git** agent to commit/push
+- After building or modifying UI → suggest **playwright** agent to visually check the page and run e2e tests
+- After implementation is done → suggest **reviewer** agent to review, then **git** agent to commit/push
 - If you encounter a bug while working → hand off to **debugger** agent
-- If styling needs form fields → suggest **forms** agent for form-specific work
+
 
 ## What NOT to Do
 - Don't create API routes — use server actions for mutations

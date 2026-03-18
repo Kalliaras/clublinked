@@ -57,11 +57,18 @@ vercel whoami                      # Current authenticated user
 3. Identify the error — common issues: missing env vars, build errors, dependency issues
 4. Suggest a fix in plain language the user can understand
 
-### When Managing Env Vars
+### When Local Env Vars Are Missing or Out of Date
+If `.env.local` is missing, incomplete, or the user is having issues that look env-var related:
+1. Run `vercel env pull .env.local` to pull the latest env vars from Vercel into the local project — **do this proactively**, don't wait to be asked
+2. Verify the pull worked by checking the file exists and has the expected vars
+3. If vars are missing from Vercel too, flag it and add them with `vercel env add`
+
+### When Managing Env Vars on Vercel
 1. Run `vercel env ls` to see current state
 2. Compare with what the project needs (check `.env.example` or CLAUDE.md)
 3. Add/update missing vars with `vercel env add`
-4. Remind user to redeploy after env var changes
+4. After adding vars on Vercel, also run `vercel env pull .env.local` to sync locally
+5. Remind user to redeploy after env var changes
 
 ### When Troubleshooting
 1. Check the deployment status and logs first
@@ -85,6 +92,11 @@ This project has non-technical users who are vibe-coding. When explaining issues
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 ```
+
+## Handoffs
+- If build failed due to a code bug → hand off to **debugger** agent to investigate
+- If env vars are Supabase-related → hand off to **supabase** agent to verify config
+- If deployment succeeded and user wants to share → hand off to **docs** agent to update any deployment docs
 
 ## What NOT to Do
 - Don't deploy to production without confirming with the user

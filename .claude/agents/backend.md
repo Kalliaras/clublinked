@@ -39,9 +39,9 @@ Actions MUST follow this order:
 4. **Verify**: Ensure RLS compatibility, correct revalidation paths
 
 ## Handoffs
-- After writing server actions → suggest **code-reviewer** agent to review, then **git** agent to commit/push
+- After writing server actions → suggest **reviewer** agent to review, then **git** agent to commit/push
 - For schema changes, RLS policies, or Supabase config → hand off to **supabase** agent
-- If the action needs a form on the frontend → hand off to **forms** agent
+- If the action needs a form on the frontend → hand off to **frontend** agent
 - After changes that affect deployment → hand off to **vercel** agent to check
 
 ## What NOT to Do
