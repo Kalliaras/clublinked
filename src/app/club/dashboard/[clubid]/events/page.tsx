@@ -1,12 +1,30 @@
-import { Card } from "@/components/ui/card";
+import { CalendarDays } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default function ClubEventsPage() {
   return (
-    <Card className="border-slate-200 p-6">
-      <h2 className="text-lg font-semibold text-slate-900">Events</h2>
-      <p className="mt-4 text-sm leading-6 text-slate-700">
-        This club has no Events details yet.
-      </p>
-    </Card>
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <CalendarDays />
+        </EmptyMedia>
+        <EmptyTitle>No events yet</EmptyTitle>
+        <EmptyDescription>
+          Create events for your club members to see and attend.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline">Create Event</Button>
+      </EmptyContent>
+    </Empty>
   );
 }

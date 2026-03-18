@@ -71,48 +71,34 @@ export default function Clubsearch() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-white">
-      <main className="mx-auto w-full max-w-md px-5 pb-10 pt-8">
-        {/* Header */}
-        <header className="flex items-center gap-3">
-          <div className="relative h-9 w-9">
-            <Image
-              src="/logo.png"
-              alt="ClubLinked logo"
-              fill
-              className="object-contain"
-              priority
+    <div className="min-h-screen bg-white">
+      <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-8">
+        {/* Title + search/filter — constrained to readable width */}
+        <div className="max-w-xl mx-auto">
+          <h1 className="text-5xl font-extrabold tracking-tight text-primary">
+            Explore Clubs
+          </h1>
+
+          {/* Search */}
+          <div className="mt-6 relative">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <input
+              className="h-14 w-full rounded-full bg-white px-12 text-base text-slate-900 placeholder:text-slate-400 shadow-sm outline-none focus:ring-2 focus:ring-primary/30 border border-border"
+              placeholder="Search by club name or category"
             />
           </div>
-          <span className="text-lg font-semibold tracking-wide text-[#1d56d8]">
-            CLUBLINKED
-          </span>
-        </header>
 
-        {/* Title */}
-        <h1 className="mt-6 text-5xl font-extrabold tracking-tight text-[#1d56d8]">
-          Explore Clubs
-        </h1>
-
-        {/* Search */}
-        <div className="mt-6 relative">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-          <input
-            className="h-14 w-full rounded-full bg-white px-12 text-base text-slate-900 placeholder:text-slate-400 shadow-sm outline-none focus:ring-2 focus:ring-white/60"
-            placeholder="Search by club name or category"
-          />
+          {/* Categories */}
+          <div className="mt-5">
+            <CategoryCombobox
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          </div>
         </div>
 
-        {/* Categories */}
-        <div className="mt-5">
-          <CategoryCombobox 
-            selectedCategory={selectedCategory} 
-            setSelectedCategory={setSelectedCategory} 
-          />
-        </div>
-
-        {/* Club cards */}
-        <section className="mt-6 grid grid-cols-2 gap-4">
+        {/* Club cards — responsive grid */}
+        <section className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredClubs.map((club) => (
             <Card
               key={club.name}

@@ -46,20 +46,20 @@ export default function UserLoginPage() {
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2">
           
           {/* LEFT TEXT — hidden on mobile, visible on desktop */}
-          <section className="hidden text-[#0E4AE6] lg:block">
+          <section className="hidden text-primary lg:block">
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
               Find Your Campus
               <br />
               Community
             </h1>
 
-            <p className="mt-5 max-w-md text-base text-[#0E4AE6]/85 sm:text-lg">
+            <p className="mt-5 max-w-md text-base text-primary/85 sm:text-lg">
               Join and connect with student clubs and organizations across your
               campus.
             </p>
 
             <div className="mt-10">
-              <div className="h-px w-40 bg-[#0E4AE6]/25" />
+              <div className="h-px w-40 bg-primary/25" />
             </div>
           </section>
 

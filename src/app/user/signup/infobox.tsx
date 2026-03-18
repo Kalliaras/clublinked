@@ -27,7 +27,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
   const _comboboxProps: { value: string; onValueChange: (value: string) => void } = { value: year, onValueChange: setYear };
 
   return (
-    <Card className="w-full max-w-sm bg-white text-[#0E4AE6] border-gray-200">
+    <Card className="w-full max-w-sm bg-white text-primary border-gray-200">
       <CardHeader>
         <CardTitle>Login to your account</CardTitle>
         <CardDescription>
@@ -35,7 +35,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
         </CardDescription>
         <CardAction>
           <Link href="/user/login">
-          <Button variant="link" className="text-[#0E4AE6] hover:text-[#0E4AE6]/80" type="button">
+          <Button variant="link" className="text-primary hover:text-primary/80" type="button">
             Login
            </Button>
           </Link>
@@ -131,7 +131,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
             <Button
               type="submit"
               disabled={isPending}
-              className="w-full bg-white text-[#0E4AE6] hover:bg-[#0E4AE6] hover:text-white border border-gray-200"
+              className="w-full bg-white text-primary hover:bg-primary hover:text-white border border-gray-200"
             >
               {isPending ? "Creating..." : "Create Account"}
             </Button>

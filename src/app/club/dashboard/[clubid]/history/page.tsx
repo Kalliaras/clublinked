@@ -1,12 +1,25 @@
-import { Card } from "@/components/ui/card";
+import { Clock } from "lucide-react";
+
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default function ClubHistoryPage() {
   return (
-    <Card className="border-slate-200 p-6">
-      <h2 className="text-lg font-semibold text-slate-900">History</h2>
-      <p className="mt-4 text-sm leading-6 text-slate-700">
-        This club has no History details yet.
-      </p>
-    </Card>
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Clock />
+        </EmptyMedia>
+        <EmptyTitle>No activity yet</EmptyTitle>
+        <EmptyDescription>
+          Club activity and milestones will show up here over time.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
   );
 }

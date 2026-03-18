@@ -1,12 +1,30 @@
-import { Card } from "@/components/ui/card";
+import { Users } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default function ClubMembersPage() {
   return (
-    <Card className="border-slate-200 p-6">
-      <h2 className="text-lg font-semibold text-slate-900">Members</h2>
-      <p className="mt-4 text-sm leading-6 text-slate-700">
-        This club has no Members details yet.
-      </p>
-    </Card>
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Users />
+        </EmptyMedia>
+        <EmptyTitle>No members yet</EmptyTitle>
+        <EmptyDescription>
+          Members will appear here once people join your club.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline">Invite Members</Button>
+      </EmptyContent>
+    </Empty>
   );
 }

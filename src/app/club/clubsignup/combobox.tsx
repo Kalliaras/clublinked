@@ -36,7 +36,7 @@ export function ComboboxDemo({ selected, onChange }: ClubTypeComboboxProps) {
       searchPlaceholder="Search club type..."
       value={selected}
       onValueChange={onChange}
-      buttonClassName="text-[#0E4AE6]"
+      buttonClassName="text-primary"
     />
   );
 }

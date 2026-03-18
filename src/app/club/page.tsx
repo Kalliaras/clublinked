@@ -107,7 +107,7 @@ export default function JoinClubPage() {
       <main className="mx-auto flex min-h-screen max-w-6xl items-center px-6 py-12">
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2">
           {/* Left section - hidden on mobile */}
-          <section className="hidden text-[#0E4AE6] lg:block">
+          <section className="hidden text-primary lg:block">
             <div className="flex items-center gap-3 mb-8">
               <div className="relative h-10 w-10">
                 <Image
@@ -127,17 +127,17 @@ export default function JoinClubPage() {
               Campus Community
             </h1>
 
-            <p className="mt-5 max-w-md text-lg text-[#0E4AE6]/85">
+            <p className="mt-5 max-w-md text-lg text-primary/85">
               Enter an invite code to join directly, or continue to search
               manually and discover clubs across your campus.
             </p>
 
-            <div className="mt-10 h-px w-40 bg-[#0E4AE6]/20" />
+            <div className="mt-10 h-px w-40 bg-primary/20" />
           </section>
 
           {/* Right card */}
           <section className="flex justify-center lg:justify-end">
-            <Card className="w-full max-w-md border-gray-200 bg-white text-[#0E4AE6] shadow-sm">
+            <Card className="w-full max-w-md border-gray-200 bg-white text-primary shadow-sm">
               <CardHeader className="space-y-2">
                 <CardTitle className="text-3xl font-bold">Join a Club</CardTitle>
                 <CardDescription className="text-base text-slate-600">
@@ -162,7 +162,7 @@ export default function JoinClubPage() {
                   <div className="grid gap-2">
                     <label
                       htmlFor="invite-code"
-                      className="text-sm font-medium text-[#0E4AE6]"
+                      className="text-sm font-medium text-primary"
                     >
                       Invite code
                     </label>
@@ -178,7 +178,7 @@ export default function JoinClubPage() {
 
                   <Button
                     type="submit"
-                    className="w-full bg-[#0E4AE6] text-white hover:bg-[#0b3ecf]"
+                    className="w-full bg-primary text-white hover:bg-primary/90"
                     disabled={loading}
                   >
                     {loading ? "Joining…" : "Join with Code"}
@@ -197,7 +197,7 @@ export default function JoinClubPage() {
                 <Link href="/club/clubsearch">
                   <Button
                     variant="outline"
-                    className="w-full border-gray-200 text-[#0E4AE6] hover:bg-[#0E4AE6] hover:text-white"
+                    className="w-full border-gray-200 text-primary hover:bg-primary hover:text-white"
                   >
                     Continue to Manual Search
                   </Button>

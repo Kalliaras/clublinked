@@ -36,12 +36,12 @@ function TabLink({
     <Link
       href={href}
       className={`relative px-1 pb-3 text-sm font-medium transition ${
-        active ? "text-blue-700" : "text-slate-600 hover:text-slate-900"
+        active ? "text-primary" : "text-slate-600 hover:text-slate-900"
       }`}
     >
       {label}
       {active && (
-        <span className="absolute -bottom-[1px] left-0 h-[2px] w-full rounded bg-blue-600" />
+        <span className="absolute -bottom-[1px] left-0 h-[2px] w-full rounded bg-primary" />
       )}
     </Link>
   );
@@ -94,7 +94,7 @@ export default function ClubDashboardClient({
           {/* Header */}
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="flex items-start gap-5">
-              <div className="relative h-16 w-16 overflow-hidden rounded-full bg-blue-600 shadow-sm">
+              <div className="relative h-16 w-16 overflow-hidden rounded-full bg-primary shadow-sm">
                 <Image
                   src="/logo.png"
                   alt="Club logo"

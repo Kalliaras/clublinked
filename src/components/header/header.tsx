@@ -23,7 +23,7 @@ export default async function Header() {
             sizes="36px"
             className="object-contain"
           />
-          <span className="text-lg font-bold text-[#1d56d8]">ClubLinked</span>
+          <span className="text-lg font-bold text-primary">ClubLinked</span>
         </Link>
 
         {/* Nav */}

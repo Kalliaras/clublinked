@@ -163,10 +163,10 @@ export function Infobox() {
   return (
     <Card className="w-full max-w-sm bg-white text-black border-gray-200">
       <CardHeader>
-        <CardTitle className="mb-2 text-[#0E4AE6]">
+        <CardTitle className="mb-2 text-primary">
           Make your Club an official member of Clublinked!
         </CardTitle>
-        <CardDescription className="text-[#0E4AE6]">
+        <CardDescription className="text-primary">
           Fill out your club details to get started
         </CardDescription>
       </CardHeader>
@@ -184,7 +184,7 @@ export function Infobox() {
               </div>
             )}
             <div className="grid gap-2">
-              <Label htmlFor="clubname" className="text-[#0E4AE6]">
+              <Label htmlFor="clubname" className="text-primary">
                 Club Name
               </Label>
               <Input
@@ -200,7 +200,7 @@ export function Infobox() {
 
             <div className="grid gap-2">
               <div className="flex items-center gap-2">
-                <Label htmlFor="clubdesc" className="text-[#0E4AE6]">
+                <Label htmlFor="clubdesc" className="text-primary">
                   Description
                 </Label>
                 <Tooltip>
@@ -229,7 +229,7 @@ export function Infobox() {
 
             <div className="grid gap-2">
               <div className="flex items-center gap-2">
-                <Label className="text-[#0E4AE6]">Interests</Label>
+                <Label className="text-primary">Interests</Label>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
@@ -321,7 +321,7 @@ export function Infobox() {
             </div>
 
             <div className="grid gap-2">
-              <Label className="text-[#0E4AE6]">Club Type</Label>
+              <Label className="text-primary">Club Type</Label>
               <ComboboxDemo
                 selected={clubType}
                 onChange={(value) => setClubType(value)}
@@ -332,7 +332,7 @@ export function Infobox() {
           <CardFooter className="mt-8 flex-col gap-2">
             <Button
               type="submit"
-              className="w-full bg-[#0E4AE6] text-white hover:bg-[#0E4AE6]/80"
+              className="w-full bg-primary text-white hover:bg-primary/80"
               disabled={loading}
             >
               {loading ? "Creating…" : "Create"}

@@ -1,12 +1,30 @@
-import { Card } from "@/components/ui/card";
+import { FolderKanban } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default function ClubProjectsPage() {
   return (
-    <Card className="border-slate-200 p-6">
-      <h2 className="text-lg font-semibold text-slate-900">Projects</h2>
-      <p className="mt-4 text-sm leading-6 text-slate-700">
-        This club has no Projects details yet.
-      </p>
-    </Card>
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <FolderKanban />
+        </EmptyMedia>
+        <EmptyTitle>No projects yet</EmptyTitle>
+        <EmptyDescription>
+          Track club projects and initiatives right here.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline">Create Project</Button>
+      </EmptyContent>
+    </Empty>
   );
 }

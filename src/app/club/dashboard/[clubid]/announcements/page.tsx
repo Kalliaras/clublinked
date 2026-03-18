@@ -1,12 +1,30 @@
-import { Card } from "@/components/ui/card";
+import { Megaphone } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default function ClubAnnouncementsPage() {
   return (
-    <Card className="border-slate-200 p-6">
-      <h2 className="text-lg font-semibold text-slate-900">Announcements</h2>
-      <p className="mt-4 text-sm leading-6 text-slate-700">
-        This club has no Announcements yet.
-      </p>
-    </Card>
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Megaphone />
+        </EmptyMedia>
+        <EmptyTitle>No announcements yet</EmptyTitle>
+        <EmptyDescription>
+          Post announcements to keep your members in the loop.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline">New Announcement</Button>
+      </EmptyContent>
+    </Empty>
   );
 }

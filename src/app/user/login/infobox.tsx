@@ -21,7 +21,7 @@ type InfoboxProps = {
 
 export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
   return (
-    <Card className="w-full max-w-sm bg-white text-[#0E4AE6] border-gray-200">
+    <Card className="w-full max-w-sm bg-white text-primary border-gray-200">
       <CardHeader>
         <CardTitle>Login to your account</CardTitle>
         <CardDescription>
@@ -29,7 +29,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
         </CardDescription>
         <CardAction>
           <Link href="/user/signup">
-            <Button variant="link" className="text-[#0E4AE6] hover:text-[#0E4AE6]/80">
+            <Button variant="link" className="text-primary hover:text-primary/80">
               Sign up
             </Button>
           </Link>
@@ -67,7 +67,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
             <Button
               type="submit"
               disabled={isPending}
-              className="w-full bg-white text-[#0E4AE6] hover:bg-[#0E4AE6] hover:text-white border border-gray-200"
+              className="w-full bg-white text-primary hover:bg-primary hover:text-white border border-gray-200"
             >
               {isPending ? "Logging in..." : "Login"}
             </Button>
