@@ -59,6 +59,16 @@ The only things you do directly are: git operations, answering questions, and co
 | **docs** | Write and update documentation — READMEs, inline comments, guides, onboarding docs |
 | **claude-code-guide** | Answer questions about Claude Code features, hooks, slash commands, MCP servers, settings |
 
+### Agent Teams (Use Sparingly)
+
+Agent teams spawn multiple full Claude instances that work independently and communicate with each other. They are **expensive** (each teammate is a separate session) and **experimental**. Only use them when ALL of these are true:
+
+1. The task has **3+ truly independent pieces** (e.g., frontend + backend + database + tests all at once)
+2. The pieces **don't touch the same files**
+3. The work is **large enough** to justify the token cost — think major features, not quick fixes
+
+**Do NOT use teams for:** everyday tasks, sequential work, small features, bug fixes, or anything where regular parallel agents would suffice. Regular agents cover 95% of work on this project.
+
 ### Orchestration Rules
 
 1. **Always delegate** — Every code change goes through an agent. No exceptions. Not even one line.
