@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 
 interface University {
   id: string;
-  name: string;
+  name: string | null;
   slug: string;
 }
 
@@ -68,7 +68,7 @@ export default function UniversitySearch() {
 
   const handleSelect = (university: University) => {
     setIsOpen(false);
-    setQuery(university.name);
+    setQuery(university.name ?? "");
     router.push(`/${university.slug}`);
   };
 
@@ -114,7 +114,7 @@ export default function UniversitySearch() {
           ) : (
             <div className="px-4 py-3 text-sm text-muted-foreground">
               No universities found. Want to{" "}
-              <Link href="/setup" className="font-medium text-primary hover:underline">
+              <Link href="/user/signup" className="font-medium text-primary hover:underline">
                 add yours
               </Link>
               ?

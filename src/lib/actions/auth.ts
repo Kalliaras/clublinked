@@ -23,24 +23,10 @@ export const SignUpAction = async (
   firstName: string,
   lastName: string,
   email: string,
-  password: string,
-  year?: string,
-  major?: string,
-  universityId?: string,
-  emailDomain?: string
+  password: string
 ): Promise<{ errorMessage?: string } | null> => {
   try {
     const supabase = await createClient();
-
-    // Validate email domain if provided
-    if (emailDomain) {
-      const userDomain = email.split("@")[1]?.toLowerCase();
-      if (userDomain !== emailDomain.toLowerCase()) {
-        return {
-          errorMessage: `Please use your university email (@${emailDomain}) to sign up.`,
-        };
-      }
-    }
 
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
@@ -63,9 +49,6 @@ export const SignUpAction = async (
       email,
       first_name: firstName,
       last_name: lastName,
-      major: major ?? null,
-      academic_year: year ?? null,
-      university_id: universityId ?? null,
       created_at: new Date().toISOString(),
     });
 

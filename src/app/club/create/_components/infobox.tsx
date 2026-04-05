@@ -17,7 +17,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { ComboboxDemo } from "./combobox";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { useUniversity } from "@/lib/context/university-context";
 import {
   CommandDialog,
   CommandInput,
@@ -28,7 +27,6 @@ import {
 
 export function Infobox() {
   const router = useRouter();
-  const university = useUniversity();
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [selectedInterests, setSelectedInterests] = React.useState<string[]>([]);
@@ -95,6 +93,18 @@ export function Infobox() {
         return;
       }
 
+      // Fetch user's university_id from profile
+      const { data: userProfile, error: profileError } = await supabase
+        .from("profiles")
+        .select("university_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (profileError || !userProfile?.university_id) {
+        setError("Could not determine your university. Please set up your profile.");
+        return;
+      }
+
       const accessCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
       const { data: club, error: clubError } = await supabase
@@ -105,7 +115,7 @@ export function Infobox() {
           type: clubType || null,
           member_count: 1,
           access_code: accessCode,
-          university_id: university.id,
+          university_id: userProfile.university_id,
         })
         .select("id")
         .single();
@@ -156,7 +166,7 @@ export function Infobox() {
 
       setSuccess("Club created! Redirecting…");
       setTimeout(() => {
-        router.push(`/${university.slug}/club/${club.id}`);
+        router.push(`/club/${club.id}`);
       }, 500);
     } finally {
       setLoading(false);
@@ -327,7 +337,7 @@ export function Infobox() {
               <Label className="text-primary">Club Type</Label>
               <ComboboxDemo
                 selected={clubType}
-                onChange={(value) => setClubType(value)}
+                onChange={(value: string) => setClubType(value)}
               />
             </div>
           </div>

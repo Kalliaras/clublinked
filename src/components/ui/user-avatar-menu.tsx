@@ -34,7 +34,7 @@ export default function UserAvatarMenu({ userId, slug }: { userId: string; slug?
   };
 
   const handleProfileClick = () => {
-    router.push(slug ? `/${slug}/profile/${userId}` : `/profile/${userId}`);
+    router.push(`/user/profile/${userId}`);
   };
 
   return (

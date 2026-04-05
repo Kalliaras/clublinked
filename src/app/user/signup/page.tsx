@@ -1,18 +1,16 @@
 "use client";
 
-import { Infobox } from "@/app/[slug]/signup/_components/infobox";
+import { Infobox } from "@/app/user/signup/_components/infobox";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { SignUpAction } from "@/lib/actions/auth";
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useUniversity } from "@/lib/context/university-context";
 
-export default function UniversitySignupPage() {
+export default function SignupPage() {
   const router = useRouter();
   const [, startTransition] = useTransition();
-  const university = useUniversity();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -20,12 +18,10 @@ export default function UniversitySignupPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (user) {
-        router.push(`/${university.slug}`);
-      }
+      if (user) router.push("/");
     };
     checkUser();
-  }, [router, university.slug]);
+  }, [router]);
 
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
@@ -33,27 +29,13 @@ export default function UniversitySignupPage() {
       const password = formData.get("password") as string;
       const firstName = formData.get("firstName") as string;
       const lastName = formData.get("lastName") as string;
-      const major = formData.get("major") as string | undefined;
-      const year = formData.get("academic_year") as string | undefined;
-      const result = await SignUpAction(
-        firstName,
-        lastName,
-        email,
-        password,
-        year,
-        major,
-        university.id,
-        university.email_domain ?? undefined
-      );
-      const errorMessage = result?.errorMessage;
-
-      if (errorMessage) {
-        toast.error("Error: " + errorMessage);
+      const result = await SignUpAction(firstName, lastName, email, password);
+      if (result?.errorMessage) {
+        toast.error("Error: " + result.errorMessage);
         return;
       }
-
       toast.success("Signed Up: Please check your email to verify your account.");
-      router.push(`/${university.slug}`);
+      router.push("/");
     });
   };
 

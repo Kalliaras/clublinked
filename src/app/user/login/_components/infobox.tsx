@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useUniversity } from "@/lib/context/university-context";
 
 type InfoboxProps = {
   onSubmitProp: (formData: FormData) => void;
@@ -20,8 +19,6 @@ type InfoboxProps = {
 };
 
 export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
-  const university = useUniversity();
-
   return (
     <Card className="w-full max-w-sm bg-white text-primary border-gray-200">
       <CardHeader>
@@ -30,7 +27,7 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
           Fill out the following information to access your account.
         </CardDescription>
         <CardAction>
-          <Link href={`/${university.slug}/signup`}>
+          <Link href="/user/signup">
             <Button variant="link" className="text-primary hover:text-primary/80">
               Sign up
             </Button>

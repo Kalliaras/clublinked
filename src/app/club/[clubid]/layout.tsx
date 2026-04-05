@@ -8,9 +8,9 @@ export default async function ClubDashboardLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ slug: string; clubid: string }>;
+  params: Promise<{ clubid: string }>;
 }) {
-  const { slug, clubid } = await params;
+  const { clubid } = await params;
   const supabase = await createClient();
 
   const { data: club, error: clubError } = await supabase
@@ -53,7 +53,6 @@ export default async function ClubDashboardLayout({
       members={club.member_count ?? 0}
       createdAt={club.created_at}
       universityName={universityName}
-      slug={slug}
       isMember={isMember}
     >
       {children}

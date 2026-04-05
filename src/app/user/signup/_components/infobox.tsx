@@ -12,9 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ComboboxDemo } from "@/app/[slug]/signup/_components/combobox";
 import Link from "next/link";
-import { useUniversity } from "@/lib/context/university-context";
 
 type InfoboxProps = {
   onSubmitProp: (formData: FormData) => void;
@@ -22,11 +20,6 @@ type InfoboxProps = {
 };
 
 export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
-  const university = useUniversity();
-  // Track combobox selection so we can include it in FormData
-  const [year, setYear] = React.useState("");
-  const _comboboxProps: { value: string; onValueChange: (value: string) => void } = { value: year, onValueChange: setYear };
-
   return (
     <Card className="w-full max-w-sm bg-white text-primary border-gray-200">
       <CardHeader>
@@ -35,10 +28,10 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
           Fill out the following information to access your account.
         </CardDescription>
         <CardAction>
-          <Link href={`/${university.slug}/login`}>
-          <Button variant="link" className="text-primary hover:text-primary/80" type="button">
-            Login
-           </Button>
+          <Link href="/user/login">
+            <Button variant="link" className="text-primary hover:text-primary/80" type="button">
+              Login
+            </Button>
           </Link>
         </CardAction>
       </CardHeader>
@@ -76,28 +69,6 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
                   className="bg-white text-black"
                 />
               </div>
-            </div>
-
-            {/* Major */}
-            <div className="grid gap-2">
-              <Label htmlFor="major">Major</Label>
-              <Input
-                id="major"
-                name="major"
-                type="text"
-                placeholder="Computer Science"
-                required
-                className="bg-white text-black"
-              />
-            </div>
-
-            {/* Year combobox */}
-            <div className="grid gap-2">
-              <Label>Year you&apos;re in</Label>
-
-              <ComboboxDemo {..._comboboxProps} />
-
-              <input type="hidden" name="academic_year" value={year} />
             </div>
 
             {/* Email */}

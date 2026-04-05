@@ -9,7 +9,7 @@ import { FolderKanban, ChevronDown } from "lucide-react";
 
 type Club = {
   id: string;
-  name: string;
+  name: string | null;
   description: string | null;
   member_count: number | null;
   created_at: string;
@@ -18,13 +18,13 @@ type Club = {
 
 export default function ClubOverviewPage() {
   const params = useParams();
-  const clubId = params?.clubid;
+  const clubId = params?.clubid as string | undefined;
   const [club, setClub] = React.useState<Club | null>(null);
   const [highlights, setHighlights] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    if (!clubId) {
+    if (!clubId || typeof clubId !== "string") {
       return;
     }
 
@@ -39,7 +39,7 @@ export default function ClubOverviewPage() {
         .single();
 
       if (clubData) {
-        setClub(clubData);
+        setClub(clubData as Club);
       }
 
       const { data: clubInterests } = await supabase

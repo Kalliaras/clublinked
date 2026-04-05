@@ -1,18 +1,16 @@
 "use client";
 
-import { Infobox } from "@/app/[slug]/login/_components/infobox";
+import { Infobox } from "@/app/user/login/_components/infobox";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { LoginAction } from "@/lib/actions/auth";
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useUniversity } from "@/lib/context/university-context";
 
-export default function UniversityLoginPage() {
+export default function LoginPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const university = useUniversity();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -20,27 +18,22 @@ export default function UniversityLoginPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (user) {
-        router.push(`/${university.slug}`);
-      }
+      if (user) router.push("/");
     };
     checkUser();
-  }, [router, university.slug]);
+  }, [router]);
 
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
       const result = await LoginAction(email, password);
-      const errorMessage = result?.errorMessage;
-
-      if (errorMessage) {
-        toast.error("Error: " + errorMessage);
+      if (result?.errorMessage) {
+        toast.error("Error: " + result.errorMessage);
         return;
       }
-
       toast.success("Logged in successfully!");
-      router.push(`/${university.slug}`);
+      router.push("/");
     });
   };
 

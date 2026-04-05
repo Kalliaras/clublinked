@@ -42,8 +42,8 @@ export default async function Header() {
 
   // Build links based on context
   const logoHref = slug ? `/${slug}` : "/";
-  const signUpHref = slug ? `/${slug}/signup` : "/setup";
-  const loginHref = slug ? `/${slug}/login` : "/setup";
+  const signUpHref = "/user/signup";
+  const loginHref = "/user/login";
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur dark:bg-slate-900/80 border-b border-gray-200">

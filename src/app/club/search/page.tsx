@@ -8,7 +8,6 @@ import * as React from "react";
 import { CategoryCombobox } from "./_components/combobox";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useUniversity } from "@/lib/context/university-context";
 
 type Club = {
   id: string;
@@ -18,27 +17,56 @@ type Club = {
 };
 
 export default function ClubDiscoveryPage() {
-  const university = useUniversity();
   const [selectedCategory, setSelectedCategory] = React.useState("all");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<Club[]>([]);
+  const [universityId, setUniversityId] = useState<string | null>(null);
 
   useEffect(() => {
+    const loadUserUniversity = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("university_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (userProfile?.university_id) {
+        setUniversityId(userProfile.university_id);
+      }
+
+      setIsLoading(false);
+    };
+
+    loadUserUniversity();
+  }, []);
+
+  useEffect(() => {
+    if (!universityId) return;
+
     const loadClubs = async () => {
       const supabase = createClient();
 
       const { data } = await supabase
         .from("clubs")
         .select("id, name, description, type")
-        .eq("university_id", university.id);
+        .eq("university_id", universityId);
 
       setClubs((data as Club[]) ?? []);
-      setIsLoading(false);
     };
 
     loadClubs();
-  }, [university.id]);
+  }, [universityId]);
 
   const filteredClubs = clubs
     .filter((club) =>
@@ -89,7 +117,7 @@ export default function ClubDiscoveryPage() {
           {filteredClubs.map((club) => (
             <Link
               key={club.id}
-              href={`/${university.slug}/club/${club.id}`}
+              href={`/club/${club.id}`}
             >
               <Card className="rounded-2xl border-0 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-3">

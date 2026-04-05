@@ -7,7 +7,7 @@ export default async function Home() {
   const [clubsRes, universityRes, studentsRes] = await Promise.all([
     supabase.from("clubs").select("id", { count: "exact", head: true }),
     supabase.from("universities").select("id", { count: "exact", head: true }),
-    supabase.from("profile").select("id", { count: "exact", head: true }),
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
   ]);
 
   const stats = [

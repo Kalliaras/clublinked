@@ -53,7 +53,7 @@ type Skill = {
   name: string;
 };
 
-export default function ProfileClient({ profile, roles, interests, skills, isOwner, slug }: { profile: Profile; roles: Role[]; interests: Interest[]; skills: Skill[]; isOwner: boolean; slug: string }) {
+export default function ProfileClient({ profile, roles, interests, skills, isOwner }: { profile: Profile; roles: Role[]; interests: Interest[]; skills: Skill[]; isOwner: boolean }) {
   const [showMoreRoles, setShowMoreRoles] = React.useState(false);
   const [showMoreInterests, setShowMoreInterests] = React.useState(false);
   const [showMoreSkills, setShowMoreSkills] = React.useState(false);
@@ -71,6 +71,7 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
   const [availableTags, setAvailableTags] = React.useState<string[]>([]);
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const [tagSearch, setTagSearch] = React.useState("");
+
   React.useEffect(() => {
     const fetchUniversity = async () => {
       if (profile.university_id) {
@@ -122,7 +123,6 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
       toast.error("Failed to update bio");
     }
   };
-
 
   const rolesVisible = showMoreRoles ? rolesData : rolesData.slice(0, 3);
   const interestsVisible = showMoreInterests ? interestsData : interestsData.slice(0, 4);
@@ -189,7 +189,6 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
             {/* Left: avatar + name */}
             <div className="flex items-start gap-5">
               <div className="relative h-16 w-16 overflow-hidden rounded-full bg-slate-200">
-                {/* Replace with your user avatar path or Next/Image src */}
                 <Image
                   src="/logo.png"
                   alt="Profile avatar"
@@ -280,7 +279,7 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
           <div className="space-y-6">
             {/* At a glance */}
             <Card className="border-slate-200 p-6">
-                  <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-slate-900">
                   At a glance
                 </h2>
@@ -324,7 +323,7 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
 
             {/* Interests & focus */}
             <Card className="border-slate-200 p-6">
-<div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-slate-900">
                   Interests &amp; focus
                 </h2>
@@ -367,29 +366,30 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
                     />
                   </button>
                 )}
-              </div>            </Card>
+              </div>
+            </Card>
 
             {/* Bottom row: Key highlights + Campus activity */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {/* Key highlights (wider) */}
               <Card className="border-slate-200 p-6 lg:col-span-2">
-<div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-slate-900">
-                      Key highlights
-                    </h2>
-                    {isOwner && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setTagDialogType("skills");
-                          setTagDialogOpen(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    )}
-                  </div>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Key highlights
+                  </h2>
+                  {isOwner && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setTagDialogType("skills");
+                        setTagDialogOpen(true);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </div>
 
                 <div className="mt-5">
                   <div className="text-sm font-medium text-slate-700">
@@ -415,7 +415,8 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
                         {showMoreSkills ? "Show less" : "+1 more"}
                       </button>
                     )}
-                  </div>                </div>
+                  </div>
+                </div>
               </Card>
 
               {/* Campus activity (smaller) */}

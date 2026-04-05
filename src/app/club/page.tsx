@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useUniversity } from "@/lib/context/university-context";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,12 +16,45 @@ import {
 import { Input } from "@/components/ui/input";
 
 export default function UniversityHub() {
-  const university = useUniversity();
   const router = useRouter();
   const [code, setCode] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
+  const [universityName, setUniversityName] = React.useState<string>("your campus");
+
+  React.useEffect(() => {
+    const fetchUserUniversity = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return;
+      }
+
+      const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("university_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (userProfile?.university_id) {
+        const { data: university } = await supabase
+          .from("universities")
+          .select("name")
+          .eq("id", userProfile.university_id)
+          .single();
+
+        if (university?.name) {
+          setUniversityName(university.name);
+        }
+      }
+    };
+
+    fetchUserUniversity();
+  }, []);
 
   const handleJoin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -98,7 +130,7 @@ export default function UniversityHub() {
 
       setSuccess("You have joined the club!");
       setCode("");
-      router.push(`/${university.slug}/club/${club.id}`);
+      router.push(`/club/${club.id}`);
     } finally {
       setLoading(false);
     }
@@ -123,7 +155,7 @@ export default function UniversityHub() {
 
             <p className="mt-5 max-w-md text-lg text-primary/85">
               Enter an invite code to join directly, or continue to search
-              manually and discover clubs at {university.name}.
+              manually and discover clubs at {universityName}.
             </p>
 
             <div className="mt-10 h-px w-40 bg-primary/20" />
@@ -189,7 +221,7 @@ export default function UniversityHub() {
                 </div>
 
                 <div className="space-y-3">
-                  <Link href={`/${university.slug}/clubs`}>
+                  <Link href="/club/search">
                     <Button
                       variant="outline"
                       className="w-full border-gray-200 text-primary hover:bg-primary hover:text-white"
@@ -198,7 +230,7 @@ export default function UniversityHub() {
                     </Button>
                   </Link>
 
-                  <Link href={`/${university.slug}/club/create`}>
+                  <Link href="/club/create">
                     <Button
                       variant="ghost"
                       className="w-full text-primary hover:bg-primary/5"

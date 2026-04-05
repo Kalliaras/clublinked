@@ -55,7 +55,6 @@ export default function ClubDashboardClient({
   members,
   createdAt,
   universityName,
-  slug,
   isMember,
   children,
 }: {
@@ -64,13 +63,12 @@ export default function ClubDashboardClient({
   members: number;
   createdAt: string;
   universityName: string | null;
-  slug: string;
   isMember: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const [joining, setJoining] = React.useState(false);
-  const basePath = `/${slug}/club/${clubId}`;
+  const basePath = `/club/${clubId}`;
 
   const isActive = (path: string) => {
     const normalizedPath = pathname?.replace(/\/+$/, "") ?? "";

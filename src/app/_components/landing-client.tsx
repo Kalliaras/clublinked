@@ -48,7 +48,6 @@ const features = [
 
 const marqueeItems = [
   "Student Government",
-  "Greek Life",
   "Engineering Society",
   "Debate Club",
   "Sports Teams",
@@ -90,7 +89,6 @@ export default function LandingClient({ stats }: { stats: Stat[] }) {
                   words={[
                     "student clubs",
                     "campus events",
-                    "Greek life",
                     "club leaders",
                   ]}
                   className="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl md:text-6xl"
@@ -114,7 +112,7 @@ export default function LandingClient({ stats }: { stats: Stat[] }) {
                   shimmerColor="#ffffff"
                   borderRadius="8px"
                   className="h-12 px-8 text-base font-semibold shadow-xl"
-                  onClick={() => router.push("/setup")}
+                  onClick={() => router.push("/user/signup")}
                 >
                   Get Started
                 </ShimmerButton>
@@ -162,10 +160,10 @@ export default function LandingClient({ stats }: { stats: Stat[] }) {
               <p className="mt-4 text-sm text-muted-foreground">
                 Don&apos;t see your university?{" "}
                 <Link
-                  href="/setup"
+                  href="/user/signup"
                   className="font-medium text-primary hover:underline"
                 >
-                  Set it up now
+                  Sign up now
                 </Link>
               </p>
             </div>
@@ -277,7 +275,7 @@ export default function LandingClient({ stats }: { stats: Stat[] }) {
                 shimmerColor="#0E4AE6"
                 borderRadius="8px"
                 className="h-12 px-10 text-base font-semibold text-primary shadow-2xl"
-                onClick={() => router.push("/setup")}
+                onClick={() => router.push("/user/signup")}
               >
                 Get Started Free
               </ShimmerButton>
