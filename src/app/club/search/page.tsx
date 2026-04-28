@@ -21,63 +21,34 @@ export default function ClubDiscoveryPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<Club[]>([]);
-  const [universityId, setUniversityId] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadUserUniversity = async () => {
+    const loadClubs = async () => {
+      setIsLoading(true);
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
 
-      if (!user) {
-        setIsLoading(false);
-        return;
+      let query = supabase
+        .from("clubs")
+        .select("id, name, description, type");
+
+      if (selectedCategory !== "all") {
+        query = query.eq("type", selectedCategory);
       }
 
-      const { data: userProfile } = await supabase
-        .from("profiles")
-        .select("university_id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (userProfile?.university_id) {
-        setUniversityId(userProfile.university_id);
-      }
-
+      const { data } = await query;
+      setClubs((data as Club[]) ?? []);
       setIsLoading(false);
     };
 
-    loadUserUniversity();
-  }, []);
-
-  useEffect(() => {
-    if (!universityId) return;
-
-    const loadClubs = async () => {
-      const supabase = createClient();
-
-      const { data } = await supabase
-        .from("clubs")
-        .select("id, name, description, type")
-        .eq("university_id", universityId);
-
-      setClubs((data as Club[]) ?? []);
-    };
-
     loadClubs();
-  }, [universityId]);
+  }, [selectedCategory]);
 
-  const filteredClubs = clubs
-    .filter((club) =>
-      selectedCategory === "all" ? true : club.type === selectedCategory
-    )
-    .filter((club) =>
-      searchQuery.trim()
-        ? club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (club.type ?? "").toLowerCase().includes(searchQuery.toLowerCase())
-        : true
-    );
+  const filteredClubs = clubs.filter((club) =>
+    searchQuery.trim()
+      ? club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (club.description ?? "").toLowerCase().includes(searchQuery.toLowerCase())
+      : true
+  );
 
   if (isLoading) {
     return <div className="min-h-screen bg-white" />;

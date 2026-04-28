@@ -59,7 +59,7 @@ export default function ClubDashboardClient({
   children,
 }: {
   clubId: string;
-  clubName: string;
+  clubName: string | null;
   members: number;
   createdAt: string;
   universityName: string | null;
