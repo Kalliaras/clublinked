@@ -49,7 +49,7 @@ export default async function Header() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur dark:bg-slate-900/80 border-b border-gray-200">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href={logoHref} className="flex items-center gap-2">
-          <Logo size={24} />
+          <Logo size={40} />
           <span className="text-lg font-bold text-primary">ClubLinked</span>
         </Link>
 

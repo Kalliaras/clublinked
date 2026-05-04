@@ -14,6 +14,7 @@ type Club = {
   name: string;
   description: string | null;
   type: string | null;
+  club_image: string | null;
 };
 
 export default function ClubDiscoveryPage() {
@@ -29,7 +30,7 @@ export default function ClubDiscoveryPage() {
 
       let query = supabase
         .from("clubs")
-        .select("id, name, description, type");
+        .select("id, name, description, type, club_image");
 
       if (selectedCategory !== "all") {
         query = query.eq("type", selectedCategory);
@@ -90,14 +91,15 @@ export default function ClubDiscoveryPage() {
               key={club.id}
               href={`/club/${club.id}`}
             >
-              <Card className="rounded-2xl border-0 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+              <Card className="rounded-2xl border-0 bg-white p-4 shadow-sm hover:shadow-md transition-shadow h-35 overflow-hidden">
                 <div className="flex items-start gap-3">
                   <div className="relative h-12 w-12 shrink-0">
                     <Image
-                      src="/logo.png"
+                      src={club.club_image ?? "/logo.png"}
                       alt="Club logo"
                       fill
                       className="object-contain"
+                      unoptimized={Boolean(club.club_image)}
                     />
                   </div>
 
@@ -105,7 +107,7 @@ export default function ClubDiscoveryPage() {
                     <h3 className="text-base font-bold leading-tight text-slate-900">
                       {club.name}
                     </h3>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="mt-1 text-sm text-slate-600 line-clamp-2 overflow-hidden">
                       {club.description || "No description"}
                     </p>
 

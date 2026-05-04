@@ -52,18 +52,22 @@ function TabLink({
 export default function ClubDashboardClient({
   clubId,
   clubName,
+  clubImageUrl,
   members,
   createdAt,
   universityName,
   isMember,
+  isOwner,
   children,
 }: {
   clubId: string;
   clubName: string | null;
+  clubImageUrl?: string | null;
   members: number;
   createdAt: string;
   universityName: string | null;
   isMember: boolean;
+  isOwner: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -101,11 +105,12 @@ export default function ClubDashboardClient({
             <div className="flex items-start gap-5">
               <div className="relative h-16 w-16 overflow-hidden rounded-full bg-primary shadow-sm">
                 <Image
-                  src="/logo.png"
-                  alt="Club logo"
+                  src={clubImageUrl ?? "/App_icon_noname.png"}
+                  alt={clubName ? `${clubName} logo` : "Club logo"}
                   fill
-                  className="object-contain p-3"
+                  className={clubImageUrl ? "object-cover" : "object-contain p-3"}
                   priority
+                  unoptimized={Boolean(clubImageUrl)}
                 />
               </div>
 
@@ -125,8 +130,22 @@ export default function ClubDashboardClient({
               </div>
             </div>
 
-            {!isMember && (
-              <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end">
+              {isOwner ? (
+                <Button
+                  className="rounded-xl px-10 bg-blue-600 hover:bg-blue-700 text-white border-0"
+                >
+                  Edit
+                </Button>
+              ) : isMember ? (
+                <Button
+                  variant="secondary"
+                  className="rounded-xl px-10"
+                  disabled
+                >
+                  Joined
+                </Button>
+              ) : (
                 <Button
                   className="rounded-xl px-10"
                   disabled={joining}
@@ -148,8 +167,8 @@ export default function ClubDashboardClient({
                 >
                   {joining ? "Joining..." : "Join"}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Tabs */}

@@ -15,7 +15,7 @@ export default async function ClubDashboardLayout({
 
   const { data: club, error: clubError } = await supabase
     .from("clubs")
-    .select("id, name, created_at, university_id, member_count, description")
+    .select("id, name, created_at, university_id, member_count, description, club_image")
     .eq("id", clubid)
     .single();
 
@@ -33,27 +33,33 @@ export default async function ClubDashboardLayout({
     universityName = university?.name ?? null;
   }
 
+  const clubImageUrl = club.club_image ?? null;
+
   // Check if user is a member of this club
   let isMember = false;
   const { data: { user } } = await supabase.auth.getUser();
+  let isOwner = false;
   if (user) {
     const { data: membership } = await supabase
       .from("user_roles")
-      .select("id")
+      .select("is_owner")
       .eq("user_id", user.id)
       .eq("club_id", clubid)
       .maybeSingle();
     isMember = !!membership;
+    isOwner = membership?.is_owner ?? false;
   }
 
   return (
     <ClubDashboardClient
       clubId={club.id}
       clubName={club.name}
+      clubImageUrl={clubImageUrl}
       members={club.member_count ?? 0}
       createdAt={club.created_at}
       universityName={universityName}
       isMember={isMember}
+      isOwner={isOwner}
     >
       {children}
     </ClubDashboardClient>

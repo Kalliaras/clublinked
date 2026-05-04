@@ -31,6 +31,7 @@ export async function joinClubAction(clubId: string): Promise<{ errorMessage?: s
     });
 
     if (error) throw error;
+
     revalidatePath("/", "layout");
     return null;
   } catch (error) {
