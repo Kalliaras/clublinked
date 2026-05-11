@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import UserAvatarMenu from "@/components/ui/user-avatar-menu";
 import { headers } from "next/headers";
 
 const STATIC_ROUTES = new Set([
@@ -53,9 +52,7 @@ export default async function Header() {
           <span className="text-lg font-bold text-primary">ClubLinked</span>
         </Link>
 
-        {user ? (
-          <UserAvatarMenu userId={user.id} slug={slug ?? undefined} />
-        ) : (
+        {!user && (
           <div className="flex gap-3">
             <Link href={signUpHref}>
               <Button>Sign up</Button>

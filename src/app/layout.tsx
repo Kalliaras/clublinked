@@ -1,10 +1,11 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import  Header from "@/components/header/header";
 import Footer from "@/components/footer/footer";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
+import Sidebar from "@/components/sidebar/sidebar";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { createClient } from "@/lib/supabase/server";
+import Header from "@/components/header/header";
 
 const openSauceSans = localFont({
   src: [
@@ -21,21 +22,35 @@ const openSauceSans = localFont({
   display: "swap",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html lang="en">
       <body
         className={`${openSauceSans.className} ${openSauceSans.variable} antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen`}
       >
         <SpeedInsights />
-        <Header />
         <Toaster />
-        {children}
-        <Footer/>
+        {user ? (
+          <div className="flex">
+            <Sidebar />
+            <main className="flex-1 min-w-0">{children}</main>
+          </div>
+        ) : (
+          <>
+            <Header />
+            {children}
+            <Footer />
+          </>
+        )}
       </body>
     </html>
   );

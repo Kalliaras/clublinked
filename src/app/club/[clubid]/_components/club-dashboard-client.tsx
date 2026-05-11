@@ -5,25 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Users, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { joinClubAction } from "../actions";
-
-function StatPill({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700">
-      <span className="text-slate-500">{icon}</span>
-      {children}
-    </div>
-  );
-}
 
 function TabLink({
   href,
@@ -37,13 +21,13 @@ function TabLink({
   return (
     <Link
       href={href}
-      className={`relative px-1 pb-3 text-sm font-medium transition ${
-        active ? "text-primary" : "text-slate-600 hover:text-slate-900"
+      className={`relative px-4 py-4 text-sm font-semibold transition-colors ${
+        active ? "text-primary" : "text-slate-500 hover:text-slate-800"
       }`}
     >
       {label}
       {active && (
-        <span className="absolute -bottom-[1px] left-0 h-[2px] w-full rounded bg-primary" />
+        <span className="absolute bottom-0 left-0 h-[2px] w-full rounded bg-primary" />
       )}
     </Link>
   );
@@ -97,95 +81,114 @@ export default function ClubDashboardClient({
   }, [createdAt]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <main className="mx-auto w-full max-w-6xl px-6 py-8">
-        <Card className="p-8">
-          {/* Header */}
-          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <div className="flex items-start gap-5">
-              <div className="relative h-16 w-16 overflow-hidden rounded-full bg-primary shadow-sm">
-                <Image
-                  src={clubImageUrl ?? "/App_icon_noname.png"}
-                  alt={clubName ? `${clubName} logo` : "Club logo"}
-                  fill
-                  className={clubImageUrl ? "object-cover" : "object-contain p-3"}
-                  priority
-                  unoptimized={Boolean(clubImageUrl)}
-                />
-              </div>
+    <div className="min-h-screen bg-white">
 
-              <div className="space-y-1">
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                  {clubName}
-                </h1>
-                <p className="text-sm text-slate-600">
-                  {universityName ? `${universityName} • ` : ""}
-                  Founded {foundedYear}
-                </p>
+      {/* ── Banner ── */}
+      <div className="h-[280px] bg-primary relative overflow-hidden">
+        {/* dot pattern */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+        {/* bottom gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-[60%] bg-gradient-to-b from-transparent to-black/40" />
+      </div>
 
-                <div className="mt-3 flex flex-wrap gap-3">
-                  <StatPill icon={<Users className="h-4 w-4" />}>{members ?? 0} Members</StatPill>
-                  <StatPill icon={<CalendarDays className="h-4 w-4" />}>Founded {foundedYear}</StatPill>
-                </div>
-              </div>
-            </div>
+      {/* ── Hero ── */}
+      <div className="mx-auto w-full max-w-5xl px-16 pt-8 relative">
 
-            <div className="flex items-center justify-end">
-              {isOwner ? (
-                <Button
-                  className="rounded-xl px-10 bg-blue-600 hover:bg-blue-700 text-white border-0"
-                >
-                  Edit
-                </Button>
-              ) : isMember ? (
-                <Button
-                  variant="secondary"
-                  className="rounded-xl px-10"
-                  disabled
-                >
-                  Joined
-                </Button>
-              ) : (
-                <Button
-                  className="rounded-xl px-10"
-                  disabled={joining}
-                  onClick={async () => {
-                    setJoining(true);
-                    try {
-                      const result = await joinClubAction(clubId);
-                      if (result?.errorMessage) {
-                        toast.error(result.errorMessage);
-                      } else {
-                        toast.success("You joined the club!");
-                      }
-                    } catch {
-                      toast.error("Failed to join club");
-                    } finally {
-                      setJoining(false);
-                    }
-                  }}
-                >
-                  {joining ? "Joining..." : "Join"}
-                </Button>
-              )}
-            </div>
+        {/* Logo + name + actions — all in one bottom-aligned row */}
+        <div className="flex items-end gap-7 mb-6">
+
+          {/* Logo */}
+          <div className="relative h-[120px] w-[120px] rounded-full border-4 border-white bg-primary shadow-lg shrink-0 overflow-hidden">
+            <Image
+              src={clubImageUrl ?? "/App_icon_noname.png"}
+              alt={clubName ?? "Club logo"}
+              fill
+              className={clubImageUrl ? "object-cover" : "object-contain p-3"}
+              priority
+              unoptimized={Boolean(clubImageUrl)}
+            />
           </div>
 
-          {/* Tabs */}
-          <div className="mt-8 border-b border-slate-200">
-            <div className="flex flex-wrap gap-8">
-              <TabLink href={basePath} label="Overview" active={isActive(basePath)} />
-              <TabLink href={`${basePath}/history`} label="History" active={isActive(`${basePath}/history`)} />
-              <TabLink href={`${basePath}/projects`} label="Projects" active={isActive(`${basePath}/projects`)} />
-              <TabLink href={`${basePath}/members`} label="Members" active={isActive(`${basePath}/members`)} />
-              <TabLink href={`${basePath}/announcements`} label="Announcements" active={isActive(`${basePath}/announcements`)} />
-              <TabLink href={`${basePath}/events`} label="Events" active={isActive(`${basePath}/events`)} />
-            </div>
+          {/* Name — flex-1, sits next to logo */}
+          <div className="flex-1 min-w-0 pb-3">
+            {universityName && (
+              <p className="text-sm font-medium text-slate-500 mb-2">{universityName}</p>
+            )}
+            <h1 className="text-[40px] font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+              {clubName}
+            </h1>
           </div>
 
-          <div className="mt-8">{children}</div>
-        </Card>
-      </main>
+          {/* Action buttons — right side, bottom-aligned */}
+          <div className="flex items-center gap-3 pb-3 shrink-0">
+            {isOwner ? (
+              <Button className="rounded-xl px-7 py-3 text-base bg-blue-600 hover:bg-blue-700 text-white border-0">
+                Edit
+              </Button>
+            ) : isMember ? (
+              <Button variant="secondary" className="rounded-xl px-7 py-3 text-base" disabled>
+                Joined
+              </Button>
+            ) : (
+              <Button
+                className="rounded-xl px-7 py-3 text-base"
+                disabled={joining}
+                onClick={async () => {
+                  setJoining(true);
+                  try {
+                    const result = await joinClubAction(clubId);
+                    if (result?.errorMessage) toast.error(result.errorMessage);
+                    else toast.success("You joined the club!");
+                  } catch { toast.error("Failed to join club"); }
+                  finally { setJoining(false); }
+                }}
+              >
+                {joining ? "Joining..." : "Join"}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* ── Meta strip ── */}
+        <div className="flex flex-wrap gap-8 py-5 border-t border-b border-slate-200 mb-6 text-[14px] text-slate-700 font-medium">
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-slate-400" />
+            {members ?? 0} members
+          </div>
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 text-slate-400" />
+            Founded {foundedYear}
+          </div>
+          {universityName && (
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+              {universityName}
+            </div>
+          )}
+        </div>
+
+        {/* ── Tabs ── */}
+        <div className="flex gap-1 border-b border-slate-200">
+          <TabLink href={basePath} label="Overview" active={isActive(basePath)} />
+          <TabLink href={`${basePath}/history`} label="History" active={isActive(`${basePath}/history`)} />
+          <TabLink href={`${basePath}/projects`} label="Projects" active={isActive(`${basePath}/projects`)} />
+          <TabLink href={`${basePath}/members`} label="Members" active={isActive(`${basePath}/members`)} />
+          <TabLink href={`${basePath}/announcements`} label="Announcements" active={isActive(`${basePath}/announcements`)} />
+          <TabLink href={`${basePath}/events`} label="Events" active={isActive(`${basePath}/events`)} />
+        </div>
+
+        {/* ── Tab content ── */}
+        <div className="py-10">{children}</div>
+      </div>
+
     </div>
   );
 }
