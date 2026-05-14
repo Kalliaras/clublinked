@@ -32,6 +32,10 @@ Actions MUST follow this order:
 6. Handle errors
 7. `revalidatePath()` for cache invalidation
 
+## Before Starting Any Task
+
+Read `CLAUDE.md` and any other relevant `.md` files in the project root and `.claude/` before beginning work. These contain project conventions, architecture rules, and workflow requirements that must be followed.
+
 ## Your Workflow
 1. **Understand the data requirement**: What needs to be fetched, created, updated, or deleted?
 2. **Choose the right pattern**: Server Component for reads, Server Action for writes

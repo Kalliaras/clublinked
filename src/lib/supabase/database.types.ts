@@ -135,6 +135,7 @@ export type Database = {
           university_id: string | null
           updated_at: string
           club_image: string | null
+          uses_applications: boolean
         }
         Insert: {
           access_code?: string | null
@@ -148,6 +149,7 @@ export type Database = {
           university_id?: string | null
           updated_at?: string
           club_image?: string | null
+          uses_applications?: boolean
         }
         Update: {
           access_code?: string | null
@@ -161,6 +163,7 @@ export type Database = {
           university_id?: string | null
           updated_at?: string
           club_image?: string | null
+          uses_applications?: boolean
         }
         Relationships: [
           {

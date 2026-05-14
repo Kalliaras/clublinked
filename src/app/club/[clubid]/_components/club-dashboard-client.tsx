@@ -42,6 +42,7 @@ export default function ClubDashboardClient({
   universityName,
   isMember,
   isOwner,
+  usesApplications,
   children,
 }: {
   clubId: string;
@@ -52,6 +53,7 @@ export default function ClubDashboardClient({
   universityName: string | null;
   isMember: boolean;
   isOwner: boolean;
+  usesApplications: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -144,12 +146,12 @@ export default function ClubDashboardClient({
                   try {
                     const result = await joinClubAction(clubId);
                     if (result?.errorMessage) toast.error(result.errorMessage);
-                    else toast.success("You joined the club!");
+                    else toast.success(usesApplications ? "Application submitted!" : "You joined the club!");
                   } catch { toast.error("Failed to join club"); }
                   finally { setJoining(false); }
                 }}
               >
-                {joining ? "Joining..." : "Join"}
+                {joining ? (usesApplications ? "Applying..." : "Joining...") : (usesApplications ? "Apply" : "Join")}
               </Button>
             )}
           </div>
