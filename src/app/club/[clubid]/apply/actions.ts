@@ -25,6 +25,17 @@ export async function submitApplicationAction(
 
     const studentId = user.id;
 
+    // Verify application belongs to this club and is still active
+    const { data: app } = await supabase
+      .from("club_applications")
+      .select("id, is_active")
+      .eq("id", applicationId)
+      .eq("club_id", clubId)
+      .maybeSingle();
+
+    if (!app) return { errorMessage: "Application not found." };
+    if (!app.is_active) return { errorMessage: "This application is no longer accepting submissions." };
+
     // Guard: already submitted?
     const { data: existing } = await supabase
       .from("application_submissions")
@@ -72,6 +83,7 @@ export async function submitApplicationAction(
     return null;
   } catch (error) {
     console.error("Error submitting application:", error);
-    return { errorMessage: (error as Error).message };
+    const message = error instanceof Error ? error.message : "An unexpected error occurred.";
+    return { errorMessage: message };
   }
 }
