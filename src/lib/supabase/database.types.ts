@@ -175,6 +175,157 @@ export type Database = {
           },
         ]
       }
+      club_applications: {
+        Row: {
+          id: string
+          club_id: string
+          title: string
+          description: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          club_id: string
+          title: string
+          description?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          club_id?: string
+          title?: string
+          description?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_applications_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      application_questions: {
+        Row: {
+          id: string
+          application_id: string
+          question_text: string
+          question_type: string
+          is_required: boolean
+          order: number
+          options: Json | null
+        }
+        Insert: {
+          id?: string
+          application_id: string
+          question_text: string
+          question_type: string
+          is_required?: boolean
+          order?: number
+          options?: Json | null
+        }
+        Update: {
+          id?: string
+          application_id?: string
+          question_text?: string
+          question_type?: string
+          is_required?: boolean
+          order?: number
+          options?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_questions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "club_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      application_submissions: {
+        Row: {
+          id: string
+          application_id: string
+          student_id: string
+          submitted_at: string
+          status: string
+        }
+        Insert: {
+          id?: string
+          application_id: string
+          student_id: string
+          submitted_at?: string
+          status?: string
+        }
+        Update: {
+          id?: string
+          application_id?: string
+          student_id?: string
+          submitted_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_submissions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "club_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_submissions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      application_answers: {
+        Row: {
+          id: string
+          submission_id: string
+          question_id: string
+          answer_text: string | null
+        }
+        Insert: {
+          id?: string
+          submission_id: string
+          question_id: string
+          answer_text?: string | null
+        }
+        Update: {
+          id?: string
+          submission_id?: string
+          question_id?: string
+          answer_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_answers_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "application_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "application_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_projects: {
         Row: {
           id: string
@@ -267,6 +418,7 @@ export type Database = {
           id: string
           last_name: string | null
           major: string | null
+          resume: string | null
           university_id: string | null
           updated_at: string
         }
@@ -279,6 +431,7 @@ export type Database = {
           id?: string
           last_name?: string | null
           major?: string | null
+          resume?: string | null
           university_id?: string | null
           updated_at?: string
         }
@@ -291,6 +444,7 @@ export type Database = {
           id?: string
           last_name?: string | null
           major?: string | null
+          resume?: string | null
           university_id?: string | null
           updated_at?: string
         }
