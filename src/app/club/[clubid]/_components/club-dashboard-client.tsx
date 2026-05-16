@@ -60,6 +60,12 @@ export default function ClubDashboardClient({
   const [joining, setJoining] = React.useState(false);
   const basePath = `/club/${clubId}`;
 
+  const isApplyPage = pathname?.endsWith("/apply") ?? false;
+
+  if (isApplyPage) {
+    return <>{children}</>;
+  }
+
   const isActive = (path: string) => {
     const normalizedPath = pathname?.replace(/\/+$/, "") ?? "";
     const normalizedTarget = path.replace(/\/+$/, "");
@@ -138,21 +144,29 @@ export default function ClubDashboardClient({
                 Joined
               </Button>
             ) : (
-              <Button
-                className="rounded-xl px-7 py-3 text-base"
-                disabled={joining}
-                onClick={async () => {
-                  setJoining(true);
-                  try {
-                    const result = await joinClubAction(clubId);
-                    if (result?.errorMessage) toast.error(result.errorMessage);
-                    else toast.success(usesApplications ? "Application submitted!" : "You joined the club!");
-                  } catch { toast.error("Failed to join club"); }
-                  finally { setJoining(false); }
-                }}
-              >
-                {joining ? (usesApplications ? "Applying..." : "Joining...") : (usesApplications ? "Apply" : "Join")}
-              </Button>
+              usesApplications ? (
+                <Link href={`/club/${clubId}/apply`}>
+                  <Button className="rounded-xl px-7 py-3 text-base">
+                    Apply
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  className="rounded-xl px-7 py-3 text-base"
+                  disabled={joining}
+                  onClick={async () => {
+                    setJoining(true);
+                    try {
+                      const result = await joinClubAction(clubId);
+                      if (result?.errorMessage) toast.error(result.errorMessage);
+                      else toast.success("You joined the club!");
+                    } catch { toast.error("Failed to join club"); }
+                    finally { setJoining(false); }
+                  }}
+                >
+                  {joining ? "Joining..." : "Join"}
+                </Button>
+              )
             )}
           </div>
         </div>
