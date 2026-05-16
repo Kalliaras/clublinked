@@ -41,12 +41,14 @@ export default async function ApplyPage({
     redirect(`/club/${clubid}`);
   }
 
-  const { data: existingSubmission } = await supabase
+  const { data: existingSubmission, error: submissionCheckError } = await supabase
     .from("application_submissions")
     .select("id, status, submitted_at")
     .eq("application_id", application.id)
     .eq("student_id", user.id)
     .maybeSingle();
+
+  if (submissionCheckError) redirect(`/club/${clubid}`);
 
   const { data: questions, error: questionsError } = await supabase
     .from("application_questions")

@@ -76,7 +76,14 @@ export async function submitApplicationAction(
       const { error: answersError } = await supabase
         .from("application_answers")
         .insert(answerRows);
-      if (answersError) throw answersError;
+      if (answersError) {
+        // Roll back the submission so the student can retry
+        await supabase
+          .from("application_submissions")
+          .delete()
+          .eq("id", submission.id);
+        return { errorMessage: "Failed to save your answers. Please try again." };
+      }
     }
 
     revalidatePath(`/club/${clubId}`);
