@@ -113,7 +113,7 @@ export function Infobox() {
           name: name.trim(),
           description: description.trim() || null,
           type: clubType || null,
-          member_count: 1,
+          member_count: 0,
           access_code: accessCode,
           university_id: userProfile.university_id,
         })
