@@ -97,7 +97,22 @@ create policy "Students can read answers for own submissions"
     )
   );
 
--- ── 7. Seed test data for clubs with uses_applications = true ─────────────
+-- ── 7. Indexes on foreign keys (PostgreSQL does not auto-index FKs) ────────
+create index if not exists idx_app_questions_application_id   on public.application_questions(application_id);
+create index if not exists idx_app_submissions_application_id on public.application_submissions(application_id);
+create index if not exists idx_app_submissions_student_id     on public.application_submissions(student_id);
+create index if not exists idx_app_answers_submission_id      on public.application_answers(submission_id);
+create index if not exists idx_app_answers_question_id        on public.application_answers(question_id);
+
+-- ── 8. updated_at auto-update trigger for club_applications ─────────────────
+create extension if not exists moddatetime schema extensions;
+
+drop trigger if exists handle_updated_at on public.club_applications;
+create trigger handle_updated_at
+  before update on public.club_applications
+  for each row execute procedure extensions.moddatetime(updated_at);
+
+-- ── 9. Seed test data for clubs with uses_applications = true ─────────────
 do $$
 declare
   r record;
