@@ -60,7 +60,7 @@ export default function ClubDashboardClient({
   const [joining, setJoining] = React.useState(false);
   const basePath = `/club/${clubId}`;
 
-  const isApplyPage = pathname?.endsWith("/apply") ?? false;
+  const isApplyPage = pathname?.startsWith(`${basePath}/apply`) ?? false;
 
   if (isApplyPage) {
     return <>{children}</>;
@@ -145,11 +145,9 @@ export default function ClubDashboardClient({
               </Button>
             ) : (
               usesApplications ? (
-                <Link href={`/club/${clubId}/apply`}>
-                  <Button className="rounded-xl px-7 py-3 text-base">
-                    Apply
-                  </Button>
-                </Link>
+                <Button className="rounded-xl px-7 py-3 text-base" asChild>
+                  <Link href={`/club/${clubId}/apply`}>Apply</Link>
+                </Button>
               ) : (
                 <Button
                   className="rounded-xl px-7 py-3 text-base"
