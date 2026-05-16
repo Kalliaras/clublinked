@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
 import ApplicationForm from "./_components/application-form";
 
 export default async function ApplyPage({
@@ -10,7 +13,6 @@ export default async function ApplyPage({
   const { clubid } = await params;
   const supabase = await createClient();
 
-  // Auth check
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -18,7 +20,6 @@ export default async function ApplyPage({
     redirect(`/user/login`);
   }
 
-  // Load club
   const { data: club, error: clubError } = await supabase
     .from("clubs")
     .select("id, name, club_image, uses_applications")
@@ -29,7 +30,6 @@ export default async function ApplyPage({
     redirect(`/club/${clubid}`);
   }
 
-  // Load active application for this club
   const { data: application } = await supabase
     .from("club_applications")
     .select("id, title, description")
@@ -41,7 +41,6 @@ export default async function ApplyPage({
     redirect(`/club/${clubid}`);
   }
 
-  // Check if already submitted
   const { data: existingSubmission } = await supabase
     .from("application_submissions")
     .select("id, status, submitted_at")
@@ -49,19 +48,19 @@ export default async function ApplyPage({
     .eq("student_id", user.id)
     .maybeSingle();
 
-  // Load questions ordered by order column
-  const { data: questions } = await supabase
+  const { data: questions, error: questionsError } = await supabase
     .from("application_questions")
     .select("id, question_text, question_type, is_required, order, options")
     .eq("application_id", application.id)
     .order("order", { ascending: true });
 
-  // Load user profile
+  if (questionsError) redirect(`/club/${clubid}`);
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("first_name, last_name, major, academic_year, resume")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Already submitted — show a simple status page
   if (existingSubmission) {
@@ -69,17 +68,7 @@ export default async function ApplyPage({
       <div className="min-h-screen bg-[#F7F8FA] flex items-center justify-center px-8">
         <div className="bg-white rounded-2xl border border-slate-200 p-12 max-w-md w-full text-center">
           <div className="h-16 w-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
-            <svg
-              className="h-8 w-8 text-green-500"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <CheckCircle2 className="h-8 w-8 text-green-500" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 mb-3">
             Application submitted
@@ -88,12 +77,9 @@ export default async function ApplyPage({
             You already applied to <strong>{club.name}</strong>. Your application
             is currently <strong>{existingSubmission.status}</strong>.
           </p>
-          <a
-            href={`/club/${clubid}`}
-            className="inline-flex items-center justify-center rounded-xl bg-primary text-white px-8 py-3 text-sm font-semibold hover:bg-primary/90 transition-colors"
-          >
-            Back to club page
-          </a>
+          <Button asChild className="rounded-xl px-8 py-3 text-sm font-semibold">
+            <Link href={`/club/${clubid}`}>Back to club page</Link>
+          </Button>
         </div>
       </div>
     );
@@ -102,7 +88,9 @@ export default async function ApplyPage({
   // Normalize options from jsonb (array of strings)
   const normalizedQuestions = (questions ?? []).map((q) => ({
     ...q,
-    options: Array.isArray(q.options) ? (q.options as string[]) : null,
+    options: Array.isArray(q.options)
+      ? (q.options as unknown[]).filter((o): o is string => typeof o === "string")
+      : null,
   }));
 
   return (
