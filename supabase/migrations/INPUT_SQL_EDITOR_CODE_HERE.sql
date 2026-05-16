@@ -49,53 +49,107 @@ alter table public.application_submissions enable row level security;
 alter table public.application_answers    enable row level security;
 
 -- club_applications: authenticated users can read active ones
-create policy "Authenticated users can read active applications"
-  on public.club_applications for select
-  to authenticated
-  using (is_active = true);
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'club_applications'
+      and policyname = 'Authenticated users can read active applications'
+  ) then
+    create policy "Authenticated users can read active applications"
+      on public.club_applications for select
+      to authenticated
+      using (is_active = true);
+  end if;
+end $$;
 
 -- application_questions: authenticated users can read questions for active apps
-create policy "Authenticated users can read questions for active applications"
-  on public.application_questions for select
-  to authenticated
-  using (
-    exists (
-      select 1 from public.club_applications ca
-      where ca.id = application_id and ca.is_active = true
-    )
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_questions'
+      and policyname = 'Authenticated users can read questions for active applications'
+  ) then
+    create policy "Authenticated users can read questions for active applications"
+      on public.application_questions for select
+      to authenticated
+      using (
+        exists (
+          select 1 from public.club_applications ca
+          where ca.id = application_id and ca.is_active = true
+        )
+      );
+  end if;
+end $$;
 
 -- application_submissions: students can insert and read their own
-create policy "Students can insert own submissions"
-  on public.application_submissions for insert
-  to authenticated
-  with check (student_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_submissions'
+      and policyname = 'Students can insert own submissions'
+  ) then
+    create policy "Students can insert own submissions"
+      on public.application_submissions for insert
+      to authenticated
+      with check (student_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Students can read own submissions"
-  on public.application_submissions for select
-  to authenticated
-  using (student_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_submissions'
+      and policyname = 'Students can read own submissions'
+  ) then
+    create policy "Students can read own submissions"
+      on public.application_submissions for select
+      to authenticated
+      using (student_id = auth.uid());
+  end if;
+end $$;
 
 -- application_answers: students can insert and read answers for their own submissions
-create policy "Students can insert answers for own submissions"
-  on public.application_answers for insert
-  to authenticated
-  with check (
-    exists (
-      select 1 from public.application_submissions s
-      where s.id = submission_id and s.student_id = auth.uid()
-    )
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_answers'
+      and policyname = 'Students can insert answers for own submissions'
+  ) then
+    create policy "Students can insert answers for own submissions"
+      on public.application_answers for insert
+      to authenticated
+      with check (
+        exists (
+          select 1 from public.application_submissions s
+          where s.id = submission_id and s.student_id = auth.uid()
+        )
+      );
+  end if;
+end $$;
 
-create policy "Students can read answers for own submissions"
-  on public.application_answers for select
-  to authenticated
-  using (
-    exists (
-      select 1 from public.application_submissions s
-      where s.id = submission_id and s.student_id = auth.uid()
-    )
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_answers'
+      and policyname = 'Students can read answers for own submissions'
+  ) then
+    create policy "Students can read answers for own submissions"
+      on public.application_answers for select
+      to authenticated
+      using (
+        exists (
+          select 1 from public.application_submissions s
+          where s.id = submission_id and s.student_id = auth.uid()
+        )
+      );
+  end if;
+end $$;
 
 -- ── 7. Indexes on foreign keys (PostgreSQL does not auto-index FKs) ────────
 create index if not exists idx_app_questions_application_id   on public.application_questions(application_id);

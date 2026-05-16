@@ -21,6 +21,7 @@ export function Logo({ size = 32, className }: LogoProps) {
         src="/App_icon_no_name.png"
         alt="ClubLinked"
         fill
+        sizes={`${size}px`}
         className="object-contain"
       />
     </div>

@@ -37,7 +37,7 @@ export default function UniversityHub() {
       const { data: userProfile } = await supabase
         .from("profiles")
         .select("university_id")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .single();
 
       if (userProfile?.university_id) {

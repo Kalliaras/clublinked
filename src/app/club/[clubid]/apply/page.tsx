@@ -60,7 +60,7 @@ export default async function ApplyPage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("first_name, last_name, major, academic_year, resume")
+    .select("id, first_name, last_name, major, academic_year, resume")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -101,6 +101,7 @@ export default async function ApplyPage({
       application={application}
       questions={normalizedQuestions}
       profile={{
+        id: profile?.id ?? null,
         first_name: profile?.first_name ?? null,
         last_name: profile?.last_name ?? null,
         major: profile?.major ?? null,

@@ -60,6 +60,14 @@ export default function ClubDashboardClient({
   const [joining, setJoining] = React.useState(false);
   const basePath = `/club/${clubId}`;
 
+  const foundedYear = React.useMemo(() => {
+    try {
+      return new Date(createdAt).getFullYear();
+    } catch {
+      return "Unknown";
+    }
+  }, [createdAt]);
+
   const isApplyPage = pathname?.startsWith(`${basePath}/apply`) ?? false;
 
   if (isApplyPage) {
@@ -79,14 +87,6 @@ export default function ClubDashboardClient({
 
     return normalizedPath === normalizedTarget;
   };
-
-  const foundedYear = React.useMemo(() => {
-    try {
-      return new Date(createdAt).getFullYear();
-    } catch {
-      return "Unknown";
-    }
-  }, [createdAt]);
 
   return (
     <div className="min-h-screen bg-white">

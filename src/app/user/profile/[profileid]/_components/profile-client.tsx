@@ -193,6 +193,7 @@ export default function ProfileClient({ profile, roles, interests, skills, isOwn
                   src="/logo.png"
                   alt="Profile avatar"
                   fill
+                  sizes="64px"
                   className="object-cover"
                 />
               </div>

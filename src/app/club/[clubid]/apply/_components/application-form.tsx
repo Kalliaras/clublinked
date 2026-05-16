@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ type Question = {
 };
 
 type Profile = {
+  id : string | null;
   first_name: string | null;
   last_name: string | null;
   major: string | null;
@@ -130,8 +132,18 @@ export default function ApplicationForm({
             <ChevronLeft className="h-5 w-5" />
           </Link>
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shrink-0">
-              {club.name?.trim().slice(0, 2).toUpperCase() || "CL"}
+            <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shrink-0 overflow-hidden relative">
+              {club.club_image ? (
+                <Image
+                  src={club.club_image}
+                  alt={club.name ?? "Club logo"}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                club.name?.trim().slice(0, 2).toUpperCase() || "CL"
+              )}
             </div>
             <div className="text-sm">
               <div className="font-semibold text-slate-900">{club.name}</div>
@@ -296,7 +308,7 @@ export default function ApplicationForm({
               <p className="text-sm font-medium text-slate-600 mb-1">No resume on file</p>
               <p className="text-xs text-slate-400">
                 Add a resume to your{" "}
-                <Link href="/user/profile" className="text-primary font-semibold hover:underline">
+                <Link href={`/user/profile/${profile.id}`} className="text-primary font-semibold hover:underline">
                   profile
                 </Link>{" "}
                 to attach it here.
