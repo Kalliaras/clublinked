@@ -131,7 +131,7 @@ export default function ApplicationForm({
           </Link>
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs shrink-0">
-              {club.name?.slice(0, 2).toUpperCase() ?? "CL"}
+              {club.name?.trim().slice(0, 2).toUpperCase() || "CL"}
             </div>
             <div className="text-sm">
               <div className="font-semibold text-slate-900">{club.name}</div>
@@ -165,7 +165,7 @@ export default function ApplicationForm({
               </label>
               <input
                 className="w-full h-12 px-4 rounded-xl border border-slate-200 text-slate-900 text-[15px] bg-slate-50 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                value={fullName}
+                value={fullName || "—"}
                 readOnly
               />
             </div>
@@ -174,7 +174,7 @@ export default function ApplicationForm({
                 <label className="block text-sm font-semibold text-slate-800 mb-1.5">Major</label>
                 <input
                   className="w-full h-12 px-4 rounded-xl border border-slate-200 text-slate-900 text-[15px] bg-slate-50 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                  value={profile.major ?? ""}
+                  value={profile.major || "—"}
                   readOnly
                 />
               </div>
@@ -182,7 +182,7 @@ export default function ApplicationForm({
                 <label className="block text-sm font-semibold text-slate-800 mb-1.5">Graduation year</label>
                 <input
                   className="w-full h-12 px-4 rounded-xl border border-slate-200 text-slate-900 text-[15px] bg-slate-50 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                  value={profile.academic_year ?? ""}
+                  value={profile.academic_year || "—"}
                   readOnly
                 />
               </div>
@@ -233,7 +233,7 @@ export default function ApplicationForm({
                 )}
 
                 {q.question_type === "multiple_choice" && q.options && (
-                  <div className="flex flex-col gap-2.5 mt-1">
+                  <div className={`flex flex-col gap-2.5 mt-1 rounded-xl ${errors[q.id] ? "ring-2 ring-red-400 ring-offset-1" : ""}`}>
                     {q.options.map((opt) => (
                       <label
                         key={opt}
