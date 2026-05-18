@@ -59,16 +59,6 @@ export async function updateSubmissionStatusAction(
         is_owner: false,
         is_admin: false,
       });
-
-      const { data: clubData } = await supabase
-        .from("clubs")
-        .select("member_count")
-        .eq("id", clubId)
-        .single();
-      await supabase
-        .from("clubs")
-        .update({ member_count: (clubData?.member_count ?? 0) + 1 })
-        .eq("id", clubId);
     }
   }
 
@@ -87,16 +77,6 @@ export async function updateSubmissionStatusAction(
         .delete()
         .eq("user_id", submission.student_id)
         .eq("club_id", clubId);
-
-      const { data: clubData } = await supabase
-        .from("clubs")
-        .select("member_count")
-        .eq("id", clubId)
-        .single();
-      await supabase
-        .from("clubs")
-        .update({ member_count: Math.max(0, (clubData?.member_count ?? 1) - 1) })
-        .eq("id", clubId);
     }
   }
 
