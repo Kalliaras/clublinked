@@ -1,98 +1,139 @@
 -- ══════════════════════════════════════════════════════════════════════════════
--- Admin Dashboard DB Changes
+-- RLS Policies for club_applications and application_submissions
 -- ══════════════════════════════════════════════════════════════════════════════
 
--- ── 10. Add 'interview' to application_submissions status check ────────────
-do $$ begin
-  if exists (
-    select 1 from pg_constraint
-    where conname = 'application_submissions_status_check'
-      and conrelid = 'public.application_submissions'::regclass
-  ) then
-    alter table public.application_submissions
-      drop constraint application_submissions_status_check;
-  end if;
-end $$;
-
-alter table public.application_submissions
-  add constraint application_submissions_status_check
-  check (status in ('pending', 'interview', 'accepted', 'rejected'));
-
--- ── 11. application_interviews table ──────────────────────────────────────
-create table if not exists public.application_interviews (
-  id              uuid primary key default gen_random_uuid(),
-  submission_id   uuid not null references public.application_submissions(id) on delete cascade,
-  interview_round integer not null default 1,
-  interview_time  timestamptz,
-  created_at      timestamptz not null default now()
-);
-
-alter table public.application_interviews enable row level security;
-
+-- ── club_applications: allow authenticated users to read (needed to apply) ──
 do $$ begin
   if not exists (
     select 1 from pg_policies
     where schemaname = 'public'
-      and tablename  = 'application_interviews'
-      and policyname = 'Authenticated users can manage interviews'
+      and tablename  = 'club_applications'
+      and policyname = 'Authenticated users can read club applications'
   ) then
-    create policy "Authenticated users can manage interviews"
-      on public.application_interviews for all
+    create policy "Authenticated users can read club applications"
+      on public.club_applications for select
       to authenticated
-      using (true)
-      with check (true);
+      using (true);
   end if;
 end $$;
 
-create index if not exists idx_app_interviews_submission_id
-  on public.application_interviews(submission_id);
+-- ── club_applications: club owners/admins can manage ────────────────────────
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'club_applications'
+      and policyname = 'Club owners can manage their applications'
+  ) then
+    create policy "Club owners can manage their applications"
+      on public.club_applications for all
+      to authenticated
+      using (
+        exists (
+          select 1 from public.user_roles
+          where user_roles.club_id = club_applications.club_id
+            and user_roles.user_id = auth.uid()
+            and (user_roles.is_owner = true or user_roles.is_admin = true)
+        )
+      )
+      with check (
+        exists (
+          select 1 from public.user_roles
+          where user_roles.club_id = club_applications.club_id
+            and user_roles.user_id = auth.uid()
+            and (user_roles.is_owner = true or user_roles.is_admin = true)
+        )
+      );
+  end if;
+end $$;
 
--- ── 12. Add is_admin to user_roles ────────────────────────────────────────
-alter table public.user_roles
-  add column if not exists is_admin boolean not null default false;
+-- ── application_submissions: students can read their own ─────────────────────
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_submissions'
+      and policyname = 'Students can read their own submissions'
+  ) then
+    create policy "Students can read their own submissions"
+      on public.application_submissions for select
+      to authenticated
+      using (student_id = auth.uid());
+  end if;
+end $$;
 
--- ── 13. Populate email_domain from website_url ────────────────────────────
--- Transformation rules:
---   1. Strip http:// or https://
---   2. Strip www. prefix if present
---   3. Strip any trailing path (everything after the first / following the domain)
---   4. Prepend @
--- Examples:
---   http://www.siu.edu/  → @siu.edu
---   https://www.mit.edu  → @mit.edu
---   https://illinois.edu/about → @illinois.edu
+-- ── application_submissions: club admins can read all for their club ─────────
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_submissions'
+      and policyname = 'Club admins can read submissions for their applications'
+  ) then
+    create policy "Club admins can read submissions for their applications"
+      on public.application_submissions for select
+      to authenticated
+      using (
+        exists (
+          select 1 from public.club_applications ca
+          join public.user_roles ur on ur.club_id = ca.club_id
+          where ca.id = application_submissions.application_id
+            and ur.user_id = auth.uid()
+            and (ur.is_owner = true or ur.is_admin = true)
+        )
+      );
+  end if;
+end $$;
 
-update public.universities
-set email_domain = '@' || regexp_replace(
-    regexp_replace(
-        regexp_replace(
-            website_url,
-            '^https?://',   -- step 1: strip http:// or https://
-            ''
-        ),
-        '^www\.',           -- step 2: strip www. prefix
-        ''
-    ),
-    '/.*$',                 -- step 3: strip trailing slash and path
-    ''
-)
-where website_url is not null;
+-- ── application_submissions: students can submit ─────────────────────────────
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_submissions'
+      and policyname = 'Students can submit applications'
+  ) then
+    create policy "Students can submit applications"
+      on public.application_submissions for insert
+      to authenticated
+      with check (student_id = auth.uid());
+  end if;
+end $$;
 
--- Preview query — uncomment and run first to verify results before the UPDATE:
--- select
---   website_url,
---   '@' || regexp_replace(
---       regexp_replace(
---           regexp_replace(
---               website_url,
---               '^https?://', ''
---           ),
---           '^www\.', ''
---       ),
---       '/.*$', ''
---   ) as computed_email_domain,
---   email_domain as current_email_domain
--- from public.universities
--- where website_url is not null
--- order by website_url
--- limit 50;
+-- ── application_submissions: club admins can update status ───────────────────
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_submissions'
+      and policyname = 'Club admins can update submission status'
+  ) then
+    create policy "Club admins can update submission status"
+      on public.application_submissions for update
+      to authenticated
+      using (
+        exists (
+          select 1 from public.club_applications ca
+          join public.user_roles ur on ur.club_id = ca.club_id
+          where ca.id = application_submissions.application_id
+            and ur.user_id = auth.uid()
+            and (ur.is_owner = true or ur.is_admin = true)
+        )
+      );
+  end if;
+end $$;
+
+-- ── application_submissions: students can delete their own pending ────────────
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename  = 'application_submissions'
+      and policyname = 'Students can delete their own pending submissions'
+  ) then
+    create policy "Students can delete their own pending submissions"
+      on public.application_submissions for delete
+      to authenticated
+      using (student_id = auth.uid());
+  end if;
+end $$;

@@ -59,13 +59,30 @@ export default async function AdminPage({
     .eq("is_active", true)
     .maybeSingle();
 
+  let effectiveApplication = activeApplication;
+  if (!effectiveApplication) {
+    const { data: fallbackApp } = await supabase
+      .from("club_applications")
+      .select("id, title")
+      .eq("club_id", clubid)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    effectiveApplication = fallbackApp;
+  }
+
   let totalApplications = 0;
   let pendingReview = 0;
   let interviewsScheduled = 0;
   let pipelineCounts = { pending: 0, interview: 0, accepted: 0, rejected: 0 };
   let recentSubmissions: {
     id: string;
-    student: { first_name: string | null; last_name: string | null };
+    student: {
+      first_name: string | null;
+      last_name: string | null;
+      major: string | null;
+      academic_year: string | null;
+    };
     submitted_at: string;
     status: string;
   }[] = [];
@@ -76,11 +93,11 @@ export default async function AdminPage({
     student: { first_name: string | null; last_name: string | null };
   }[] = [];
 
-  if (activeApplication) {
+  if (effectiveApplication) {
     const { data: submissions } = await supabase
       .from("application_submissions")
       .select("id, status, student_id, submitted_at")
-      .eq("application_id", activeApplication.id);
+      .eq("application_id", effectiveApplication.id);
 
     const allSubs = submissions ?? [];
     totalApplications = allSubs.length;
@@ -139,8 +156,7 @@ export default async function AdminPage({
       }
     }
 
-    const pendingSubs = allSubs
-      .filter((s) => s.status === "pending")
+    const recentSubs = allSubs
       .sort(
         (a, b) =>
           new Date(b.submitted_at).getTime() -
@@ -148,24 +164,26 @@ export default async function AdminPage({
       )
       .slice(0, 5);
 
-    if (pendingSubs.length > 0) {
-      const pendingStudentIds = pendingSubs.map((s) => s.student_id);
-      const { data: pendingProfiles } = await supabase
+    if (recentSubs.length > 0) {
+      const recentStudentIds = recentSubs.map((s) => s.student_id);
+      const { data: recentProfiles } = await supabase
         .from("profiles")
-        .select("id, first_name, last_name")
-        .in("id", pendingStudentIds);
+        .select("id, first_name, last_name, major, academic_year")
+        .in("id", recentStudentIds);
 
       const profileMap = new Map(
-        (pendingProfiles ?? []).map((p) => [p.id, p])
+        (recentProfiles ?? []).map((p) => [p.id, p])
       );
 
-      recentSubmissions = pendingSubs.map((s) => {
+      recentSubmissions = recentSubs.map((s) => {
         const profile = profileMap.get(s.student_id);
         return {
           id: s.id,
           student: {
             first_name: profile?.first_name ?? null,
             last_name: profile?.last_name ?? null,
+            major: (profile as { major?: string | null })?.major ?? null,
+            academic_year: (profile as { academic_year?: string | null })?.academic_year ?? null,
           },
           submitted_at: s.submitted_at,
           status: s.status,

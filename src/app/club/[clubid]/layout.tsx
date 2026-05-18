@@ -40,6 +40,7 @@ export default async function ClubDashboardLayout({
   const { data: { user } } = await supabase.auth.getUser();
   let isOwner = false;
   let isAdmin = false;
+  let hasApplied = false;
   if (user) {
     const { data: membership } = await supabase
       .from("user_roles")
@@ -50,6 +51,24 @@ export default async function ClubDashboardLayout({
     isMember = !!membership;
     isOwner = membership?.is_owner ?? false;
     isAdmin = membership?.is_admin ?? false;
+
+    // Check if user has already submitted an application
+    const { data: activeApp } = await supabase
+      .from("club_applications")
+      .select("id")
+      .eq("club_id", clubid)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (activeApp) {
+      const { data: submission } = await supabase
+        .from("application_submissions")
+        .select("id")
+        .eq("application_id", activeApp.id)
+        .eq("student_id", user.id)
+        .maybeSingle();
+      hasApplied = !!submission;
+    }
   }
 
   return (
@@ -64,6 +83,7 @@ export default async function ClubDashboardLayout({
       isOwner={isOwner}
       isAdmin={isAdmin}
       usesApplications={club.uses_applications ?? false}
+      hasApplied={hasApplied}
     >
       {children}
     </ClubDashboardClient>

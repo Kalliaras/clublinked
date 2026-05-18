@@ -35,7 +35,12 @@ type AdminDashboardProps = {
   };
   recentSubmissions: {
     id: string;
-    student: { first_name: string | null; last_name: string | null };
+    student: {
+      first_name: string | null;
+      last_name: string | null;
+      major: string | null;
+      academic_year: string | null;
+    };
     submitted_at: string;
     status: string;
   }[];
@@ -349,7 +354,7 @@ export default function AdminDashboardClient({
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-bold text-slate-900">
-                  Recent submissions
+                  Recent applications
                 </h2>
                 <Link
                   href={`${adminBase}/applications`}
@@ -366,7 +371,7 @@ export default function AdminDashboardClient({
                     <FileText className="h-5 w-5 text-slate-400" />
                   </div>
                   <p className="text-sm font-semibold text-slate-700 mb-1">
-                    No pending applications
+                    No applications yet
                   </p>
                   <p className="text-xs text-slate-400">
                     New submissions will appear here.
@@ -386,12 +391,23 @@ export default function AdminDashboardClient({
                         <p className="text-sm font-semibold text-slate-900 truncate">
                           {getFullName(sub.student.first_name, sub.student.last_name)}
                         </p>
+                        {(sub.student.major || sub.student.academic_year) && (
+                          <p className="text-xs text-slate-400 truncate">
+                            {[sub.student.major, sub.student.academic_year].filter(Boolean).join(" · ")}
+                          </p>
+                        )}
                         <p className="text-xs text-slate-500">
                           {formatRelativeTime(sub.submitted_at)}
                         </p>
                       </div>
-                      <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">
-                        Pending
+                      <span className={cn(
+                        "text-xs font-medium px-2 py-0.5 rounded-full shrink-0 capitalize",
+                        sub.status === "pending" && "text-amber-600 bg-amber-50",
+                        sub.status === "interview" && "text-violet-600 bg-violet-50",
+                        sub.status === "accepted" && "text-emerald-600 bg-emerald-50",
+                        sub.status === "rejected" && "text-red-600 bg-red-50",
+                      )}>
+                        {sub.status}
                       </span>
                     </div>
                   ))}
