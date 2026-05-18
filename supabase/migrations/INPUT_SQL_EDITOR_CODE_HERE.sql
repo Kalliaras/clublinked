@@ -1,204 +1,98 @@
--- ── 1. club_applications ──────────────────────────────────────────────────
-create table if not exists public.club_applications (
-  id          uuid primary key default gen_random_uuid(),
-  club_id     uuid not null references public.clubs(id) on delete cascade,
-  title       text not null,
-  description text,
-  is_active   boolean not null default true,
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
+-- ══════════════════════════════════════════════════════════════════════════════
+-- Admin Dashboard DB Changes
+-- ══════════════════════════════════════════════════════════════════════════════
+
+-- ── 10. Add 'interview' to application_submissions status check ────────────
+do $$ begin
+  if exists (
+    select 1 from pg_constraint
+    where conname = 'application_submissions_status_check'
+      and conrelid = 'public.application_submissions'::regclass
+  ) then
+    alter table public.application_submissions
+      drop constraint application_submissions_status_check;
+  end if;
+end $$;
+
+alter table public.application_submissions
+  add constraint application_submissions_status_check
+  check (status in ('pending', 'interview', 'accepted', 'rejected'));
+
+-- ── 11. application_interviews table ──────────────────────────────────────
+create table if not exists public.application_interviews (
+  id              uuid primary key default gen_random_uuid(),
+  submission_id   uuid not null references public.application_submissions(id) on delete cascade,
+  interview_round integer not null default 1,
+  interview_time  timestamptz,
+  created_at      timestamptz not null default now()
 );
 
--- ── 2. application_questions ──────────────────────────────────────────────
-create table if not exists public.application_questions (
-  id             uuid primary key default gen_random_uuid(),
-  application_id uuid not null references public.club_applications(id) on delete cascade,
-  question_text  text not null,
-  question_type  text not null check (question_type in ('text', 'textarea', 'multiple_choice')),
-  is_required    boolean not null default true,
-  "order"        integer not null default 0,
-  options        jsonb
-);
-
--- ── 3. application_submissions ────────────────────────────────────────────
-create table if not exists public.application_submissions (
-  id             uuid primary key default gen_random_uuid(),
-  application_id uuid not null references public.club_applications(id) on delete cascade,
-  student_id     uuid not null references public.profiles(id) on delete cascade,
-  submitted_at   timestamptz not null default now(),
-  status         text not null default 'pending' check (status in ('pending', 'accepted', 'rejected')),
-  unique (application_id, student_id)
-);
-
--- ── 4. application_answers ────────────────────────────────────────────────
-create table if not exists public.application_answers (
-  id            uuid primary key default gen_random_uuid(),
-  submission_id uuid not null references public.application_submissions(id) on delete cascade,
-  question_id   uuid not null references public.application_questions(id) on delete cascade,
-  answer_text   text
-);
-
--- ── 5. Add resume column to profiles ─────────────────────────────────────
-alter table public.profiles
-  add column if not exists resume text;
-
--- ── 6. RLS ────────────────────────────────────────────────────────────────
-alter table public.club_applications      enable row level security;
-alter table public.application_questions  enable row level security;
-alter table public.application_submissions enable row level security;
-alter table public.application_answers    enable row level security;
-
--- club_applications: authenticated users can read active ones
-do $$ begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename  = 'club_applications'
-      and policyname = 'Authenticated users can read active applications'
-  ) then
-    create policy "Authenticated users can read active applications"
-      on public.club_applications for select
-      to authenticated
-      using (is_active = true);
-  end if;
-end $$;
-
--- application_questions: authenticated users can read questions for active apps
-do $$ begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename  = 'application_questions'
-      and policyname = 'Authenticated users can read questions for active applications'
-  ) then
-    create policy "Authenticated users can read questions for active applications"
-      on public.application_questions for select
-      to authenticated
-      using (
-        exists (
-          select 1 from public.club_applications ca
-          where ca.id = application_id and ca.is_active = true
-        )
-      );
-  end if;
-end $$;
-
--- application_submissions: students can insert and read their own
-do $$ begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename  = 'application_submissions'
-      and policyname = 'Students can insert own submissions'
-  ) then
-    create policy "Students can insert own submissions"
-      on public.application_submissions for insert
-      to authenticated
-      with check (student_id = auth.uid());
-  end if;
-end $$;
+alter table public.application_interviews enable row level security;
 
 do $$ begin
   if not exists (
     select 1 from pg_policies
     where schemaname = 'public'
-      and tablename  = 'application_submissions'
-      and policyname = 'Students can read own submissions'
+      and tablename  = 'application_interviews'
+      and policyname = 'Authenticated users can manage interviews'
   ) then
-    create policy "Students can read own submissions"
-      on public.application_submissions for select
+    create policy "Authenticated users can manage interviews"
+      on public.application_interviews for all
       to authenticated
-      using (student_id = auth.uid());
+      using (true)
+      with check (true);
   end if;
 end $$;
 
--- application_answers: students can insert and read answers for their own submissions
-do $$ begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename  = 'application_answers'
-      and policyname = 'Students can insert answers for own submissions'
-  ) then
-    create policy "Students can insert answers for own submissions"
-      on public.application_answers for insert
-      to authenticated
-      with check (
-        exists (
-          select 1 from public.application_submissions s
-          where s.id = submission_id and s.student_id = auth.uid()
-        )
-      );
-  end if;
-end $$;
+create index if not exists idx_app_interviews_submission_id
+  on public.application_interviews(submission_id);
 
-do $$ begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename  = 'application_answers'
-      and policyname = 'Students can read answers for own submissions'
-  ) then
-    create policy "Students can read answers for own submissions"
-      on public.application_answers for select
-      to authenticated
-      using (
-        exists (
-          select 1 from public.application_submissions s
-          where s.id = submission_id and s.student_id = auth.uid()
-        )
-      );
-  end if;
-end $$;
+-- ── 12. Add is_admin to user_roles ────────────────────────────────────────
+alter table public.user_roles
+  add column if not exists is_admin boolean not null default false;
 
--- ── 7. Indexes on foreign keys (PostgreSQL does not auto-index FKs) ────────
-create index if not exists idx_app_questions_application_id   on public.application_questions(application_id);
-create index if not exists idx_app_submissions_application_id on public.application_submissions(application_id);
-create index if not exists idx_app_submissions_student_id     on public.application_submissions(student_id);
-create index if not exists idx_app_answers_submission_id      on public.application_answers(submission_id);
-create index if not exists idx_app_answers_question_id        on public.application_answers(question_id);
+-- ── 13. Populate email_domain from website_url ────────────────────────────
+-- Transformation rules:
+--   1. Strip http:// or https://
+--   2. Strip www. prefix if present
+--   3. Strip any trailing path (everything after the first / following the domain)
+--   4. Prepend @
+-- Examples:
+--   http://www.siu.edu/  → @siu.edu
+--   https://www.mit.edu  → @mit.edu
+--   https://illinois.edu/about → @illinois.edu
 
--- ── 8. updated_at auto-update trigger for club_applications ─────────────────
-create extension if not exists moddatetime schema extensions;
+update public.universities
+set email_domain = '@' || regexp_replace(
+    regexp_replace(
+        regexp_replace(
+            website_url,
+            '^https?://',   -- step 1: strip http:// or https://
+            ''
+        ),
+        '^www\.',           -- step 2: strip www. prefix
+        ''
+    ),
+    '/.*$',                 -- step 3: strip trailing slash and path
+    ''
+)
+where website_url is not null;
 
-drop trigger if exists handle_updated_at on public.club_applications;
-create trigger handle_updated_at
-  before update on public.club_applications
-  for each row execute procedure extensions.moddatetime(updated_at);
-
--- ── 9. Seed test data for clubs with uses_applications = true ─────────────
-do $$
-declare
-  r record;
-  app_id uuid;
-begin
-  for r in
-    select id from public.clubs where uses_applications = true
-  loop
-    if exists (
-      select 1 from public.club_applications
-      where club_id = r.id and is_active = true
-    ) then
-      continue;
-    end if;
-
-    insert into public.club_applications (club_id, title, description, is_active)
-    values (
-      r.id,
-      'General Membership Application',
-      'Thank you for your interest in joining! Please fill out this form so we can learn more about you.',
-      true
-    )
-    returning id into app_id;
-
-    insert into public.application_questions
-      (application_id, question_text, question_type, is_required, "order", options)
-    values
-      (app_id, 'How did you hear about us?', 'multiple_choice', true, 1,
-       '["From a friend or current member", "Campus event or flyer", "ClubLinked", "Social media", "Other"]'::jsonb),
-      (app_id, 'Why do you want to join this club?', 'textarea', true, 2, null),
-      (app_id, 'Tell us about a project or experience you are proud of.', 'textarea', true, 3, null),
-      (app_id, 'Is there anything else you would like us to know about you?', 'textarea', false, 4, null);
-  end loop;
-end;
-$$;
+-- Preview query — uncomment and run first to verify results before the UPDATE:
+-- select
+--   website_url,
+--   '@' || regexp_replace(
+--       regexp_replace(
+--           regexp_replace(
+--               website_url,
+--               '^https?://', ''
+--           ),
+--           '^www\.', ''
+--       ),
+--       '/.*$', ''
+--   ) as computed_email_domain,
+--   email_domain as current_email_domain
+-- from public.universities
+-- where website_url is not null
+-- order by website_url
+-- limit 50;

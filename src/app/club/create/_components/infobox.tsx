@@ -130,6 +130,7 @@ export function Infobox() {
         club_id: club.id,
         title: "President",
         is_owner: true,
+        is_admin: true,
       });
 
       if (roleError) {

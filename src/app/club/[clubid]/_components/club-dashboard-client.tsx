@@ -41,7 +41,8 @@ export default function ClubDashboardClient({
   createdAt,
   universityName,
   isMember,
-  isOwner,
+  isOwner: _isOwner,
+  isAdmin,
   usesApplications,
   children,
 }: {
@@ -53,6 +54,7 @@ export default function ClubDashboardClient({
   universityName: string | null;
   isMember: boolean;
   isOwner: boolean;
+  isAdmin: boolean;
   usesApplications: boolean;
   children: React.ReactNode;
 }) {
@@ -69,8 +71,9 @@ export default function ClubDashboardClient({
   }, [createdAt]);
 
   const isApplyPage = pathname?.startsWith(`${basePath}/apply`) ?? false;
+  const isAdminPage = pathname?.startsWith(`${basePath}/admin`) ?? false;
 
-  if (isApplyPage) {
+  if (isApplyPage || isAdminPage) {
     return <>{children}</>;
   }
 
@@ -135,9 +138,9 @@ export default function ClubDashboardClient({
 
           {/* Action buttons — right side, bottom-aligned */}
           <div className="flex items-center gap-3 pb-3 shrink-0">
-            {isOwner ? (
-              <Button className="rounded-xl px-7 py-3 text-base bg-blue-600 hover:bg-blue-700 text-white border-0">
-                Edit
+            {isAdmin ? (
+              <Button className="rounded-xl px-7 py-3 text-base bg-blue-600 hover:bg-blue-700 text-white border-0" asChild>
+                <Link href={`/club/${clubId}/admin`}>Edit</Link>
               </Button>
             ) : isMember ? (
               <Button variant="secondary" className="rounded-xl px-7 py-3 text-base" disabled>

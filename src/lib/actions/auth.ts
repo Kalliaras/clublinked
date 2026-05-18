@@ -23,7 +23,10 @@ export const SignUpAction = async (
   firstName: string,
   lastName: string,
   email: string,
-  password: string
+  password: string,
+  major?: string,
+  academicYear?: string,
+  universityId?: string
 ): Promise<{ errorMessage?: string } | null> => {
   try {
     const supabase = await createClient();
@@ -49,6 +52,9 @@ export const SignUpAction = async (
       email,
       first_name: firstName,
       last_name: lastName,
+      ...(major ? { major } : {}),
+      ...(academicYear ? { academic_year: academicYear } : {}),
+      ...(universityId ? { university_id: universityId } : {}),
       created_at: new Date().toISOString(),
     });
 

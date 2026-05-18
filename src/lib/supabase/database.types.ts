@@ -88,27 +88,59 @@ export type Database = {
           },
         ]
       }
+      application_interviews: {
+        Row: {
+          id: string
+          submission_id: string
+          interview_round: number
+          interview_time: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          submission_id: string
+          interview_round?: number
+          interview_time?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          submission_id?: string
+          interview_round?: number
+          interview_time?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_interviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "application_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       application_submissions: {
         Row: {
           id: string
           application_id: string
           student_id: string
           submitted_at: string
-          status: 'pending' | 'accepted' | 'rejected'
+          status: 'pending' | 'interview' | 'accepted' | 'rejected'
         }
         Insert: {
           id?: string
           application_id: string
           student_id: string
           submitted_at?: string
-          status?: 'pending' | 'accepted' | 'rejected'
+          status?: 'pending' | 'interview' | 'accepted' | 'rejected'
         }
         Update: {
           id?: string
           application_id?: string
           student_id?: string
           submitted_at?: string
-          status?: 'pending' | 'accepted' | 'rejected'
+          status?: 'pending' | 'interview' | 'accepted' | 'rejected'
         }
         Relationships: [
           {
@@ -530,6 +562,7 @@ export type Database = {
         Row: {
           club_id: string
           created_at: string
+          is_admin: boolean
           is_owner: boolean
           title: string
           updated_at: string
@@ -538,6 +571,7 @@ export type Database = {
         Insert: {
           club_id: string
           created_at?: string
+          is_admin?: boolean
           is_owner?: boolean
           title: string
           updated_at?: string
@@ -546,6 +580,7 @@ export type Database = {
         Update: {
           club_id?: string
           created_at?: string
+          is_admin?: boolean
           is_owner?: boolean
           title?: string
           updated_at?: string

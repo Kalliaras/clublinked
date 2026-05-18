@@ -23,13 +23,25 @@ export default function SignupPage() {
     checkUser();
   }, [router]);
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    major: string;
+    academicYear: string;
+    universityId: string | null;
+  }) => {
     startTransition(async () => {
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
-      const firstName = formData.get("firstName") as string;
-      const lastName = formData.get("lastName") as string;
-      const result = await SignUpAction(firstName, lastName, email, password);
+      const result = await SignUpAction(
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.password,
+        data.major || undefined,
+        data.academicYear || undefined,
+        data.universityId ?? undefined
+      );
       if (result?.errorMessage) {
         toast.error("Error: " + result.errorMessage);
         return;

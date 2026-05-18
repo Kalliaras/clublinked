@@ -39,15 +39,17 @@ export default async function ClubDashboardLayout({
   let isMember = false;
   const { data: { user } } = await supabase.auth.getUser();
   let isOwner = false;
+  let isAdmin = false;
   if (user) {
     const { data: membership } = await supabase
       .from("user_roles")
-      .select("is_owner")
+      .select("is_owner, is_admin")
       .eq("user_id", user.id)
       .eq("club_id", clubid)
       .maybeSingle();
     isMember = !!membership;
     isOwner = membership?.is_owner ?? false;
+    isAdmin = membership?.is_admin ?? false;
   }
 
   return (
@@ -60,6 +62,7 @@ export default async function ClubDashboardLayout({
       universityName={universityName}
       isMember={isMember}
       isOwner={isOwner}
+      isAdmin={isAdmin}
       usesApplications={club.uses_applications ?? false}
     >
       {children}
