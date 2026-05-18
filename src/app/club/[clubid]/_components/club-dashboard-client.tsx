@@ -119,7 +119,7 @@ export default function ClubDashboardClient({
           {/* Logo */}
           <div className="relative h-[120px] w-[120px] rounded-full border-4 border-white bg-primary shadow-lg shrink-0 overflow-hidden">
             <Image
-              src={clubImageUrl ?? "/App_icon_noname.png"}
+              src={clubImageUrl ?? "/App_icon_no_name.png"}
               alt={clubName ?? "Club logo"}
               fill
               className={clubImageUrl ? "object-cover" : "object-contain p-3"}

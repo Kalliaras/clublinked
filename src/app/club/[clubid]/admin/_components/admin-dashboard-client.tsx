@@ -13,9 +13,12 @@ import {
   ChevronDown,
   Link2,
   ArrowRight,
+  MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tailwind";
+import { toast } from "sonner";
+import { updateSubmissionStatusAction } from "../actions";
 
 type AdminDashboardProps = {
   clubId: string;
@@ -103,6 +106,8 @@ export default function AdminDashboardClient({
 }: AdminDashboardProps) {
   const pathname = usePathname();
   const [switcherOpen, setSwitcherOpen] = React.useState(false);
+  const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
+
   const basePath = `/club/${clubId}`;
   const adminBase = `${basePath}/admin`;
 
@@ -166,6 +171,9 @@ export default function AdminDashboardClient({
 
   return (
     <div className="flex min-h-screen bg-[#F7F8FA]">
+      {openMenuId !== null && (
+        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+      )}
       {/* Sidebar */}
       <aside className="w-[260px] shrink-0 bg-white border-r border-slate-200 flex flex-col fixed top-0 left-0 h-screen z-40">
         {/* Brand */}
@@ -409,6 +417,42 @@ export default function AdminDashboardClient({
                       )}>
                         {sub.status}
                       </span>
+
+                      <div className="relative shrink-0">
+                        <button
+                          className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                          onClick={() => setOpenMenuId(openMenuId === sub.id ? null : sub.id)}
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </button>
+
+                        {openMenuId === sub.id && (
+                          <div className="absolute right-0 top-8 z-50 bg-white border border-slate-200 rounded-xl shadow-lg py-1 min-w-[120px]">
+                            <button
+                              className="w-full text-left px-3 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors"
+                              onClick={async () => {
+                                setOpenMenuId(null);
+                                const res = await updateSubmissionStatusAction(sub.id, "accepted", clubId);
+                                if (res?.errorMessage) toast.error(res.errorMessage);
+                                else toast.success("Application accepted");
+                              }}
+                            >
+                              Accept
+                            </button>
+                            <button
+                              className="w-full text-left px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+                              onClick={async () => {
+                                setOpenMenuId(null);
+                                const res = await updateSubmissionStatusAction(sub.id, "rejected", clubId);
+                                if (res?.errorMessage) toast.error(res.errorMessage);
+                                else toast.success("Application rejected");
+                              }}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

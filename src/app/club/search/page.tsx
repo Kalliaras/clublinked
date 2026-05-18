@@ -98,6 +98,7 @@ export default function ClubDiscoveryPage() {
                       src={club.club_image ?? "/logo.png"}
                       alt="Club logo"
                       fill
+                      sizes="48px"
                       className="object-contain"
                       unoptimized={Boolean(club.club_image)}
                     />
