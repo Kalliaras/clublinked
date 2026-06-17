@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/footer/footer";
 import Sidebar from "@/components/sidebar/sidebar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { createClient } from "@/lib/supabase/server";
 import Header from "@/components/header/header";
+import { getUser } from "@/lib/supabase/get-user";
 
 const openSauceSans = localFont({
   src: [
@@ -27,10 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   return (
     <html lang="en">

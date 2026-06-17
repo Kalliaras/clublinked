@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/get-user";
 import { Button } from "@/components/ui/button";
 import { headers } from "next/headers";
 
@@ -14,20 +15,16 @@ const STATIC_ROUTES = new Set([
 ]);
 
 export default async function Header() {
-  const supabase = await createClient();
-  const userResult = await supabase.auth.getUser();
-  const user = userResult?.data?.user ?? null;
+  const user = await getUser();
 
-  // Read pathname from middleware-injected header
   const headersList = await headers();
   const pathname = headersList.get("x-pathname") || "";
-
-  // Extract potential slug from the first path segment
   const segments = pathname.split("/").filter(Boolean);
   const firstSegment = segments[0] || "";
   let slug: string | null = null;
 
   if (firstSegment && !STATIC_ROUTES.has(firstSegment)) {
+    const supabase = await createClient();
     const { data: university } = await supabase
       .from("universities")
       .select("slug")
@@ -39,7 +36,6 @@ export default async function Header() {
     }
   }
 
-  // Build links based on context
   const logoHref = slug ? `/${slug}` : "/";
   const signUpHref = "/user/signup";
   const loginHref = "/user/login";

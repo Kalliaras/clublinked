@@ -1,18 +1,15 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/get-user";
 import LandingClient from "./_components/landing-client";
 
 export default async function Home() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUser();
   if (user) {
     redirect("/club/search");
   }
 
+  const supabase = await createClient();
   const [clubsRes, universityRes, studentsRes] = await Promise.all([
     supabase.from("clubs").select("id", { count: "exact", head: true }),
     supabase.from("universities").select("id", { count: "exact", head: true }),
