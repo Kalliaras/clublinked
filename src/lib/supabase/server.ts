@@ -25,14 +25,3 @@ export async function createClient() {
   )
   return client
 }
-
-export async function getUser() {
-    const {auth} = await createClient();
-    const userObject = await auth.getUser();
-    if (userObject.error || !userObject.data.user) {
-        console.error("No user found", userObject.error);
-        return null;
-    }
-
-    return userObject.data.user;
-}

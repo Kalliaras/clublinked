@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { createClient, getUser } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/get-user';
 import ProfileClient from './_components/profile-client';
 
 type Profile = {
