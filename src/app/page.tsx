@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUser } from "@/lib/supabase/get-user";
+import LandingHero from "./_components/landing-hero";
 import LandingClient from "./_components/landing-client";
 
 export default async function Home() {
@@ -22,5 +23,10 @@ export default async function Home() {
     { value: studentsRes.count ?? 10000, label: "Students" },
   ];
 
-  return <LandingClient stats={stats} />;
+  return (
+    <div className="min-h-screen bg-white">
+      <LandingHero />
+      <LandingClient stats={stats} />
+    </div>
+  );
 }

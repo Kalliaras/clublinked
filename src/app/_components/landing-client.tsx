@@ -3,16 +3,12 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Users, Building2, Zap } from "lucide-react";
 import UniversitySearch from "./university-search";
-import { cn } from "@/lib/utils/tailwind";
 
 // Magic UI components
 import { BlurFade } from "@/components/ui/blur-fade";
-import { WordRotate } from "@/components/ui/word-rotate";
-import { DotPattern } from "@/components/ui/dot-pattern";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { NumberTicker } from "@/components/ui/number-ticker";
@@ -66,70 +62,7 @@ export default function LandingClient({ stats }: { stats: Stat[] }) {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* ── Hero Section ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        {/* Dot pattern background */}
-        <DotPattern
-          className={cn(
-            "absolute inset-0 [mask-image:radial-gradient(700px_circle_at_center,white,transparent)]",
-            "opacity-40"
-          )}
-        />
-
-        <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-16 md:pb-28 md:pt-24">
-          <div className="flex flex-col items-center text-center">
-            {/* Headline — WordRotate renders a motion.h1 internally */}
-            <BlurFade delay={0.1} inView>
-              <div className="max-w-3xl">
-                <div className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-                  The operating system for
-                </div>
-                <WordRotate
-                  words={[
-                    "student clubs",
-                    "campus events",
-                    "club leaders",
-                  ]}
-                  className="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl md:text-6xl"
-                />
-              </div>
-            </BlurFade>
-
-            {/* Subtitle */}
-            <BlurFade delay={0.3} inView>
-              <p className="mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl">
-                ClubLinked helps universities manage clubs, events, and members
-                in one place. Less admin work, more community building.
-              </p>
-            </BlurFade>
-
-            {/* CTAs */}
-            <BlurFade delay={0.4} inView>
-              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-                <ShimmerButton
-                  background="#0E4AE6"
-                  shimmerColor="#ffffff"
-                  borderRadius="8px"
-                  className="h-12 px-8 text-base font-semibold shadow-xl"
-                  onClick={() => router.push("/user/signup")}
-                >
-                  Get Started
-                </ShimmerButton>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="h-12 px-8 text-base font-semibold"
-                >
-                  <Link href="#find-university">Find Your University</Link>
-                </Button>
-              </div>
-            </BlurFade>
-          </div>
-        </div>
-      </section>
-
+    <div className="bg-white">
       {/* ── University Search Section ─────────────────────────────────── */}
       <section
         id="find-university"
