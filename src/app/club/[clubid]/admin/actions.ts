@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export async function updateSubmissionStatusAction(
   submissionId: string,
-  status: "accepted" | "rejected",
+  status: "pending" | "interview" | "accepted" | "rejected",
   clubId: string
 ) {
   const supabase = await createClient();
@@ -26,7 +26,6 @@ export async function updateSubmissionStatusAction(
     return { errorMessage: "Not authorized" };
   }
 
-  // Fetch the submission to get the student_id
   const { data: submission, error: fetchError } = await supabase
     .from("application_submissions")
     .select("id, student_id, status")
@@ -43,7 +42,6 @@ export async function updateSubmissionStatusAction(
   if (error) return { errorMessage: error.message };
 
   if (status === "accepted" && submission.status !== "accepted") {
-    // Add student as a club member if not already one
     const { data: existing } = await supabase
       .from("user_roles")
       .select("user_id")
@@ -63,7 +61,6 @@ export async function updateSubmissionStatusAction(
   }
 
   if (status === "rejected" && submission.status === "accepted") {
-    // Undo membership if re-rejected after a previous accept
     const { data: memberRole } = await supabase
       .from("user_roles")
       .select("user_id, is_owner, is_admin")
@@ -81,5 +78,6 @@ export async function updateSubmissionStatusAction(
   }
 
   revalidatePath(`/club/${clubId}/admin`);
+  revalidatePath(`/club/${clubId}/admin/applications`);
   return { success: true };
 }
