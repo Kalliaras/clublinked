@@ -38,7 +38,7 @@ export default async function RootLayout({
         <Toaster />
         {user ? (
           <div className="flex">
-            <Sidebar />
+            <Sidebar user={user} />
             <main className="flex-1 min-w-0">{children}</main>
           </div>
         ) : (
