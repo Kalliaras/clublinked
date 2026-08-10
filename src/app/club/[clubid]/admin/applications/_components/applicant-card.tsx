@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils/tailwind";
 import { toast } from "sonner";
 import { updateSubmissionStatusAction } from "../../actions";
@@ -145,7 +146,11 @@ export default function ApplicantCard({
         >
           {initials || "?"}
         </div>
-        <div className="flex-1 min-w-0">
+        <Link
+          href={`/club/${clubId}/apply?submission=${submission.id}`}
+          className="flex-1 min-w-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          prefetch={false}
+        >
           <p className="text-[13px] font-semibold text-slate-900 truncate leading-tight">
             {fullName}
           </p>
@@ -155,7 +160,7 @@ export default function ApplicantCard({
           <p className="text-[11px] text-slate-400 mt-0.5">
             {formatRelativeTime(submission.submitted_at)}
           </p>
-        </div>
+        </Link>
         <div className="relative shrink-0">
           <button
             type="button"

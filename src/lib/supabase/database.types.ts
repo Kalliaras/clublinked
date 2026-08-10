@@ -627,7 +627,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_application_review: {
+        Args: { p_club_id: string; p_submission_id: string }
+        Returns: Json
+      }
+      review_application_submission: {
+        Args: {
+          p_club_id: string
+          p_interview_time?: string | null
+          p_status: string
+          p_submission_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

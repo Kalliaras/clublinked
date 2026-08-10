@@ -2,67 +2,91 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/get-user";
 import { Button } from "@/components/ui/button";
 import ApplicationForm from "./_components/application-form";
+import ApplicationReviewView from "./_components/application-review";
+import type { ApplicationReview } from "./_components/review-types";
 
 export default async function ApplyPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ clubid: string }>;
+  searchParams: Promise<{ submission?: string }>;
 }) {
-  const { clubid } = await params;
+  const [{ clubid }, query] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) {
     redirect(`/user/login`);
   }
 
-  const { data: club, error: clubError } = await supabase
-    .from("clubs")
-    .select("id, name, club_image, uses_applications")
-    .eq("id", clubid)
-    .single();
+  if (query.submission) {
+    const { data, error } = await supabase.rpc("get_application_review", {
+      p_submission_id: query.submission,
+      p_club_id: clubid,
+    });
+
+    if (error || !data || typeof data !== "object" || Array.isArray(data)) {
+      redirect(`/club/${clubid}/admin/applications`);
+    }
+
+    return (
+      <ApplicationReviewView review={data as unknown as ApplicationReview} />
+    );
+  }
+
+  const [clubResult, applicationResult] = await Promise.all([
+    supabase
+      .from("clubs")
+      .select("id, name, club_image, uses_applications")
+      .eq("id", clubid)
+      .single(),
+    supabase
+      .from("club_applications")
+      .select("id, title, description")
+      .eq("club_id", clubid)
+      .eq("is_active", true)
+      .maybeSingle(),
+  ]);
+
+  const { data: club, error: clubError } = clubResult;
 
   if (clubError || !club || !club.uses_applications) {
     redirect(`/club/${clubid}`);
   }
 
-  const { data: application } = await supabase
-    .from("club_applications")
-    .select("id, title, description")
-    .eq("club_id", clubid)
-    .eq("is_active", true)
-    .maybeSingle();
+  const { data: application } = applicationResult;
 
   if (!application) {
     redirect(`/club/${clubid}`);
   }
 
-  const { data: existingSubmission, error: submissionCheckError } = await supabase
-    .from("application_submissions")
-    .select("id, status, submitted_at")
-    .eq("application_id", application.id)
-    .eq("student_id", user.id)
-    .maybeSingle();
+  const [submissionResult, questionsResult, profileResult] = await Promise.all([
+    supabase
+      .from("application_submissions")
+      .select("id, status, submitted_at")
+      .eq("application_id", application.id)
+      .eq("student_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("application_questions")
+      .select("id, question_text, question_type, is_required, order, options")
+      .eq("application_id", application.id)
+      .order("order", { ascending: true }),
+    supabase
+      .from("profiles")
+      .select("id, first_name, last_name, major, academic_year, resume")
+      .eq("id", user.id)
+      .maybeSingle(),
+  ]);
 
-  if (submissionCheckError) redirect(`/club/${clubid}`);
+  const { data: existingSubmission, error: submissionCheckError } = submissionResult;
+  const { data: questions, error: questionsError } = questionsResult;
+  const { data: profile } = profileResult;
 
-  const { data: questions, error: questionsError } = await supabase
-    .from("application_questions")
-    .select("id, question_text, question_type, is_required, order, options")
-    .eq("application_id", application.id)
-    .order("order", { ascending: true });
-
-  if (questionsError) redirect(`/club/${clubid}`);
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, first_name, last_name, major, academic_year, resume")
-    .eq("id", user.id)
-    .maybeSingle();
+  if (submissionCheckError || questionsError) redirect(`/club/${clubid}`);
 
   // Already submitted — show a simple status page
   if (existingSubmission) {

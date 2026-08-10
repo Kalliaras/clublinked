@@ -6,7 +6,8 @@ import { revalidatePath } from "next/cache";
 export async function updateSubmissionStatusAction(
   submissionId: string,
   status: "pending" | "interview" | "accepted" | "rejected",
-  clubId: string
+  clubId: string,
+  interviewTime?: string | null
 ) {
   const supabase = await createClient();
 
@@ -15,69 +16,26 @@ export async function updateSubmissionStatusAction(
   } = await supabase.auth.getUser();
   if (!user) return { errorMessage: "Not authenticated" };
 
-  const { data: role } = await supabase
-    .from("user_roles")
-    .select("is_owner, is_admin")
-    .eq("user_id", user.id)
-    .eq("club_id", clubId)
-    .maybeSingle();
-
-  if (!role || (!role.is_owner && !role.is_admin)) {
-    return { errorMessage: "Not authorized" };
+  let normalizedInterviewTime: string | null = null;
+  if (interviewTime?.trim()) {
+    const parsedInterviewTime = new Date(interviewTime);
+    if (Number.isNaN(parsedInterviewTime.getTime())) {
+      return { errorMessage: "Choose a valid interview date and time." };
+    }
+    normalizedInterviewTime = parsedInterviewTime.toISOString();
   }
 
-  const { data: submission, error: fetchError } = await supabase
-    .from("application_submissions")
-    .select("id, student_id, status")
-    .eq("id", submissionId)
-    .single();
-
-  if (fetchError || !submission) return { errorMessage: "Submission not found" };
-
-  const { error } = await supabase
-    .from("application_submissions")
-    .update({ status })
-    .eq("id", submissionId);
+  const { error } = await supabase.rpc("review_application_submission", {
+    p_submission_id: submissionId,
+    p_club_id: clubId,
+    p_status: status,
+    p_interview_time: normalizedInterviewTime,
+  });
 
   if (error) return { errorMessage: error.message };
 
-  if (status === "accepted" && submission.status !== "accepted") {
-    const { data: existing } = await supabase
-      .from("user_roles")
-      .select("user_id")
-      .eq("user_id", submission.student_id)
-      .eq("club_id", clubId)
-      .maybeSingle();
-
-    if (!existing) {
-      await supabase.from("user_roles").insert({
-        user_id: submission.student_id,
-        club_id: clubId,
-        title: "Member",
-        is_owner: false,
-        is_admin: false,
-      });
-    }
-  }
-
-  if (status === "rejected" && submission.status === "accepted") {
-    const { data: memberRole } = await supabase
-      .from("user_roles")
-      .select("user_id, is_owner, is_admin")
-      .eq("user_id", submission.student_id)
-      .eq("club_id", clubId)
-      .maybeSingle();
-
-    if (memberRole && !memberRole.is_owner && !memberRole.is_admin) {
-      await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", submission.student_id)
-        .eq("club_id", clubId);
-    }
-  }
-
   revalidatePath(`/club/${clubId}/admin`);
   revalidatePath(`/club/${clubId}/admin/applications`);
+  revalidatePath(`/club/${clubId}/apply`);
   return { success: true };
 }

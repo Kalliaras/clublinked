@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/get-user";
 import ApplicationsClient from "./_components/applications-client";
 
 export default async function ApplicationsPage({
@@ -10,35 +11,51 @@ export default async function ApplicationsPage({
   const { clubid } = await params;
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) redirect("/user/login");
 
-  const { data: role } = await supabase
-    .from("user_roles")
-    .select("is_owner, is_admin")
-    .eq("user_id", user.id)
-    .eq("club_id", clubid)
-    .maybeSingle();
+  const [roleResult, clubResult, adminRolesResult, applicationResult, profileResult] =
+    await Promise.all([
+      supabase
+        .from("user_roles")
+        .select("is_owner, is_admin")
+        .eq("user_id", user.id)
+        .eq("club_id", clubid)
+        .maybeSingle(),
+      supabase
+        .from("clubs")
+        .select("id, name, club_image")
+        .eq("id", clubid)
+        .single(),
+      supabase
+        .from("user_roles")
+        .select("club_id, clubs(name, club_image)")
+        .eq("user_id", user.id)
+        .or("is_owner.eq.true,is_admin.eq.true"),
+      supabase
+        .from("club_applications")
+        .select("id, title")
+        .eq("club_id", clubid)
+        .eq("is_active", true)
+        .maybeSingle(),
+      supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .maybeSingle(),
+    ]);
+
+  const { data: role } = roleResult;
 
   if (!role || (!role.is_owner && !role.is_admin)) {
     redirect(`/club/${clubid}`);
   }
 
-  const { data: club } = await supabase
-    .from("clubs")
-    .select("id, name, club_image")
-    .eq("id", clubid)
-    .single();
+  const { data: club } = clubResult;
 
   if (!club) redirect(`/club/${clubid}`);
 
-  const { data: adminRoles } = await supabase
-    .from("user_roles")
-    .select("club_id, clubs(name, club_image)")
-    .eq("user_id", user.id)
-    .or("is_owner.eq.true,is_admin.eq.true");
+  const { data: adminRoles } = adminRolesResult;
 
   const adminClubs = (adminRoles ?? [])
     .filter((r) => r.clubs)
@@ -48,12 +65,7 @@ export default async function ApplicationsPage({
       club_image: (r.clubs as { name: string | null; club_image: string | null }).club_image ?? null,
     }));
 
-  const { data: activeApplication } = await supabase
-    .from("club_applications")
-    .select("id, title")
-    .eq("club_id", clubid)
-    .eq("is_active", true)
-    .maybeSingle();
+  const { data: activeApplication } = applicationResult;
 
   let effectiveApplication = activeApplication;
   if (!effectiveApplication) {
@@ -67,11 +79,7 @@ export default async function ApplicationsPage({
     effectiveApplication = fallbackApp;
   }
 
-  const { data: userProfile } = await supabase
-    .from("profiles")
-    .select("first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: userProfile } = profileResult;
 
   type Submission = {
     id: string;
@@ -90,20 +98,19 @@ export default async function ApplicationsPage({
   if (effectiveApplication) {
     const { data: subs } = await supabase
       .from("application_submissions")
-      .select("id, status, student_id, submitted_at")
+      .select(
+        "id, status, submitted_at, student:profiles!application_submissions_student_id_fkey(first_name, last_name, major, academic_year)"
+      )
       .eq("application_id", effectiveApplication.id);
 
-    if (subs && subs.length > 0) {
-      const studentIds = subs.map((s) => s.student_id);
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, first_name, last_name, major, academic_year")
-        .in("id", studentIds);
-
-      const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
-
+    if (subs) {
       submissions = subs.map((s) => {
-        const profile = profileMap.get(s.student_id);
+        const profile = s.student as {
+          first_name: string | null;
+          last_name: string | null;
+          major: string | null;
+          academic_year: string | null;
+        } | null;
         return {
           id: s.id,
           status: s.status,
@@ -111,8 +118,8 @@ export default async function ApplicationsPage({
           student: {
             first_name: profile?.first_name ?? null,
             last_name: profile?.last_name ?? null,
-            major: (profile as { major?: string | null })?.major ?? null,
-            academic_year: (profile as { academic_year?: string | null })?.academic_year ?? null,
+            major: profile?.major ?? null,
+            academic_year: profile?.academic_year ?? null,
           },
         };
       });
