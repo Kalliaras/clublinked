@@ -1,8 +1,4 @@
-"use client";
-
-import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
@@ -13,14 +9,11 @@ import {
   ChevronDown,
   Link2,
   ArrowRight,
-  MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tailwind";
-import { toast } from "sonner";
-import { updateSubmissionStatusAction } from "../actions";
 
-type AdminDashboardProps = {
+export type AdminDashboardProps = {
   clubId: string;
   club: { id: string; name: string; club_image: string | null };
   adminClubs: { club_id: string; name: string; club_image: string | null }[];
@@ -104,17 +97,10 @@ export default function AdminDashboardClient({
   userFirstName,
   userLastName,
 }: AdminDashboardProps) {
-  const pathname = usePathname();
-  const [switcherOpen, setSwitcherOpen] = React.useState(false);
-  const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
-
   const basePath = `/club/${clubId}`;
   const adminBase = `${basePath}/admin`;
 
-  const isNavActive = (href: string) => {
-    const normalized = pathname?.replace(/\/+$/, "") ?? "";
-    return normalized === href.replace(/\/+$/, "");
-  };
+  const isNavActive = (href: string) => href === adminBase;
 
   const pipelineTotal =
     pipelineCounts.pending +
@@ -171,9 +157,6 @@ export default function AdminDashboardClient({
 
   return (
     <div className="flex min-h-screen bg-[#F7F8FA]">
-      {openMenuId !== null && (
-        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-      )}
       {/* Sidebar */}
       <aside className="w-[260px] shrink-0 bg-white border-r border-slate-200 flex flex-col fixed top-0 left-0 h-screen z-40">
         {/* Brand */}
@@ -189,43 +172,38 @@ export default function AdminDashboardClient({
 
         {/* Club switcher */}
         <div className="px-3 pb-4 relative">
-          <button
-            className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 text-left hover:bg-slate-50 transition-colors"
-            onClick={() => setSwitcherOpen((prev) => !prev)}
-          >
-            <div className="min-w-0">
-              <p className="text-xs text-slate-500 font-medium">Managing</p>
-              <p className="text-sm font-semibold text-slate-900 truncate">
-                {club.name}
-              </p>
-            </div>
-            <ChevronDown
-              className={cn(
-                "h-4 w-4 text-slate-400 shrink-0 transition-transform",
-                switcherOpen && "rotate-180"
-              )}
-            />
-          </button>
+          <details className="group relative">
+            <summary className="flex w-full cursor-pointer list-none items-center justify-between gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-left transition-colors hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+              <div className="min-w-0">
+                <p className="text-xs text-slate-500 font-medium">Managing</p>
+                <p className="text-sm font-semibold text-slate-900 truncate">
+                  {club.name}
+                </p>
+              </div>
+              <ChevronDown
+                className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180"
+              />
+            </summary>
 
-          {switcherOpen && adminClubs.length > 1 && (
-            <div className="absolute top-full left-3 right-3 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-50">
-              {adminClubs.map((c) => (
-                <Link
-                  key={c.club_id}
-                  href={`/club/${c.club_id}/admin`}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 text-sm font-medium hover:bg-slate-50 transition-colors",
-                    c.club_id === clubId
-                      ? "text-blue-700 bg-blue-50"
-                      : "text-slate-700"
-                  )}
-                  onClick={() => setSwitcherOpen(false)}
-                >
-                  {c.name}
-                </Link>
-              ))}
-            </div>
-          )}
+            {adminClubs.length > 1 && (
+              <div className="absolute top-full left-3 right-3 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-50">
+                {adminClubs.map((c) => (
+                  <Link
+                    key={c.club_id}
+                    href={`/club/${c.club_id}/admin`}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2 text-sm font-medium hover:bg-slate-50 transition-colors",
+                      c.club_id === clubId
+                        ? "text-blue-700 bg-blue-50"
+                        : "text-slate-700"
+                    )}
+                  >
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </details>
         </div>
 
         {/* Nav links */}
@@ -388,8 +366,10 @@ export default function AdminDashboardClient({
               ) : (
                 <div className="flex flex-col gap-1">
                   {recentSubmissions.map((sub) => (
-                    <div
+                    <Link
                       key={sub.id}
+                      href={`${basePath}/apply?submission=${sub.id}`}
+                      prefetch={false}
                       className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50 transition-colors"
                     >
                       <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 shrink-0 select-none">
@@ -418,42 +398,8 @@ export default function AdminDashboardClient({
                         {sub.status}
                       </span>
 
-                      <div className="relative shrink-0">
-                        <button
-                          className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                          onClick={() => setOpenMenuId(openMenuId === sub.id ? null : sub.id)}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </button>
-
-                        {openMenuId === sub.id && (
-                          <div className="absolute right-0 top-8 z-50 bg-white border border-slate-200 rounded-xl shadow-lg py-1 min-w-[120px]">
-                            <button
-                              className="w-full text-left px-3 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors"
-                              onClick={async () => {
-                                setOpenMenuId(null);
-                                const res = await updateSubmissionStatusAction(sub.id, "accepted", clubId);
-                                if (res?.errorMessage) toast.error(res.errorMessage);
-                                else toast.success("Application accepted");
-                              }}
-                            >
-                              Accept
-                            </button>
-                            <button
-                              className="w-full text-left px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
-                              onClick={async () => {
-                                setOpenMenuId(null);
-                                const res = await updateSubmissionStatusAction(sub.id, "rejected", clubId);
-                                if (res?.errorMessage) toast.error(res.errorMessage);
-                                else toast.success("Application rejected");
-                              }}
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-slate-300" />
+                    </Link>
                   ))}
                 </div>
               )}

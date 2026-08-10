@@ -627,6 +627,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_admin_dashboard: {
+        Args: { p_club_id: string }
+        Returns: Json
+      }
       get_application_review: {
         Args: { p_club_id: string; p_submission_id: string }
         Returns: Json
