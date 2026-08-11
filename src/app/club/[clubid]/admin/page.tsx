@@ -32,6 +32,8 @@ export default async function AdminPage({
   }
 
   const supabase = await createClient();
+
+
   const { data, error } = await supabase.rpc("get_admin_dashboard", {
     p_club_id: clubid,
   });
