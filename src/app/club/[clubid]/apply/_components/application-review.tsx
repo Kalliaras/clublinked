@@ -31,9 +31,10 @@ export default function ApplicationReviewView({
   const fullName = [review.student.first_name, review.student.last_name]
     .filter(Boolean)
     .join(" ") || "Applicant";
+  const isAccepted = review.submission.status === "accepted";
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] pb-28">
+    <div className={`min-h-screen bg-[#F7F8FA] ${isAccepted ? "pb-10" : "pb-28"}`}>
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-8">
         <div className="flex min-w-0 items-center gap-4">
           <Link
@@ -189,18 +190,20 @@ export default function ApplicationReviewView({
         </section>
       </main>
 
-      <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-8">
-        <div className="mx-auto flex max-w-3xl flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <p className="hidden text-sm text-slate-500 sm:block">
-            Choose the next stage for {fullName}.
-          </p>
-          <ReviewActions
-            submissionId={review.submission.id}
-            clubId={review.club.id}
-            applicantName={fullName}
-          />
-        </div>
-      </footer>
+      {!isAccepted && (
+        <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-8">
+          <div className="mx-auto flex max-w-3xl flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <p className="hidden text-sm text-slate-500 sm:block">
+              Choose the next stage for {fullName}.
+            </p>
+            <ReviewActions
+              submissionId={review.submission.id}
+              clubId={review.club.id}
+              applicantName={fullName}
+            />
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

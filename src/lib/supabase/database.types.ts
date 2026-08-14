@@ -375,6 +375,7 @@ export type Database = {
       clubs: {
         Row: {
           access_code: string | null
+          attandence_required: number
           created_at: string
           description: string | null
           history: string | null
@@ -389,6 +390,7 @@ export type Database = {
         }
         Insert: {
           access_code?: string | null
+          attandence_required?: number
           created_at?: string
           description?: string | null
           history?: string | null
@@ -403,6 +405,7 @@ export type Database = {
         }
         Update: {
           access_code?: string | null
+          attandence_required?: number
           created_at?: string
           description?: string | null
           history?: string | null
@@ -560,6 +563,7 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          attendance_score: number
           club_id: string
           created_at: string
           is_admin: boolean
@@ -569,6 +573,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attendance_score?: number
           club_id: string
           created_at?: string
           is_admin?: boolean
@@ -578,6 +583,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          attendance_score?: number
           club_id?: string
           created_at?: string
           is_admin?: boolean
@@ -592,6 +598,45 @@ export type Database = {
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_activities: {
+        Row: {
+          activity: string
+          club_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          activity: string
+          club_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          activity?: string
+          club_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activities_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -627,6 +672,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      change_club_member_role: {
+        Args: { p_club_id: string; p_role: string; p_user_id: string }
+        Returns: undefined
+      }
       get_admin_dashboard: {
         Args: { p_club_id: string }
         Returns: Json
@@ -634,6 +683,15 @@ export type Database = {
       get_application_review: {
         Args: { p_club_id: string; p_submission_id: string }
         Returns: Json
+      }
+      get_recent_club_member_activities: {
+        Args: { p_club_id: string }
+        Returns: {
+          activity: string
+          created_at: string
+          id: string
+          user_id: string
+        }[]
       }
       review_application_submission: {
         Args: {

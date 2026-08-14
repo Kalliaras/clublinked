@@ -87,10 +87,7 @@ function getMenuOptions(status: string): MenuOption[] {
         { label: "Move back to Submitted", newStatus: "pending", color: "text-slate-600" },
       ];
     case "accepted":
-      return [
-        { label: "Move to Interview", newStatus: "interview", color: "text-violet-600" },
-        { label: "Reject", newStatus: "rejected", color: "text-red-500" },
-      ];
+      return [];
     case "rejected":
       return [
         { label: "Move to Submitted", newStatus: "pending", color: "text-slate-600" },
@@ -161,7 +158,7 @@ export default function ApplicantCard({
             {formatRelativeTime(submission.submitted_at)}
           </p>
         </Link>
-        <div className="relative shrink-0">
+        {menuOptions.length > 0 && <div className="relative shrink-0">
           <button
             type="button"
             className="h-6 w-6 rounded-md flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
@@ -190,7 +187,7 @@ export default function ApplicantCard({
               ))}
             </div>
           )}
-        </div>
+        </div>}
       </div>
     </div>
   );

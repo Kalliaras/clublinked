@@ -149,7 +149,7 @@ export default function AdminDashboardClient({
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
-    { href: `${basePath}/members`, label: "Members", icon: Users },
+    { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${basePath}/events`, label: "Events", icon: CalendarDays },
     { href: `${basePath}/announcements`, label: "Announcements", icon: Bell },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
