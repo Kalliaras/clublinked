@@ -37,6 +37,7 @@ export default function ClubDashboardClient({
   clubId,
   clubName,
   clubImageUrl,
+  clubBannerImageUrl,
   members,
   createdAt,
   universityName,
@@ -50,6 +51,7 @@ export default function ClubDashboardClient({
   clubId: string;
   clubName: string | null;
   clubImageUrl?: string | null;
+  clubBannerImageUrl?: string | null;
   members: number;
   createdAt: string;
   universityName: string | null;
@@ -98,9 +100,19 @@ export default function ClubDashboardClient({
 
       {/* ── Banner ── */}
       <div className="h-[280px] bg-primary relative overflow-hidden">
+        {clubBannerImageUrl && (
+          <Image
+            src={clubBannerImageUrl}
+            alt={`${clubName ?? "Club"} banner`}
+            fill
+            className="object-cover"
+            priority
+            unoptimized
+          />
+        )}
         {/* dot pattern */}
         <div
-          className="absolute inset-0"
+          className={`absolute inset-0 ${clubBannerImageUrl ? "opacity-30" : ""}`}
           style={{
             backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px)",
             backgroundSize: "28px 28px",

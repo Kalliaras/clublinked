@@ -4,6 +4,8 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils/tailwind"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Clock3, MapPin } from "lucide-react"
 import {
   Popover,
   PopoverContent,
@@ -15,6 +17,9 @@ export type CalendarEvent = {
   title: string | null
   description: string | null
   time: string
+  event_type: string | null
+  status: string
+  location: string | null
 }
 
 interface CalendarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -52,7 +57,16 @@ function getMonthDays(month: number, year: number) {
 }
 
 function formatDateKey(date: Date) {
-  return date.toISOString().slice(0, 10)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+function formatEventLabel(value: string) {
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 function Calendar({
@@ -148,15 +162,33 @@ function Calendar({
                           </button>
                         </PopoverTrigger>
                         <PopoverContent className="w-72">
+                          <div className="mb-3 flex flex-wrap items-center gap-2">
+                            <Badge className="bg-sky-50 text-sky-700 hover:bg-sky-50">
+                              {formatEventLabel(event.event_type || "Event")}
+                            </Badge>
+                            <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700">
+                              {formatEventLabel(event.status)}
+                            </Badge>
+                          </div>
                           <p className="text-sm font-semibold text-slate-900">
                             {event.title ?? "Untitled event"}
                           </p>
                           <p className="mt-2 text-sm leading-6 text-slate-700">
                             {event.description ?? "No description provided."}
                           </p>
-                          <p className="mt-3 text-xs text-slate-500">
-                            Starts {new Date(event.time).toLocaleString()}
-                          </p>
+                          <div className="mt-3 grid gap-2 text-xs text-slate-500">
+                            <p className="flex items-start gap-2">
+                              <Clock3 className="h-3.5 w-3.5 shrink-0" />
+                              {new Date(event.time).toLocaleString([], {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              })}
+                            </p>
+                            <p className="flex items-start gap-2">
+                              <MapPin className="h-3.5 w-3.5 shrink-0" />
+                              {event.location || "Location to be announced"}
+                            </p>
+                          </div>
                         </PopoverContent>
                       </Popover>
                     ))}

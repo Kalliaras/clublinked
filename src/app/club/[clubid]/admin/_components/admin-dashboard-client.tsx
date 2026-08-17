@@ -7,9 +7,10 @@ import {
   Bell,
   Settings,
   ChevronDown,
-  Link2,
   ArrowRight,
+  UserRound,
 } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tailwind";
 
@@ -148,9 +149,10 @@ export default function AdminDashboardClient({
 
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
+    { href: `${adminBase}/profile`, label: "Profile", icon: UserRound },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
-    { href: `${basePath}/events`, label: "Events", icon: CalendarDays },
+    { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${basePath}/announcements`, label: "Announcements", icon: Bell },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
@@ -163,10 +165,10 @@ export default function AdminDashboardClient({
         <div className="px-5 pt-6 pb-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-blue-600 font-bold text-base"
+            className="flex items-center gap-2 text-base font-bold text-primary"
           >
-            <Link2 className="h-4 w-4" />
-            ClubLinked
+            <Logo size={36} />
+            <span>ClubLinked</span>
           </Link>
         </div>
 

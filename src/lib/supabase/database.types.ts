@@ -241,28 +241,37 @@ export type Database = {
       }
       club_events: {
         Row: {
-          id: string
           club_id: string
           created_at: string
-          title: string | null
           description: string | null
+          event_type: string
+          id: string
+          location: string
+          status: string
           time: string
+          title: string | null
         }
         Insert: {
-          id?: string
           club_id: string
           created_at?: string
-          title?: string | null
           description?: string | null
+          event_type?: string
+          id?: string
+          location?: string
+          status?: string
           time: string
+          title?: string | null
         }
         Update: {
-          id?: string
           club_id?: string
           created_at?: string
-          title?: string | null
           description?: string | null
+          event_type?: string
+          id?: string
+          location?: string
+          status?: string
           time?: string
+          title?: string | null
         }
         Relationships: [
           {
@@ -376,6 +385,7 @@ export type Database = {
         Row: {
           access_code: string | null
           attandence_required: number
+          club_banner_image: string | null
           created_at: string
           description: string | null
           history: string | null
@@ -391,6 +401,7 @@ export type Database = {
         Insert: {
           access_code?: string | null
           attandence_required?: number
+          club_banner_image?: string | null
           created_at?: string
           description?: string | null
           history?: string | null
@@ -406,6 +417,7 @@ export type Database = {
         Update: {
           access_code?: string | null
           attandence_required?: number
+          club_banner_image?: string | null
           created_at?: string
           description?: string | null
           history?: string | null
@@ -676,6 +688,26 @@ export type Database = {
         Args: { p_club_id: string; p_role: string; p_user_id: string }
         Returns: undefined
       }
+      club_events_can_manage: {
+        Args: { p_club_id: string }
+        Returns: boolean
+      }
+      club_events_is_member: {
+        Args: { p_club_id: string }
+        Returns: boolean
+      }
+      club_branding_can_manage: {
+        Args: { p_club_id: string }
+        Returns: boolean
+      }
+      club_branding_can_manage_object: {
+        Args: { object_name: string }
+        Returns: boolean
+      }
+      club_branding_decode_object_path: {
+        Args: { encoded_path: string }
+        Returns: string
+      }
       get_admin_dashboard: {
         Args: { p_club_id: string }
         Returns: Json
@@ -699,6 +731,18 @@ export type Database = {
           p_interview_time?: string | null
           p_status: string
           p_submission_id: string
+        }
+        Returns: undefined
+      }
+      update_club_profile: {
+        Args: {
+          p_club_banner_image: string | null
+          p_club_id: string
+          p_club_image: string | null
+          p_description: string | null
+          p_name: string
+          p_type: string | null
+          p_uses_applications: boolean
         }
         Returns: undefined
       }

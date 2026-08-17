@@ -7,10 +7,8 @@ import { CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -23,14 +21,16 @@ type ClubEvent = {
   title: string | null;
   description: string | null;
   time: string;
+  event_type: string | null;
+  status: string;
+  location: string | null;
 };
 
-const EVENT_BADGE_LIMIT = 16;
-
-function truncateTitle(title: string) {
-  return title.length > EVENT_BADGE_LIMIT
-    ? `${title.slice(0, EVENT_BADGE_LIMIT - 1).trimEnd()}…`
-    : title;
+function getLocalDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 export default function ClubEventsPage() {
@@ -51,7 +51,7 @@ export default function ClubEventsPage() {
 
       const { data } = await supabase
         .from("club_events")
-        .select("id, club_id, title, description, time")
+        .select("id, club_id, title, description, time, event_type, status, location")
         .eq("club_id", clubId)
         .order("time", { ascending: true });
 
@@ -70,7 +70,7 @@ export default function ClubEventsPage() {
       if (Number.isNaN(date.getTime())) {
         return;
       }
-      const dateKey = date.toISOString().slice(0, 10);
+      const dateKey = getLocalDateKey(date);
       const existing = map.get(dateKey) ?? [];
       existing.push(event);
       map.set(dateKey, existing);
@@ -110,12 +110,9 @@ export default function ClubEventsPage() {
           </EmptyMedia>
           <EmptyTitle>No events yet</EmptyTitle>
           <EmptyDescription>
-            Create events for your club members to see and attend.
+            There are no events available for your account yet.
           </EmptyDescription>
         </EmptyHeader>
-        <EmptyContent>
-          <Button variant="outline">Create Event</Button>
-        </EmptyContent>
       </Empty>
     );
   }
@@ -128,7 +125,7 @@ export default function ClubEventsPage() {
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Club Events</h2>
               <p className="text-sm text-slate-600">
-                Tap an event badge to view the title and description.
+                Tap an event badge to view its details, location, and visibility.
               </p>
             </div>
           </div>

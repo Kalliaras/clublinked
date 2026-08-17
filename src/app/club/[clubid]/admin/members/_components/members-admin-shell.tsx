@@ -6,11 +6,12 @@ import {
   ChevronDown,
   FileText,
   LayoutDashboard,
-  Link2,
   Settings,
+  UserRound,
   Users,
 } from "lucide-react";
 
+import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils/tailwind";
 
 type AdminClub = {
@@ -43,9 +44,10 @@ export function MembersAdminShell({
   const adminBase = `/club/${clubId}/admin`;
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
+    { href: `${adminBase}/profile`, label: "Profile", icon: UserRound },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
-    { href: `/club/${clubId}/events`, label: "Events", icon: CalendarDays },
+    { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `/club/${clubId}/announcements`, label: "Announcements", icon: Bell },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
@@ -54,9 +56,9 @@ export function MembersAdminShell({
     <div className="flex min-h-screen bg-[#F7F8FA]">
       <aside className="fixed inset-y-0 left-0 z-40 flex w-[260px] shrink-0 flex-col border-r border-slate-200 bg-white">
         <div className="px-5 pb-4 pt-6">
-          <Link href="/" className="flex items-center gap-2 text-base font-bold text-blue-600">
-            <Link2 className="size-4" />
-            ClubLinked
+          <Link href="/" className="flex items-center gap-2 text-base font-bold text-primary">
+            <Logo size={36} />
+            <span>ClubLinked</span>
           </Link>
         </div>
 
