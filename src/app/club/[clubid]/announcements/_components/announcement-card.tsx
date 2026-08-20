@@ -5,8 +5,8 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 
 type Announcement = {
   id: string;
-  title: string;
-  body: string;
+  title: string | null;
+  body: string | null;
   created_at: string;
   user_id: string;
   profiles: { first_name: string | null; last_name: string | null } | null;
@@ -22,6 +22,8 @@ export function AnnouncementCard({
   const [expanded, setExpanded] = useState(false);
 
   const { title, body, created_at, profiles } = announcement;
+  const safeTitle = title?.trim() || "Untitled announcement";
+  const safeBody = body?.trim() || "No message was provided.";
 
   const firstName = profiles?.first_name ?? null;
   const lastName = profiles?.last_name ?? null;
@@ -43,9 +45,11 @@ export function AnnouncementCard({
     year: "numeric",
   });
 
-  const isLong = body.length > BODY_TRUNCATE_LENGTH;
+  const isLong = safeBody.length > BODY_TRUNCATE_LENGTH;
   const displayBody =
-    isLong && !expanded ? body.slice(0, BODY_TRUNCATE_LENGTH) + "…" : body;
+    isLong && !expanded
+      ? safeBody.slice(0, BODY_TRUNCATE_LENGTH) + "…"
+      : safeBody;
 
   return (
     <div className="rounded-2xl border border-border bg-white shadow-sm p-5">
@@ -60,7 +64,7 @@ export function AnnouncementCard({
           {/* Top row: title + date */}
           <div className="flex justify-between items-start gap-2">
             <h3 className="text-base font-semibold text-slate-900 leading-snug">
-              {title}
+              {safeTitle}
             </h3>
             <span className="text-xs text-slate-400 shrink-0 mt-0.5">
               {formattedDate}

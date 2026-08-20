@@ -12,8 +12,8 @@ import { AnnouncementCard } from "./_components/announcement-card";
 
 type Announcement = {
   id: string;
-  title: string;
-  body: string;
+  title: string | null;
+  body: string | null;
   created_at: string;
   user_id: string;
   profiles: { first_name: string | null; last_name: string | null } | null;

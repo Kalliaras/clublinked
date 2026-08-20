@@ -34,7 +34,7 @@ function AdminNavigation({ clubId, mobile = false }: { clubId: string; mobile?: 
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
-    { href: `/club/${clubId}/announcements`, label: "Announcements", icon: Bell },
+    { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
 

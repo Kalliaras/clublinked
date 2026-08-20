@@ -18,15 +18,17 @@ import { cn } from "@/lib/utils/tailwind";
 type AdminClub = { club_id: string; name: string };
 
 function initials(firstName: string | null, lastName: string | null) {
-  return [firstName, lastName]
-    .filter(Boolean)
-    .map((part) => part![0].toUpperCase())
-    .join("") || "?";
+  return (
+    [firstName, lastName]
+      .filter(Boolean)
+      .map((part) => part![0].toUpperCase())
+      .join("") || "?"
+  );
 }
 
-function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boolean }) {
+function AdminNavigation({ clubId, mobile = false }: { clubId: string; mobile?: boolean }) {
   const adminBase = `/club/${clubId}/admin`;
-  const items = [
+  const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
     { href: `${adminBase}/profile`, label: "Profile", icon: UserRound },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
@@ -38,8 +40,8 @@ function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boole
 
   return (
     <nav className={cn("flex gap-0.5", mobile ? "flex-col py-2" : "flex-1 flex-col overflow-y-auto px-3 py-2")}>
-      {items.map(({ href, label, icon: Icon }) => {
-        const active = href === `${adminBase}/profile`;
+      {navItems.map(({ href, label, icon: Icon }) => {
+        const active = href === `${adminBase}/announcements`;
         return (
           <Link
             key={href}
@@ -60,7 +62,7 @@ function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boole
   );
 }
 
-export function ProfileAdminShell({
+export function AnnouncementsAdminShell({
   clubId,
   clubName,
   adminClubs,
@@ -101,7 +103,7 @@ export function ProfileAdminShell({
                 {adminClubs.map((club) => (
                   <Link
                     key={club.club_id}
-                    href={`/club/${club.club_id}/admin/profile`}
+                    href={`/club/${club.club_id}/admin/announcements`}
                     className={cn(
                       "block px-3 py-2 text-sm font-medium hover:bg-slate-50",
                       club.club_id === clubId ? "bg-blue-50 text-blue-700" : "text-slate-700"
@@ -115,7 +117,7 @@ export function ProfileAdminShell({
           </details>
         </div>
 
-        <Navigation clubId={clubId} />
+        <AdminNavigation clubId={clubId} />
 
         <div className="border-t border-slate-200 px-4 py-4">
           <div className="flex items-center gap-3">
@@ -141,12 +143,14 @@ export function ProfileAdminShell({
           </summary>
           <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
             <p className="px-3 pb-1 pt-2 text-xs font-medium text-slate-500">Managing {clubName}</p>
-            <Navigation clubId={clubId} mobile />
+            <AdminNavigation clubId={clubId} mobile />
           </div>
         </details>
       </header>
 
-      <main className="min-h-screen min-w-0 md:ml-[260px]">{children}</main>
+      <main className="min-h-screen min-w-0 md:ml-[260px]">
+        <div className="px-4 py-6 sm:px-6 md:px-8 md:py-8">{children}</div>
+      </main>
     </div>
   );
 }

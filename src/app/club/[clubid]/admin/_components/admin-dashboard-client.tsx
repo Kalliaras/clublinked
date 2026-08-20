@@ -153,7 +153,7 @@ export default function AdminDashboardClient({
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
-    { href: `${basePath}/announcements`, label: "Announcements", icon: Bell },
+    { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
 
