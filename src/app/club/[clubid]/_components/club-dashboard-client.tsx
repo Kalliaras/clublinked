@@ -45,6 +45,7 @@ export default function ClubDashboardClient({
   isOwner: _isOwner,
   isAdmin,
   usesApplications,
+  applicationsClosed,
   hasApplied,
   children,
 }: {
@@ -59,6 +60,7 @@ export default function ClubDashboardClient({
   isOwner: boolean;
   isAdmin: boolean;
   usesApplications: boolean;
+  applicationsClosed: boolean;
   hasApplied: boolean;
   children: React.ReactNode;
 }) {
@@ -105,21 +107,26 @@ export default function ClubDashboardClient({
             src={clubBannerImageUrl}
             alt={`${clubName ?? "Club"} banner`}
             fill
+            sizes="100vw"
             className="object-cover"
-            priority
-            unoptimized
+            fetchPriority="high"
+            loading="eager"
+            quality={75}
           />
         )}
-        {/* dot pattern */}
-        <div
-          className={`absolute inset-0 ${clubBannerImageUrl ? "opacity-30" : ""}`}
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-        {/* bottom gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-[60%] bg-gradient-to-b from-transparent to-black/40" />
+        {!clubBannerImageUrl && (
+          <>
+            {/* Decorated fallback used only when no stored banner is available. */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px)",
+                backgroundSize: "28px 28px",
+              }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 h-[60%] bg-gradient-to-b from-transparent to-black/40" />
+          </>
+        )}
       </div>
 
       {/* ── Hero ── */}
@@ -134,9 +141,10 @@ export default function ClubDashboardClient({
               src={clubImageUrl ?? "/App_icon_no_name.png"}
               alt={clubName ?? "Club logo"}
               fill
+              sizes="120px"
               className={clubImageUrl ? "object-cover" : "object-contain p-3"}
-              priority
-              unoptimized={Boolean(clubImageUrl)}
+              loading="eager"
+              quality={75}
             />
           </div>
 
@@ -168,6 +176,13 @@ export default function ClubDashboardClient({
                     disabled
                   >
                     Submitted
+                  </Button>
+                ) : applicationsClosed ? (
+                  <Button
+                    className="cursor-not-allowed rounded-xl border-0 bg-slate-400 px-7 py-3 text-base text-white"
+                    disabled
+                  >
+                    Applications closed
                   </Button>
                 ) : (
                   <Button className="rounded-xl px-7 py-3 text-base" asChild>

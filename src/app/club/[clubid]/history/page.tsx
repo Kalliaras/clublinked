@@ -1,40 +1,23 @@
 import { Clock } from "lucide-react";
+import { notFound } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { getClubPublicData } from "@/lib/data/club-page";
 
-interface ClubHistoryPageProps {
-  params: Promise<{ clubid: string }>;
-}
-
-export default async function ClubHistoryPage({ params }: ClubHistoryPageProps) {
+export default async function ClubHistoryPage({ params }: { params: Promise<{ clubid: string }> }) {
   const { clubid } = await params;
-  const supabase = await createClient();
+  const publicData = await getClubPublicData(clubid);
+  if (!publicData) notFound();
 
-  const { data: club } = await supabase
-    .from("clubs")
-    .select("history")
-    .eq("id", clubid)
-    .single();
-
-  if (!club?.history) {
+  const history = publicData.club.history?.trim();
+  if (!history) {
     return (
       <Empty>
         <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Clock />
-          </EmptyMedia>
+          <EmptyMedia variant="icon"><Clock /></EmptyMedia>
           <EmptyTitle>No history yet</EmptyTitle>
-          <EmptyDescription>
-            Club history and milestones will show up here once added.
-          </EmptyDescription>
+          <EmptyDescription>Club history and milestones will show up here once added.</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -42,12 +25,10 @@ export default async function ClubHistoryPage({ params }: ClubHistoryPageProps) 
 
   return (
     <Card className="border-slate-200 p-6">
-      <h2 className="text-lg font-semibold text-slate-900 mb-4">Club History</h2>
+      <h2 className="mb-4 text-lg font-semibold text-slate-900">Club History</h2>
       <div className="prose prose-sm max-w-none text-slate-700">
-        {club.history.split('\n').map((paragraph, index) => (
-          <p key={index} className="mb-4 last:mb-0">
-            {paragraph}
-          </p>
+        {history.split("\n").map((paragraph, index) => (
+          <p key={index} className="mb-4 last:mb-0">{paragraph}</p>
         ))}
       </div>
     </Card>

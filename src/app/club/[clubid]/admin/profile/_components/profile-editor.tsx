@@ -11,6 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  DEFAULT_CLUB_BANNERS,
+  DEFAULT_CLUB_PROFILE_IMAGES,
+  type DefaultClubBrandingOption,
+} from "@/lib/club-branding-defaults";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils/tailwind";
 import { updateClubProfileAction } from "../actions";
@@ -23,6 +28,7 @@ type ProfileValues = {
   description: string;
   type: string;
   usesApplications: boolean;
+  applicationDeadline: string | null;
   clubImage: string | null;
   clubBannerImage: string | null;
 };
@@ -102,6 +108,8 @@ function UploadField({
   onSelect,
   error,
   banner = false,
+  defaults,
+  onDefaultSelect,
 }: {
   label: string;
   currentUrl: string | null;
@@ -109,6 +117,8 @@ function UploadField({
   onSelect: (file?: File) => void;
   error: string | null;
   banner?: boolean;
+  defaults: readonly DefaultClubBrandingOption[];
+  onDefaultSelect: (url: string) => void;
 }) {
   const src = selection?.previewUrl ?? currentUrl;
   const inputId = banner ? "club-banner-upload" : "club-logo-upload";
@@ -156,6 +166,43 @@ function UploadField({
       <p className={cn("mt-1.5 text-xs", error ? "text-red-600" : "text-slate-500")}>
         {error ?? (banner ? "1280 × 320 recommended · 10 MB max" : "Square image recommended · 5 MB max")}
       </p>
+      <div className="mt-4">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Choose a default
+        </p>
+        <div className={cn("grid gap-2", banner ? "grid-cols-2" : "grid-cols-4 sm:grid-cols-2")}>
+          {defaults.map((option) => {
+            const selected = !selection && currentUrl === option.url;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                aria-label={`Use ${option.label} default ${banner ? "banner" : "logo"}`}
+                aria-pressed={selected}
+                onClick={() => onDefaultSelect(option.url)}
+                className={cn(
+                  "relative overflow-hidden border-2 bg-slate-100 transition hover:border-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+                  banner ? "aspect-[4/1] rounded-lg" : "aspect-square rounded-full",
+                  selected ? "border-blue-600" : "border-transparent"
+                )}
+              >
+                <Image
+                  src={option.url}
+                  alt={`${option.label} default`}
+                  fill
+                  className={banner ? "object-cover" : "object-contain"}
+                  unoptimized
+                />
+                {selected && (
+                  <span className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-blue-600 text-white shadow">
+                    <Check className="size-3" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -198,6 +245,20 @@ export function ProfileEditor({
     setLogoError(null);
     setBannerError(null);
     setSaveError(null);
+  }
+
+  function selectDefaultLogo(url: string) {
+    if (logo) URL.revokeObjectURL(logo.previewUrl);
+    setLogo(null);
+    setLogoError(null);
+    setField("clubImage", url);
+  }
+
+  function selectDefaultBanner(url: string) {
+    if (banner) URL.revokeObjectURL(banner.previewUrl);
+    setBanner(null);
+    setBannerError(null);
+    setField("clubBannerImage", url);
   }
 
   async function save() {
@@ -302,6 +363,8 @@ export function ProfileEditor({
                 currentUrl={values.clubImage}
                 selection={logo}
                 error={logoError}
+                defaults={DEFAULT_CLUB_PROFILE_IMAGES}
+                onDefaultSelect={selectDefaultLogo}
                 onSelect={(file) => pickImage(file, 5 * 1024 * 1024, logo, setLogo, setLogoError)}
               />
               <UploadField
@@ -310,6 +373,8 @@ export function ProfileEditor({
                 selection={banner}
                 error={bannerError}
                 banner
+                defaults={DEFAULT_CLUB_BANNERS}
+                onDefaultSelect={selectDefaultBanner}
                 onSelect={(file) => pickImage(file, 10 * 1024 * 1024, banner, setBanner, setBannerError)}
               />
             </div>
@@ -345,6 +410,22 @@ export function ProfileEditor({
                   </div>
                 </div>
               </div>
+              {values.usesApplications && (
+                <div className="max-w-sm space-y-2">
+                  <Label htmlFor="application-deadline">Application deadline</Label>
+                  <Input
+                    id="application-deadline"
+                    type="datetime-local"
+                    value={values.applicationDeadline ?? ""}
+                    onChange={(event) =>
+                      setField("applicationDeadline", event.target.value || null)
+                    }
+                  />
+                  <p className="text-xs text-slate-500">
+                    Stored in UTC. Clubs closing within seven days are marked Closing soon.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
         </div>

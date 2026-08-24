@@ -101,11 +101,17 @@ export default function ApplicationForm({
         answerPayload
       );
 
+      if (result?.applicationsClosed) {
+        toast.error("Applications are closed. Your application was not submitted.");
+        router.replace(`/club/${club.id}/overview`);
+        return;
+      }
+
       if (result?.errorMessage) {
         toast.error(result.errorMessage);
       } else {
         toast.success("Application submitted! We'll be in touch.");
-        router.push(`/club/${club.id}`);
+        router.push(`/club/${club.id}/overview`);
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -138,8 +144,8 @@ export default function ApplicationForm({
                   src={club.club_image}
                   alt={club.name ?? "Club logo"}
                   fill
+                  sizes="36px"
                   className="object-cover"
-                  unoptimized
                 />
               ) : (
                 club.name?.trim().slice(0, 2).toUpperCase() || "CL"

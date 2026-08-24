@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
@@ -84,6 +84,7 @@ function revalidateEventPages(clubId: string) {
   revalidatePath(`/club/${clubId}/events`);
   revalidatePath(`/club/${clubId}/overview`);
   revalidatePath(`/club/${clubId}`);
+  updateTag("club-page");
 }
 
 export async function createEventAction(

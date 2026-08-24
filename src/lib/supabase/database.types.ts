@@ -384,6 +384,7 @@ export type Database = {
       clubs: {
         Row: {
           access_code: string | null
+          application_deadline: string | null
           attandence_required: number
           club_banner_image: string | null
           created_at: string
@@ -400,6 +401,7 @@ export type Database = {
         }
         Insert: {
           access_code?: string | null
+          application_deadline?: string | null
           attandence_required?: number
           club_banner_image?: string | null
           created_at?: string
@@ -416,6 +418,7 @@ export type Database = {
         }
         Update: {
           access_code?: string | null
+          application_deadline?: string | null
           attandence_required?: number
           club_banner_image?: string | null
           created_at?: string
@@ -684,6 +687,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_application_submission_if_open: {
+        Args: { p_application_id: string; p_club_id: string }
+        Returns: string
+      }
       change_club_member_role: {
         Args: { p_club_id: string; p_role: string; p_user_id: string }
         Returns: undefined
@@ -712,6 +719,22 @@ export type Database = {
         Args: { p_club_id: string }
         Returns: Json
       }
+      get_club_viewer_state: {
+        Args: { p_club_id: string }
+        Returns: Json
+      }
+      get_club_members: {
+        Args: { p_club_id: string }
+        Returns: {
+          academic_year: string | null
+          first_name: string | null
+          is_owner: boolean
+          last_name: string | null
+          major: string | null
+          title: string
+          user_id: string
+        }[]
+      }
       get_application_review: {
         Args: { p_club_id: string; p_submission_id: string }
         Returns: Json
@@ -736,6 +759,7 @@ export type Database = {
       }
       update_club_profile: {
         Args: {
+          p_application_deadline: string | null
           p_club_banner_image: string | null
           p_club_id: string
           p_club_image: string | null

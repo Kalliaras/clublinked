@@ -12,7 +12,7 @@ export async function submitApplicationAction(
   applicationId: string,
   clubId: string,
   answers: SubmitAnswerInput[]
-): Promise<{ errorMessage?: string } | null> {
+): Promise<{ errorMessage?: string; applicationsClosed?: boolean } | null> {
   try {
     const supabase = await createClient();
 
@@ -23,51 +23,34 @@ export async function submitApplicationAction(
       return { errorMessage: "You must be logged in to apply." };
     }
 
-    const studentId = user.id;
+    // The RPC locks the application row and checks its active flag and the
+    // club deadline in the same transaction that creates the submission.
+    const { data: submissionId, error: submissionError } = await supabase.rpc(
+      "create_application_submission_if_open",
+      { p_application_id: applicationId, p_club_id: clubId }
+    );
 
-    // Verify application belongs to this club and is still active
-    const { data: app } = await supabase
-      .from("club_applications")
-      .select("id, is_active")
-      .eq("id", applicationId)
-      .eq("club_id", clubId)
-      .maybeSingle();
-
-    if (!app) return { errorMessage: "Application not found." };
-    if (!app.is_active) return { errorMessage: "This application is no longer accepting submissions." };
-
-    // Guard: already submitted?
-    const { data: existing } = await supabase
-      .from("application_submissions")
-      .select("id")
-      .eq("application_id", applicationId)
-      .eq("student_id", studentId)
-      .maybeSingle();
-
-    if (existing) {
-      return { errorMessage: "You have already submitted an application for this club." };
-    }
-
-    // Insert submission
-    const { data: submission, error: submissionError } = await supabase
-      .from("application_submissions")
-      .insert({
-        application_id: applicationId,
-        student_id: studentId,
-        status: "pending",
-      })
-      .select("id")
-      .single();
-
-    if (submissionError || !submission) {
-      throw submissionError ?? new Error("Failed to create submission");
+    if (submissionError) {
+      if (submissionError.message.includes("APPLICATION_CLOSED")) {
+        return {
+          errorMessage: "Applications for this club are closed.",
+          applicationsClosed: true,
+        };
+      }
+      if (submissionError.message.includes("ALREADY_SUBMITTED")) {
+        return { errorMessage: "You have already submitted an application for this club." };
+      }
+      if (submissionError.message.includes("APPLICATION_NOT_FOUND")) {
+        return { errorMessage: "Application not found." };
+      }
+      throw submissionError;
     }
 
     // Insert answers (skip blanks for optional questions)
     const answerRows = answers
       .filter((a) => a.answerText.trim() !== "")
       .map((a) => ({
-        submission_id: submission.id,
+        submission_id: submissionId,
         question_id: a.questionId,
         answer_text: a.answerText,
       }));
@@ -81,7 +64,7 @@ export async function submitApplicationAction(
         await supabase
           .from("application_submissions")
           .delete()
-          .eq("id", submission.id);
+          .eq("id", submissionId);
         return { errorMessage: "Failed to save your answers. Please try again." };
       }
     }

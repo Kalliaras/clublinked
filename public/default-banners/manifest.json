@@ -1,0 +1,28 @@
+{
+  "bucket": "club-default-images",
+  "folder": "banners",
+  "width": 1280,
+  "height": 320,
+  "banners": [
+    {
+      "id": "blue",
+      "file": "default-blue.png",
+      "label": "Blue"
+    },
+    {
+      "id": "violet",
+      "file": "default-violet.png",
+      "label": "Violet"
+    },
+    {
+      "id": "teal",
+      "file": "default-teal.png",
+      "label": "Teal"
+    },
+    {
+      "id": "coral",
+      "file": "default-coral.png",
+      "label": "Coral"
+    }
+  ]
+}

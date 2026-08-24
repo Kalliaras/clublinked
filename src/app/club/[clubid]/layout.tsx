@@ -1,6 +1,7 @@
 import * as React from "react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getClubPublicData } from "@/lib/data/club-page";
 import ClubDashboardClient from "./_components/club-dashboard-client";
 
 export default async function ClubDashboardLayout({
@@ -11,80 +12,43 @@ export default async function ClubDashboardLayout({
   params: Promise<{ clubid: string }>;
 }) {
   const { clubid } = await params;
+  const publicDataPromise = getClubPublicData(clubid);
   const supabase = await createClient();
 
-  const { data: club, error: clubError } = await supabase
-    .from("clubs")
-    .select("id, name, created_at, university_id, member_count, description, club_image, club_banner_image, uses_applications")
-    .eq("id", clubid)
-    .single();
+  const [publicData, viewerResult] = await Promise.all([
+    publicDataPromise,
+    supabase.rpc("get_club_viewer_state", { p_club_id: clubid }),
+  ]);
 
-  if (clubError || !club) {
+  if (!publicData) {
     notFound();
   }
 
-  let universityName: string | null = null;
-  if (club.university_id) {
-    const { data: university } = await supabase
-      .from("universities")
-      .select("name")
-      .eq("id", club.university_id)
-      .single();
-    universityName = university?.name ?? null;
-  }
-
-  const clubImageUrl = club.club_image ?? null;
-
-  // Check if user is a member of this club
-  let isMember = false;
-  const { data: { user } } = await supabase.auth.getUser();
-  let isOwner = false;
-  let isAdmin = false;
-  let hasApplied = false;
-  if (user) {
-    const { data: membership } = await supabase
-      .from("user_roles")
-      .select("is_owner, is_admin")
-      .eq("user_id", user.id)
-      .eq("club_id", clubid)
-      .maybeSingle();
-    isMember = !!membership;
-    isOwner = membership?.is_owner ?? false;
-    isAdmin = membership?.is_admin ?? false;
-
-    // Check if user has already submitted an application
-    const { data: activeApp } = await supabase
-      .from("club_applications")
-      .select("id")
-      .eq("club_id", clubid)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if (activeApp) {
-      const { data: submission } = await supabase
-        .from("application_submissions")
-        .select("id")
-        .eq("application_id", activeApp.id)
-        .eq("student_id", user.id)
-        .maybeSingle();
-      hasApplied = !!submission;
-    }
-  }
+  const club = publicData.club;
+  const viewer =
+    viewerResult.data && typeof viewerResult.data === "object" && !Array.isArray(viewerResult.data)
+      ? (viewerResult.data as Record<string, unknown>)
+      : {};
+  const applicationsClosed = Boolean(
+    club.application_deadline &&
+      new Date(club.application_deadline).getTime() <= Date.now()
+  );
 
   return (
     <ClubDashboardClient
       clubId={club.id}
       clubName={club.name}
-      clubImageUrl={clubImageUrl}
+      clubImageUrl={club.club_image ?? null}
       clubBannerImageUrl={club.club_banner_image ?? null}
       members={club.member_count ?? 0}
       createdAt={club.created_at}
-      universityName={universityName}
-      isMember={isMember}
-      isOwner={isOwner}
-      isAdmin={isAdmin}
+      universityName={club.university_name}
+      isMember={viewer.is_member === true}
+      isOwner={viewer.is_owner === true}
+      isAdmin={viewer.is_admin === true}
       usesApplications={club.uses_applications ?? false}
-      hasApplied={hasApplied}
+      applicationsClosed={applicationsClosed}
+      hasApplied={viewer.has_applied === true}
     >
       {children}
     </ClubDashboardClient>

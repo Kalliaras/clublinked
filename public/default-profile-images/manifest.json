@@ -1,0 +1,12 @@
+{
+  "bucket": "club-default-profile-images",
+  "folder": "profiles",
+  "width": 512,
+  "height": 512,
+  "profiles": [
+    { "id": "blue", "file": "default-blue.png", "label": "Blue", "color": "#155EEF" },
+    { "id": "violet", "file": "default-violet.png", "label": "Violet", "color": "#6D28D9" },
+    { "id": "teal", "file": "default-teal.png", "label": "Teal", "color": "#0F9F86" },
+    { "id": "coral", "file": "default-coral.png", "label": "Coral", "color": "#F65F55" }
+  ]
+}

@@ -1,7 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 
+import { isDefaultClubBrandingUrl } from "@/lib/club-branding-defaults";
 import { createClient } from "@/lib/supabase/server";
 
 export type ClubProfileInput = {
@@ -9,6 +10,7 @@ export type ClubProfileInput = {
   description: string;
   type: string;
   usesApplications: boolean;
+  applicationDeadline: string | null;
   clubImage: string | null;
   clubBannerImage: string | null;
 };
@@ -16,11 +18,13 @@ export type ClubProfileInput = {
 function isAllowedStorageUrl(
   value: string | null,
   clubId: string,
-  bucket: "club-profile-images" | "club-banner-images"
+  kind: "profile" | "banner"
 ) {
   if (!value) return true;
+  if (isDefaultClubBrandingUrl(value, kind)) return true;
 
   try {
+    const bucket = kind === "profile" ? "club-profile-images" : "club-banner-images";
     const storageOrigin = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).origin;
     const url = new URL(value);
     return (
@@ -63,6 +67,10 @@ export async function updateClubProfileAction(clubId: string, input: ClubProfile
   const name = input.name.trim();
   const description = input.description.trim();
   const type = input.type.trim();
+  const applicationDeadline =
+    input.usesApplications && input.applicationDeadline
+      ? new Date(`${input.applicationDeadline}:00Z`)
+      : null;
 
   if (name.length < 2 || name.length > 120) {
     return { errorMessage: "Club name must be between 2 and 120 characters." };
@@ -73,13 +81,19 @@ export async function updateClubProfileAction(clubId: string, input: ClubProfile
   if (type.length > 80) {
     return { errorMessage: "Category must be 80 characters or fewer." };
   }
+  if (applicationDeadline && Number.isNaN(applicationDeadline.getTime())) {
+    return { errorMessage: "Choose a valid application deadline." };
+  }
   if (
     (input.clubImage !== currentClub.club_image &&
-      !isAllowedStorageUrl(input.clubImage, clubId, "club-profile-images")) ||
+      !isAllowedStorageUrl(input.clubImage, clubId, "profile")) ||
     (input.clubBannerImage !== currentClub.club_banner_image &&
-      !isAllowedStorageUrl(input.clubBannerImage, clubId, "club-banner-images"))
+      !isAllowedStorageUrl(input.clubBannerImage, clubId, "banner"))
   ) {
-    return { errorMessage: "An image URL did not come from this club's secure storage folder." };
+    return {
+      errorMessage:
+        "Choose a ClubLinked default or upload an image to this club's storage folder.",
+    };
   }
 
   const { error: profileError } = await supabase.rpc("update_club_profile", {
@@ -88,6 +102,7 @@ export async function updateClubProfileAction(clubId: string, input: ClubProfile
     p_description: description || null,
     p_type: type || null,
     p_uses_applications: input.usesApplications,
+    p_application_deadline: applicationDeadline?.toISOString() ?? null,
     p_club_image: input.clubImage,
     p_club_banner_image: input.clubBannerImage,
   });
@@ -95,5 +110,7 @@ export async function updateClubProfileAction(clubId: string, input: ClubProfile
 
   revalidatePath(`/club/${clubId}`, "layout");
   revalidatePath(`/club/${clubId}/admin/profile`);
+  updateTag("club-discovery");
+  updateTag("club-page");
   return { success: true };
 }

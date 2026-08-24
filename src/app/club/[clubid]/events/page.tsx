@@ -1,138 +1,15 @@
-"use client";
+import { createClient } from "@/lib/supabase/server";
+import { EventsCalendar, type ClubEvent } from "./_components/events-calendar";
 
-import * as React from "react";
-import { useParams } from "next/navigation";
-import { CalendarDays } from "lucide-react";
+export default async function ClubEventsPage({ params }: { params: Promise<{ clubid: string }> }) {
+  const { clubid } = await params;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("club_events")
+    .select("id, club_id, title, description, time, event_type, status, location")
+    .eq("club_id", clubid)
+    .order("time", { ascending: true });
 
-import { createClient } from "@/lib/supabase/client";
-import { Calendar } from "@/components/ui/calendar";
-import { Card } from "@/components/ui/card";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-
-type ClubEvent = {
-  id: string;
-  club_id: string;
-  title: string | null;
-  description: string | null;
-  time: string;
-  event_type: string | null;
-  status: string;
-  location: string | null;
-};
-
-function getLocalDateKey(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-export default function ClubEventsPage() {
-  const params = useParams();
-  const clubId = params?.clubid as string | undefined;
-  const [events, setEvents] = React.useState<ClubEvent[]>([]);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    if (!clubId) {
-      return;
-    }
-
-    const supabase = createClient();
-
-    const loadEvents = async () => {
-      setLoading(true);
-
-      const { data } = await supabase
-        .from("club_events")
-        .select("id, club_id, title, description, time, event_type, status, location")
-        .eq("club_id", clubId)
-        .order("time", { ascending: true });
-
-      setEvents((data ?? []) as ClubEvent[]);
-      setLoading(false);
-    };
-
-    loadEvents();
-  }, [clubId]);
-
-  const eventsByDay = React.useMemo(() => {
-    const map = new Map<string, ClubEvent[]>();
-
-    events.forEach((event) => {
-      const date = new Date(event.time);
-      if (Number.isNaN(date.getTime())) {
-        return;
-      }
-      const dateKey = getLocalDateKey(date);
-      const existing = map.get(dateKey) ?? [];
-      existing.push(event);
-      map.set(dateKey, existing);
-    });
-
-    return map;
-  }, [events]);
-
-  if (!clubId) {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <CalendarDays />
-          </EmptyMedia>
-          <EmptyTitle>Missing club</EmptyTitle>
-          <EmptyDescription>Club ID is required to load events.</EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    );
-  }
-
-  if (loading) {
-    return (
-      <Card className="border-slate-200 p-6">
-        <p className="text-sm text-slate-700">Loading events…</p>
-      </Card>
-    );
-  }
-
-  if (events.length === 0) {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <CalendarDays />
-          </EmptyMedia>
-          <EmptyTitle>No events yet</EmptyTitle>
-          <EmptyDescription>
-            There are no events available for your account yet.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <Card className="border-slate-200 p-6">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Club Events</h2>
-              <p className="text-sm text-slate-600">
-                Tap an event badge to view its details, location, and visibility.
-              </p>
-            </div>
-          </div>
-
-          <Calendar defaultMonth={new Date()} eventsByDay={eventsByDay} />
-        </div>
-      </Card>
-    </div>
-  );
+  if (error) console.error("Failed to fetch events:", error.message);
+  return <EventsCalendar events={(data ?? []) as ClubEvent[]} />;
 }

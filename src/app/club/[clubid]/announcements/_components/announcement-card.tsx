@@ -43,6 +43,7 @@ export function AnnouncementCard({
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   });
 
   const isLong = safeBody.length > BODY_TRUNCATE_LENGTH;
