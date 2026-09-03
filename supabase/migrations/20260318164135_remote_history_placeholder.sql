@@ -1,1 +1,0 @@
--- Placeholder for a migration already applied to the linked remote database.
