@@ -18,7 +18,7 @@ export default async function AdminEventsPage({
 
   if (!user) redirect("/user/login");
 
-  const [roleResult, clubResult, adminRolesResult, profileResult, eventsResult] =
+  const [roleResult, clubResult, adminRolesResult, eventsResult] =
     await Promise.all([
       supabase
         .from("user_roles")
@@ -32,11 +32,6 @@ export default async function AdminEventsPage({
         .select("club_id, clubs(name)")
         .eq("user_id", user.id)
         .or("is_owner.eq.true,is_admin.eq.true"),
-      supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
-        .maybeSingle(),
       supabase
         .from("club_events")
         .select("id, club_id, title, description, time, event_type, status, location")
@@ -73,8 +68,6 @@ export default async function AdminEventsPage({
       clubId={clubid}
       clubName={club.name ?? "Unnamed club"}
       adminClubs={adminClubs}
-      userFirstName={profileResult.data?.first_name ?? null}
-      userLastName={profileResult.data?.last_name ?? null}
     >
       <EventsAdminClient clubId={clubid} clubName={club.name ?? "Unnamed club"} events={events} />
     </EventsAdminShell>

@@ -9,13 +9,12 @@ export default async function Sidebar({ user }: { user: User }) {
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("first_name, last_name, email, universities(name)")
+    .select("first_name, last_name")
     .eq("id", user.id)
     .single();
 
   const firstName = profile?.first_name ?? "";
   const lastName = profile?.last_name ?? "";
-  const subtitle = profile?.universities?.name ?? profile?.email ?? user.email ?? "";
 
   return (
     <aside className="w-64 shrink-0 border-r border-border bg-white flex flex-col h-screen sticky top-0">
@@ -34,7 +33,7 @@ export default async function Sidebar({ user }: { user: User }) {
       <SidebarProfileChip
         firstName={firstName}
         lastName={lastName}
-        subtitle={subtitle}
+        profileHref={`/user/profile/${user.id}`}
       />
     </aside>
   );

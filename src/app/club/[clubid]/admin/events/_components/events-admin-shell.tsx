@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Menu,
   Settings,
-  UserRound,
   Users,
 } from "lucide-react";
 
@@ -17,20 +16,10 @@ import { cn } from "@/lib/utils/tailwind";
 
 type AdminClub = { club_id: string; name: string };
 
-function initials(firstName: string | null, lastName: string | null) {
-  return (
-    [firstName, lastName]
-      .filter(Boolean)
-      .map((part) => part![0].toUpperCase())
-      .join("") || "?"
-  );
-}
-
 function AdminNavigation({ clubId, mobile = false }: { clubId: string; mobile?: boolean }) {
   const adminBase = `/club/${clubId}/admin`;
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
-    { href: `${adminBase}/profile`, label: "Profile", icon: UserRound },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
@@ -66,19 +55,13 @@ export function EventsAdminShell({
   clubId,
   clubName,
   adminClubs,
-  userFirstName,
-  userLastName,
   children,
 }: {
   clubId: string;
   clubName: string;
   adminClubs: AdminClub[];
-  userFirstName: string | null;
-  userLastName: string | null;
   children: ReactNode;
 }) {
-  const userName = [userFirstName, userLastName].filter(Boolean).join(" ") || "Admin";
-
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] flex-col border-r border-slate-200 bg-white md:flex">
@@ -119,17 +102,6 @@ export function EventsAdminShell({
 
         <AdminNavigation clubId={clubId} />
 
-        <div className="border-t border-slate-200 px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-              {initials(userFirstName, userLastName)}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-slate-900">{userName}</p>
-              <p className="text-xs text-slate-500">Admin</p>
-            </div>
-          </div>
-        </div>
       </aside>
 
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">

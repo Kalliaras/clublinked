@@ -328,9 +328,9 @@ export function ProfileEditor({
     <>
       <div className="flex flex-col gap-4 border-b border-slate-200 bg-white px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-7 lg:px-9">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">Club profile</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">Settings</p>
           <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
-            Edit your club <span className="text-blue-600">profile.</span>
+            Manage your club <span className="text-blue-600">settings.</span>
           </h1>
         </div>
         <div className="flex gap-2">

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { ProfileAdminShell } from "./_components/profile-admin-shell";
+import { SettingsAdminShell } from "./_components/settings-admin-shell";
 import { ProfileEditor } from "./_components/profile-editor";
 
 type ClubProfileRow = {
@@ -15,17 +15,16 @@ type ClubProfileRow = {
   club_banner_image: string | null;
 };
 
-export default async function AdminProfilePage({ params }: { params: Promise<{ clubid: string }> }) {
+export default async function AdminSettingsPage({ params }: { params: Promise<{ clubid: string }> }) {
   const { clubid } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/user/login");
 
-  const [roleResult, clubResult, adminRolesResult, profileResult] = await Promise.all([
+  const [roleResult, clubResult, adminRolesResult] = await Promise.all([
     supabase.from("user_roles").select("is_owner, is_admin").eq("club_id", clubid).eq("user_id", user.id).maybeSingle(),
     supabase.from("clubs").select("id, name, description, type, uses_applications, application_deadline, club_image, club_banner_image").eq("id", clubid).single(),
     supabase.from("user_roles").select("club_id, clubs(name)").eq("user_id", user.id).or("is_owner.eq.true,is_admin.eq.true"),
-    supabase.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle(),
   ]);
 
   const role = roleResult.data;
@@ -41,12 +40,10 @@ export default async function AdminProfilePage({ params }: { params: Promise<{ c
     }));
 
   return (
-    <ProfileAdminShell
+    <SettingsAdminShell
       clubId={clubid}
       clubName={club.name ?? "Unnamed club"}
       adminClubs={adminClubs}
-      userFirstName={profileResult.data?.first_name ?? null}
-      userLastName={profileResult.data?.last_name ?? null}
     >
       <ProfileEditor
         clubId={clubid}
@@ -60,6 +57,6 @@ export default async function AdminProfilePage({ params }: { params: Promise<{ c
           clubBannerImage: club.club_banner_image,
         }}
       />
-    </ProfileAdminShell>
+    </SettingsAdminShell>
   );
 }

@@ -465,12 +465,17 @@ export type Database = {
           created_at: string
           email: string | null
           first_name: string | null
+          github_url: string | null
           id: string
+          instagram_url: string | null
           last_name: string | null
+          linkedin_url: string | null
           major: string | null
+          portfolio_url: string | null
           resume: string | null
           university_id: string | null
           updated_at: string
+          x_url: string | null
         }
         Insert: {
           academic_year?: string | null
@@ -478,12 +483,17 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name?: string | null
+          github_url?: string | null
           id?: string
+          instagram_url?: string | null
           last_name?: string | null
+          linkedin_url?: string | null
           major?: string | null
+          portfolio_url?: string | null
           resume?: string | null
           university_id?: string | null
           updated_at?: string
+          x_url?: string | null
         }
         Update: {
           academic_year?: string | null
@@ -491,12 +501,17 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name?: string | null
+          github_url?: string | null
           id?: string
+          instagram_url?: string | null
           last_name?: string | null
+          linkedin_url?: string | null
           major?: string | null
+          portfolio_url?: string | null
           resume?: string | null
           university_id?: string | null
           updated_at?: string
+          x_url?: string | null
         }
         Relationships: [
           {
@@ -687,6 +702,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      update_own_user_profile: {
+        Args: {
+          p_academic_year: string
+          p_bio: string
+          p_first_name: string
+          p_github_url: string
+          p_instagram_url: string
+          p_interest_ids: string[]
+          p_last_name: string
+          p_linkedin_url: string
+          p_major: string
+          p_portfolio_url: string
+          p_resume: string | null
+          p_skill_ids: string[]
+          p_x_url: string
+        }
+        Returns: undefined
+      }
       create_application_submission_if_open: {
         Args: { p_application_id: string; p_club_id: string }
         Returns: string

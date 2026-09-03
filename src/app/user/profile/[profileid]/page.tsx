@@ -5,14 +5,18 @@ import ProfileClient from './_components/profile-client';
 
 type Profile = {
   id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  university_id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  university_id: string | null;
   major: string | null;
   academic_year: string | null;
   bio: string | null;
-  created_at: string;
+  linkedin_url: string | null;
+  github_url: string | null;
+  instagram_url: string | null;
+  x_url: string | null;
+  portfolio_url: string | null;
 };
 
 type Role = { title: string; club_name: string };
@@ -32,6 +36,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ profil
     .single();
 
   if (profileError || !profile) notFound();
+
+  const { data: university } = profile.university_id
+    ? await supabase
+        .from('universities')
+        .select('name')
+        .eq('id', profile.university_id)
+        .maybeSingle()
+    : { data: null };
 
   const { data: userRoles } = await supabase
     .from('user_roles')
@@ -67,5 +79,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ profil
   const skillsMap = new Map(skillTags?.map(t => [t.id, t.name]) || []);
   const skills: Skill[] = userSkills?.map(s => ({ name: skillsMap.get(s.skill_id) || 'Unknown Skill' })) || [];
 
-  return <ProfileClient profile={profile as Profile} roles={roles} interests={interests} skills={skills} isOwner={isOwner} />;
+  return (
+    <ProfileClient
+      profile={profile as Profile}
+      roles={roles}
+      interests={interests}
+      skills={skills}
+      isOwner={isOwner}
+      universityName={university?.name ?? null}
+    />
+  );
 }

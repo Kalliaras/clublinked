@@ -8,7 +8,6 @@ import {
   Settings,
   ChevronDown,
   ArrowRight,
-  UserRound,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -47,8 +46,6 @@ export type AdminDashboardProps = {
     interview_round: number;
     student: { first_name: string | null; last_name: string | null };
   }[];
-  userFirstName: string | null;
-  userLastName: string | null;
 };
 
 function formatRelativeTime(dateStr: string): string {
@@ -95,8 +92,6 @@ export default function AdminDashboardClient({
   pipelineCounts,
   recentSubmissions,
   upcomingInterviews,
-  userFirstName,
-  userLastName,
 }: AdminDashboardProps) {
   const basePath = `/club/${clubId}`;
   const adminBase = `${basePath}/admin`;
@@ -149,7 +144,6 @@ export default function AdminDashboardClient({
 
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
-    { href: `${adminBase}/profile`, label: "Profile", icon: UserRound },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
@@ -235,20 +229,6 @@ export default function AdminDashboardClient({
           })}
         </nav>
 
-        {/* Profile chip */}
-        <div className="px-4 py-4 border-t border-slate-200">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 shrink-0 select-none">
-              {getInitials(userFirstName, userLastName) || "?"}
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900 truncate">
-                {getFullName(userFirstName, userLastName)}
-              </p>
-              <p className="text-xs text-slate-500">Admin</p>
-            </div>
-          </div>
-        </div>
       </aside>
 
       {/* Main content */}

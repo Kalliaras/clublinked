@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -10,13 +11,13 @@ import { Button } from "@/components/ui/button";
 interface SidebarProfileChipProps {
   firstName: string;
   lastName: string;
-  subtitle: string;
+  profileHref: string;
 }
 
 export default function SidebarProfileChip({
   firstName,
   lastName,
-  subtitle,
+  profileHref,
 }: SidebarProfileChipProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -38,20 +39,23 @@ export default function SidebarProfileChip({
 
   return (
     <div className="mx-3 mb-4 p-3 rounded-2xl border border-border flex items-center gap-3">
-      {/* Initials avatar */}
-      <div className="h-9 w-9 shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
-        <span className="text-sm font-semibold text-primary">{initials}</span>
-      </div>
+      <Link
+        href={profileHref}
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        aria-label="View your profile"
+      >
+        {/* Initials avatar */}
+        <div className="h-9 w-9 shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
+          <span className="text-sm font-semibold text-primary">{initials}</span>
+        </div>
 
-      {/* Name + subtitle */}
-      <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-bold text-foreground leading-tight truncate">
-          {fullName}
-        </p>
-        <p className="text-[12px] text-muted-foreground leading-tight truncate">
-          {subtitle}
-        </p>
-      </div>
+        {/* Name */}
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-bold text-foreground leading-tight truncate">
+            {fullName}
+          </p>
+        </div>
+      </Link>
 
       {/* Logout button */}
       <Button

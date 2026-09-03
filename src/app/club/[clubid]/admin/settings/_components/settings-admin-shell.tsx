@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Menu,
   Settings,
-  UserRound,
   Users,
 } from "lucide-react";
 
@@ -17,18 +16,10 @@ import { cn } from "@/lib/utils/tailwind";
 
 type AdminClub = { club_id: string; name: string };
 
-function initials(firstName: string | null, lastName: string | null) {
-  return [firstName, lastName]
-    .filter(Boolean)
-    .map((part) => part![0].toUpperCase())
-    .join("") || "?";
-}
-
 function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boolean }) {
   const adminBase = `/club/${clubId}/admin`;
   const items = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
-    { href: `${adminBase}/profile`, label: "Profile", icon: UserRound },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
@@ -39,7 +30,7 @@ function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boole
   return (
     <nav className={cn("flex gap-0.5", mobile ? "flex-col py-2" : "flex-1 flex-col overflow-y-auto px-3 py-2")}>
       {items.map(({ href, label, icon: Icon }) => {
-        const active = href === `${adminBase}/profile`;
+        const active = href === `${adminBase}/settings`;
         return (
           <Link
             key={href}
@@ -60,23 +51,17 @@ function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boole
   );
 }
 
-export function ProfileAdminShell({
+export function SettingsAdminShell({
   clubId,
   clubName,
   adminClubs,
-  userFirstName,
-  userLastName,
   children,
 }: {
   clubId: string;
   clubName: string;
   adminClubs: AdminClub[];
-  userFirstName: string | null;
-  userLastName: string | null;
   children: ReactNode;
 }) {
-  const userName = [userFirstName, userLastName].filter(Boolean).join(" ") || "Admin";
-
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] flex-col border-r border-slate-200 bg-white md:flex">
@@ -101,7 +86,7 @@ export function ProfileAdminShell({
                 {adminClubs.map((club) => (
                   <Link
                     key={club.club_id}
-                    href={`/club/${club.club_id}/admin/profile`}
+                    href={`/club/${club.club_id}/admin/settings`}
                     className={cn(
                       "block px-3 py-2 text-sm font-medium hover:bg-slate-50",
                       club.club_id === clubId ? "bg-blue-50 text-blue-700" : "text-slate-700"
@@ -117,17 +102,6 @@ export function ProfileAdminShell({
 
         <Navigation clubId={clubId} />
 
-        <div className="border-t border-slate-200 px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-              {initials(userFirstName, userLastName)}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-slate-900">{userName}</p>
-              <p className="text-xs text-slate-500">Admin</p>
-            </div>
-          </div>
-        </div>
       </aside>
 
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">

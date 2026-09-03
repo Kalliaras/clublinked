@@ -14,7 +14,7 @@ export default async function ApplicationsPage({
   const user = await getUser();
   if (!user) redirect("/user/login");
 
-  const [roleResult, clubResult, adminRolesResult, applicationResult, profileResult] =
+  const [roleResult, clubResult, adminRolesResult, applicationResult] =
     await Promise.all([
       supabase
         .from("user_roles")
@@ -37,11 +37,6 @@ export default async function ApplicationsPage({
         .select("id, title")
         .eq("club_id", clubid)
         .eq("is_active", true)
-        .maybeSingle(),
-      supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
         .maybeSingle(),
     ]);
 
@@ -78,8 +73,6 @@ export default async function ApplicationsPage({
       .maybeSingle();
     effectiveApplication = fallbackApp;
   }
-
-  const { data: userProfile } = profileResult;
 
   type Submission = {
     id: string;
@@ -133,8 +126,6 @@ export default async function ApplicationsPage({
       adminClubs={adminClubs}
       applicationTitle={effectiveApplication?.title ?? null}
       submissions={submissions}
-      userFirstName={userProfile?.first_name ?? null}
-      userLastName={userProfile?.last_name ?? null}
     />
   );
 }

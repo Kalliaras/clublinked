@@ -109,7 +109,7 @@ export async function updateClubProfileAction(clubId: string, input: ClubProfile
   if (profileError) return { errorMessage: profileError.message };
 
   revalidatePath(`/club/${clubId}`, "layout");
-  revalidatePath(`/club/${clubId}/admin/profile`);
+  revalidatePath(`/club/${clubId}/admin/settings`);
   updateTag("club-discovery");
   updateTag("club-page");
   return { success: true };

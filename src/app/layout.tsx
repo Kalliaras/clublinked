@@ -3,10 +3,10 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/footer/footer";
 import Sidebar from "@/components/sidebar/sidebar";
+import AuthenticatedShell from "@/components/authenticated-shell";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from "@/components/header/header";
 import { getUser } from "@/lib/supabase/get-user";
-import { headers } from "next/headers";
 
 const openSauceSans = localFont({
   src: [
@@ -28,9 +28,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [user, headerStore] = await Promise.all([getUser(), headers()]);
-  const pathname = headerStore.get("x-pathname") ?? "";
-  const usesAdminShell = /^\/club\/[^/]+\/admin(?:\/|$)/.test(pathname);
+  const user = await getUser();
 
   return (
     <html lang="en">
@@ -39,13 +37,10 @@ export default async function RootLayout({
       >
         <SpeedInsights />
         <Toaster />
-        {user && usesAdminShell ? (
-          children
-        ) : user ? (
-          <div className="flex">
-            <Sidebar user={user} />
-            <main className="flex-1 min-w-0">{children}</main>
-          </div>
+        {user ? (
+          <AuthenticatedShell sidebar={<Sidebar user={user} />}>
+            {children}
+          </AuthenticatedShell>
         ) : (
           <>
             <Header />

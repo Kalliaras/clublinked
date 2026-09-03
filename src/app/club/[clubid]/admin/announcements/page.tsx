@@ -20,7 +20,7 @@ export default async function AdminAnnouncementsPage({
 
   if (!user) redirect("/user/login");
 
-  const [roleResult, clubResult, adminRolesResult, profileResult, announcementsResult] =
+  const [roleResult, clubResult, adminRolesResult, announcementsResult] =
     await Promise.all([
       supabase
         .from("user_roles")
@@ -34,11 +34,6 @@ export default async function AdminAnnouncementsPage({
         .select("club_id, clubs(name)")
         .eq("user_id", user.id)
         .or("is_owner.eq.true,is_admin.eq.true"),
-      supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
-        .maybeSingle(),
       supabase
         .from("club_announcements")
         .select("id, title, body, created_at")
@@ -67,8 +62,6 @@ export default async function AdminAnnouncementsPage({
         clubId={clubid}
         clubName={club.name ?? "Unnamed club"}
         adminClubs={adminClubs}
-        userFirstName={profileResult.data?.first_name ?? null}
-        userLastName={profileResult.data?.last_name ?? null}
       >
         <div className="mx-auto w-full max-w-5xl">
           <Alert variant="destructive" className="border-red-200 bg-white p-5">
@@ -90,8 +83,6 @@ export default async function AdminAnnouncementsPage({
       clubId={clubid}
       clubName={club.name ?? "Unnamed club"}
       adminClubs={adminClubs}
-      userFirstName={profileResult.data?.first_name ?? null}
-      userLastName={profileResult.data?.last_name ?? null}
     >
       <AnnouncementsAdminClient
         clubId={clubid}

@@ -35,7 +35,6 @@ export default async function ClubMembersPage({ params }: ClubMembersPageProps) 
     { data: club },
     { data: recentActivities },
     { data: adminRoles },
-    { data: userProfile },
   ] =
     await Promise.all([
       supabase
@@ -58,11 +57,6 @@ export default async function ClubMembersPage({ params }: ClubMembersPageProps) 
         .select("club_id, clubs(name)")
         .eq("user_id", user.id)
         .or("is_owner.eq.true,is_admin.eq.true"),
-      supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
-        .maybeSingle(),
     ]);
 
   if (!club) redirect(`/club/${clubid}`);
@@ -120,8 +114,6 @@ export default async function ClubMembersPage({ params }: ClubMembersPageProps) 
       clubId={clubid}
       clubName={club.name ?? "Unnamed club"}
       adminClubs={adminClubs}
-      userFirstName={userProfile?.first_name ?? null}
-      userLastName={userProfile?.last_name ?? null}
     >
       <MembersClient
         clubId={clubid}

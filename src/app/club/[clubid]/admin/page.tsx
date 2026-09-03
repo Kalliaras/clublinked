@@ -53,8 +53,6 @@ export default async function AdminPage({
       pipelineCounts={dashboard.pipeline_counts}
       recentSubmissions={dashboard.recent_submissions}
       upcomingInterviews={dashboard.upcoming_interviews}
-      userFirstName={dashboard.user_profile?.first_name ?? null}
-      userLastName={dashboard.user_profile?.last_name ?? null}
     />
   );
 }
