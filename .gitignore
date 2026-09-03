@@ -20,6 +20,9 @@
 # production
 /build
 
+# Supabase migrations
+/supabase/migrations/
+
 # misc
 .DS_Store
 *.pem
