@@ -153,11 +153,18 @@ export function ClubSearchClient({
   interests,
   skills,
   now,
+  emptyCollection,
 }: {
   clubs: DiscoveryClub[];
   interests: DiscoveryTag[];
   skills: DiscoveryTag[];
   now: string;
+  emptyCollection?: {
+    title: string;
+    description: string;
+    actionLabel: string;
+    actionHref: string;
+  };
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -395,11 +402,28 @@ export function ClubSearchClient({
 
       {filteredClubs.length === 0 && (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-14 text-center">
-          <h2 className="font-bold text-slate-950">No clubs match those filters.</h2>
-          <p className="mt-1 text-sm text-slate-500">Try removing a filter or searching for something broader.</p>
-          <button type="button" onClick={clearFilters} className="mt-4 text-sm font-semibold text-primary hover:underline">
-            Clear filters
-          </button>
+          <h2 className="font-bold text-slate-950">
+            {clubs.length === 0 && emptyCollection
+              ? emptyCollection.title
+              : "No clubs match those filters."}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {clubs.length === 0 && emptyCollection
+              ? emptyCollection.description
+              : "Try removing a filter or searching for something broader."}
+          </p>
+          {clubs.length === 0 && emptyCollection ? (
+            <Link
+              href={emptyCollection.actionHref}
+              className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+            >
+              {emptyCollection.actionLabel}
+            </Link>
+          ) : (
+            <button type="button" onClick={clearFilters} className="mt-4 text-sm font-semibold text-primary hover:underline">
+              Clear filters
+            </button>
+          )}
         </div>
       )}
     </>

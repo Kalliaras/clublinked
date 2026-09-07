@@ -4,8 +4,10 @@ import {
   FileText,
   Users,
   CalendarDays,
+  CalendarClock,
   Bell,
   Settings,
+  Wrench,
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
@@ -145,6 +147,8 @@ export default function AdminDashboardClient({
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
+    { href: `${adminBase}/interviews`, label: "Interviews", icon: CalendarClock },
+    { href: `${adminBase}/projects`, label: "Projects", icon: Wrench },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },

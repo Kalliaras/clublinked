@@ -21,15 +21,22 @@ export default function SidebarNav({ userId }: SidebarNavProps) {
   const navItems: NavItem[] = [
     { label: "Home", href: "/club", icon: Home },
     { label: "Discover", href: "/club/search", icon: Search },
-    { label: "My Clubs", href: "/club", icon: Users },
+    { label: "My Clubs", href: `/user/profile/${userId}/clubs`, icon: Users },
     { label: "Profile", href: `/user/profile/${userId}`, icon: User },
   ];
+  const activeHref = navItems
+    .filter(
+      (item) =>
+        pathname === item.href ||
+        (item.href !== "/club" && pathname.startsWith(`${item.href}/`))
+    )
+    .toSorted((left, right) => right.href.length - left.href.length)[0]?.href;
 
   return (
     <nav className="flex flex-col gap-1 px-3 flex-1">
       {navItems.map((item) => {
         const Icon = item.icon;
-        const isActive = pathname === item.href || (item.href !== "/club" && pathname.startsWith(item.href));
+        const isActive = item.href === activeHref;
 
         return (
           <Link

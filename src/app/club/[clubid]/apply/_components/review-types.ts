@@ -36,4 +36,21 @@ export type ApplicationReview = {
     interview_time: string | null;
     interview_round: number;
   } | null;
+  feedback: Array<{
+    id: string;
+    interview_id: string;
+    interview_round: number;
+    analytical_thinking_score: number;
+    communication_score: number;
+    teamwork_score: number;
+    culture_fit_score: number;
+    recommendation: "advance" | "maybe" | "reject";
+    notes: string;
+    submitted_at: string;
+    reviewer: {
+      id: string;
+      first_name: string | null;
+      last_name: string | null;
+    };
+  }>;
 };

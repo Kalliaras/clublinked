@@ -8,13 +8,18 @@ import {
   FileText,
   Users,
   CalendarDays,
+  CalendarClock,
   Bell,
   Settings,
+  Wrench,
   ChevronDown,
   Search,
   Inbox,
+  Pencil,
+  Plus,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tailwind";
 import ApplicantCard, { type Submission } from "./applicant-card";
 
@@ -64,6 +69,8 @@ export default function ApplicationsClient({
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
+    { href: `${adminBase}/interviews`, label: "Interviews", icon: CalendarClock },
+    { href: `${adminBase}/projects`, label: "Projects", icon: Wrench },
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
@@ -175,17 +182,25 @@ export default function ApplicationsClient({
       <main className="flex-1 ml-[260px] min-h-screen">
         <div className="px-8 py-8">
           {/* Page header */}
-          <div className="mb-6">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
-              Applications
-            </p>
-            <h1 className="text-2xl font-extrabold text-slate-900">
-              {applicationTitle ?? "Application Pipeline"}
-            </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              {submissions.length} candidate
-              {submissions.length !== 1 ? "s" : ""} across 4 stages
-            </p>
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
+                Applications
+              </p>
+              <h1 className="text-2xl font-extrabold text-slate-900">
+                {applicationTitle ?? "Application Pipeline"}
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">
+                {submissions.length} candidate
+                {submissions.length !== 1 ? "s" : ""} across 4 stages
+              </p>
+            </div>
+            <Button asChild className="shrink-0 rounded-xl">
+              <Link href={`${adminBase}/applications/builder`}>
+                {applicationTitle ? <Pencil className="size-4" /> : <Plus className="size-4" />}
+                {applicationTitle ? "Edit application" : "Create application"}
+              </Link>
+            </Button>
           </div>
 
           {/* Search toolbar */}

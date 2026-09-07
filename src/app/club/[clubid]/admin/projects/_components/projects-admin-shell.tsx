@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   Bell,
-  CalendarDays,
   CalendarClock,
+  CalendarDays,
   ChevronDown,
   FileText,
   LayoutDashboard,
@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils/tailwind";
 
 type AdminClub = { club_id: string; name: string };
 
-function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boolean }) {
+function AdminNavigation({ clubId, mobile = false }: { clubId: string; mobile?: boolean }) {
   const adminBase = `/club/${clubId}/admin`;
-  const items = [
+  const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
     { href: `${adminBase}/applications`, label: "Applications", icon: FileText },
     { href: `${adminBase}/interviews`, label: "Interviews", icon: CalendarClock },
@@ -33,8 +33,8 @@ function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boole
 
   return (
     <nav className={cn("flex gap-0.5", mobile ? "flex-col py-2" : "flex-1 flex-col overflow-y-auto px-3 py-2")}>
-      {items.map(({ href, label, icon: Icon }) => {
-        const active = href === `${adminBase}/settings`;
+      {navItems.map(({ href, label, icon: Icon }) => {
+        const active = href === `${adminBase}/projects`;
         return (
           <Link
             key={href}
@@ -55,7 +55,7 @@ function Navigation({ clubId, mobile = false }: { clubId: string; mobile?: boole
   );
 }
 
-export function SettingsAdminShell({
+export function ProjectsAdminShell({
   clubId,
   clubName,
   adminClubs,
@@ -90,7 +90,7 @@ export function SettingsAdminShell({
                 {adminClubs.map((club) => (
                   <Link
                     key={club.club_id}
-                    href={`/club/${club.club_id}/admin/settings`}
+                    href={`/club/${club.club_id}/admin/projects`}
                     className={cn(
                       "block px-3 py-2 text-sm font-medium hover:bg-slate-50",
                       club.club_id === clubId ? "bg-blue-50 text-blue-700" : "text-slate-700"
@@ -104,8 +104,7 @@ export function SettingsAdminShell({
           </details>
         </div>
 
-        <Navigation clubId={clubId} />
-
+        <AdminNavigation clubId={clubId} />
       </aside>
 
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">
@@ -119,12 +118,14 @@ export function SettingsAdminShell({
           </summary>
           <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
             <p className="px-3 pb-1 pt-2 text-xs font-medium text-slate-500">Managing {clubName}</p>
-            <Navigation clubId={clubId} mobile />
+            <AdminNavigation clubId={clubId} mobile />
           </div>
         </details>
       </header>
 
-      <main className="min-h-screen min-w-0 md:ml-[260px]">{children}</main>
+      <main className="min-h-screen min-w-0 md:ml-[260px]">
+        <div className="px-4 py-6 sm:px-6 md:px-8 md:py-8">{children}</div>
+      </main>
     </div>
   );
 }

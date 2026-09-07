@@ -6,7 +6,7 @@ export default async function ClubProjectsPage({ params }: { params: Promise<{ c
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("club_projects")
-    .select("id, club_id, title, description, created_at")
+    .select("id, club_id, title, description, visibility, created_at")
     .eq("club_id", clubid)
     .order("created_at", { ascending: false });
 

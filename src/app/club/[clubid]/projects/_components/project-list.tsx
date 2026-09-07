@@ -3,6 +3,7 @@
 import * as React from "react";
 import { FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 
@@ -11,6 +12,7 @@ export type ClubProject = {
   club_id: string;
   title: string | null;
   description: string | null;
+  visibility: "public" | "members_only";
   created_at: string;
 };
 
@@ -52,7 +54,12 @@ export function ProjectList({ projects }: { projects: ClubProject[] }) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <h3 className="text-lg font-semibold leading-tight text-slate-900">{project.title || "Untitled project"}</h3>
-                  <time className="text-sm text-slate-500">{projectDateFormatter.format(new Date(project.created_at))}</time>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Badge variant="secondary" className="bg-slate-100 text-slate-600 hover:bg-slate-100">
+                      {project.visibility === "members_only" ? "Members only" : "Public"}
+                    </Badge>
+                    <time className="text-sm text-slate-500">{projectDateFormatter.format(new Date(project.created_at))}</time>
+                  </div>
                 </div>
                 <p className="mt-3 text-sm leading-6 text-slate-700">{preview}</p>
                 {isLong && (

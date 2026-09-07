@@ -13,7 +13,7 @@ export default async function ApplyPage({
   searchParams,
 }: {
   params: Promise<{ clubid: string }>;
-  searchParams: Promise<{ submission?: string }>;
+  searchParams: Promise<{ submission?: string; tab?: string }>;
 }) {
   const [{ clubid }, query] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
@@ -33,7 +33,10 @@ export default async function ApplyPage({
     }
 
     return (
-      <ApplicationReviewView review={data as unknown as ApplicationReview} />
+      <ApplicationReviewView
+        review={data as unknown as ApplicationReview}
+        activeTab={query.tab === "feedback" ? "feedback" : "application"}
+      />
     );
   }
 
