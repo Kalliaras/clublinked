@@ -94,7 +94,8 @@ export default async function ApplicationsPage({
       .select(
         "id, status, submitted_at, student:profiles!application_submissions_student_id_fkey(first_name, last_name, major, academic_year)"
       )
-      .eq("application_id", effectiveApplication.id);
+      .eq("application_id", effectiveApplication.id)
+      .eq("application_complete", true);
 
     if (subs) {
       submissions = subs.map((s) => {

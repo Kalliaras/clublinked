@@ -13,6 +13,7 @@ type ClubProfileRow = {
   application_deadline: string | null;
   club_image: string | null;
   club_banner_image: string | null;
+  access_code: string | null;
 };
 
 export default async function AdminSettingsPage({ params }: { params: Promise<{ clubid: string }> }) {
@@ -23,7 +24,7 @@ export default async function AdminSettingsPage({ params }: { params: Promise<{ 
 
   const [roleResult, clubResult, adminRolesResult] = await Promise.all([
     supabase.from("user_roles").select("is_owner, is_admin").eq("club_id", clubid).eq("user_id", user.id).maybeSingle(),
-    supabase.from("clubs").select("id, name, description, type, uses_applications, application_deadline, club_image, club_banner_image").eq("id", clubid).single(),
+    supabase.from("clubs").select("id, name, description, type, uses_applications, application_deadline, club_image, club_banner_image, access_code").eq("id", clubid).single(),
     supabase.from("user_roles").select("club_id, clubs(name)").eq("user_id", user.id).or("is_owner.eq.true,is_admin.eq.true"),
   ]);
 
@@ -47,6 +48,7 @@ export default async function AdminSettingsPage({ params }: { params: Promise<{ 
     >
       <ProfileEditor
         clubId={clubid}
+        accessCode={club.access_code}
         initialValues={{
           name: club.name ?? "",
           description: club.description ?? "",

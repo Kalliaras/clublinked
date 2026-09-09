@@ -49,6 +49,7 @@ export default async function ClubDashboardLayout({
       usesApplications={club.uses_applications ?? false}
       applicationsClosed={applicationsClosed}
       hasApplied={viewer.has_applied === true}
+      hasDraft={viewer.has_draft === true}
     >
       {children}
     </ClubDashboardClient>

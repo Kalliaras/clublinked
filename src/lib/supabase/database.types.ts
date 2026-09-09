@@ -183,24 +183,30 @@ export type Database = {
       application_submissions: {
         Row: {
           application_id: string
+          application_complete: boolean
           id: string
           status: string
           student_id: string
           submitted_at: string
+          updated_at: string
         }
         Insert: {
           application_id: string
+          application_complete?: boolean
           id?: string
           status?: string
           student_id: string
           submitted_at?: string
+          updated_at?: string
         }
         Update: {
           application_id?: string
+          application_complete?: boolean
           id?: string
           status?: string
           student_id?: string
           submitted_at?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -819,6 +825,19 @@ export type Database = {
         Returns: Json
       }
       get_club_viewer_state: { Args: { p_club_id: string }; Returns: Json }
+      get_student_application_workspace: {
+        Args: { p_club_id: string }
+        Returns: Json
+      }
+      get_student_calendar: {
+        Args: { p_end: string; p_profile_id: string; p_start: string }
+        Returns: Json
+      }
+      get_student_home: { Args: never; Returns: Json }
+      get_student_applications: {
+        Args: { p_profile_id: string }
+        Returns: Json
+      }
       get_recent_club_member_activities: {
         Args: { p_club_id: string }
         Returns: {
@@ -850,6 +869,19 @@ export type Database = {
           p_teamwork_score: number | null
         }
         Returns: string
+      }
+      join_club_with_access_code: {
+        Args: { p_access_code: string }
+        Returns: string
+      }
+      save_student_application: {
+        Args: {
+          p_answers: Json
+          p_application_id: string
+          p_club_id: string
+          p_submit?: boolean
+        }
+        Returns: Json
       }
       save_club_application_builder: {
         Args: {

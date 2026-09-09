@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Check, ImageIcon, Loader2, RotateCcw, UploadCloud } from "lucide-react";
+import { Check, Eye, EyeOff, ImageIcon, KeyRound, Loader2, RotateCcw, UploadCloud } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -209,9 +209,11 @@ function UploadField({
 
 export function ProfileEditor({
   clubId,
+  accessCode,
   initialValues,
 }: {
   clubId: string;
+  accessCode: string | null;
   initialValues: ProfileValues;
 }) {
   const router = useRouter();
@@ -222,6 +224,7 @@ export function ProfileEditor({
   const [bannerError, setBannerError] = React.useState<string | null>(null);
   const [saveError, setSaveError] = React.useState<string | null>(null);
   const [saving, setSaving] = React.useState(false);
+  const [accessCodeVisible, setAccessCodeVisible] = React.useState(false);
 
   React.useEffect(() => {
     const previewUrl = logo?.previewUrl;
@@ -377,6 +380,46 @@ export function ProfileEditor({
                 onDefaultSelect={selectDefaultBanner}
                 onSelect={(file) => pickImage(file, 10 * 1024 * 1024, banner, setBanner, setBannerError)}
               />
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <KeyRound className="size-4" />
+              </span>
+              <div>
+                <h2 className="text-sm font-bold text-slate-950">Club access code</h2>
+                <p className="text-xs text-slate-500">Share this code with people you want to invite.</p>
+              </div>
+            </div>
+            <div className="p-5">
+              <Label htmlFor="club-access-code">Access code</Label>
+              <div className="relative mt-2 max-w-md">
+                <Input
+                  id="club-access-code"
+                  type={!accessCode || accessCodeVisible ? "text" : "password"}
+                  value={accessCode ?? "No access code set"}
+                  readOnly
+                  autoComplete="off"
+                  spellCheck={false}
+                  aria-describedby="club-access-code-help"
+                  className="h-11 bg-slate-50 pr-12 font-mono tracking-wider"
+                />
+                <button
+                  type="button"
+                  onClick={() => setAccessCodeVisible((visible) => !visible)}
+                  disabled={!accessCode}
+                  aria-label={accessCodeVisible ? "Hide club access code" : "Show club access code"}
+                  aria-pressed={accessCodeVisible}
+                  className="absolute right-1.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {accessCodeVisible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+              <p id="club-access-code-help" className="mt-2 text-xs text-slate-500">
+                The code stays hidden until you select the eye icon.
+              </p>
             </div>
           </section>
 

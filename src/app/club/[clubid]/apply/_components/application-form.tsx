@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { ChevronLeft, FileText, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  submitApplicationAction,
+  saveApplicationAction,
   type SubmitAnswerInput,
 } from "../actions";
 
@@ -47,16 +47,19 @@ export default function ApplicationForm({
   application,
   questions,
   profile,
+  initialAnswers,
 }: {
   club: Club;
   application: Application;
   questions: Question[];
   profile: Profile;
+  initialAnswers: Record<string, string>;
 }) {
   const router = useRouter();
-  const [answers, setAnswers] = React.useState<Record<string, string>>({});
+  const [answers, setAnswers] = React.useState<Record<string, string>>(initialAnswers);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [submitting, setSubmitting] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
 
   const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
 
@@ -82,6 +85,36 @@ export default function ApplicationForm({
     return Object.keys(newErrors).length === 0;
   };
 
+  const answerPayload = (): SubmitAnswerInput[] => questions.map((question) => ({
+    questionId: question.id,
+    answerText: answers[question.id] ?? "",
+  }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const result = await saveApplicationAction(
+        application.id,
+        club.id,
+        answerPayload(),
+        false
+      );
+
+      if (result?.applicationsClosed) {
+        toast.error("Applications are closed. This draft can no longer be updated.");
+      } else if (result?.errorMessage) {
+        toast.error(result.errorMessage);
+      } else {
+        toast.success("Draft saved.");
+        router.refresh();
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validate()) {
       toast.error("Please answer all required questions before submitting.");
@@ -90,15 +123,11 @@ export default function ApplicationForm({
 
     setSubmitting(true);
     try {
-      const answerPayload: SubmitAnswerInput[] = questions.map((q) => ({
-        questionId: q.id,
-        answerText: answers[q.id] ?? "",
-      }));
-
-      const result = await submitApplicationAction(
+      const result = await saveApplicationAction(
         application.id,
         club.id,
-        answerPayload
+        answerPayload(),
+        true
       );
 
       if (result?.applicationsClosed) {
@@ -111,7 +140,7 @@ export default function ApplicationForm({
         toast.error(result.errorMessage);
       } else {
         toast.success("Application submitted! We'll be in touch.");
-        router.push(`/club/${club.id}/overview`);
+        router.push(`/user/profile/${profile.id}/applications`);
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -334,12 +363,20 @@ export default function ApplicationForm({
           </p>
           <div className="flex gap-3">
             <Button variant="outline" className="rounded-xl" asChild>
-              <Link href={`/club/${club.id}`}>Cancel</Link>
+              <Link href={`/user/profile/${profile.id}/applications`}>Cancel</Link>
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={handleSave}
+              disabled={saving || submitting}
+            >
+              {saving ? "Saving..." : "Save draft"}
             </Button>
             <Button
               className="rounded-xl px-8"
               onClick={handleSubmit}
-              disabled={submitting}
+              disabled={submitting || saving}
             >
               {submitting ? "Submitting..." : "Submit application"}
             </Button>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Users, User } from "lucide-react";
+import { CalendarDays, FileText, Home, Search, Users, User } from "lucide-react";
 import { cn } from "@/lib/utils/tailwind";
 
 interface NavItem {
@@ -20,7 +20,9 @@ export default function SidebarNav({ userId }: SidebarNavProps) {
 
   const navItems: NavItem[] = [
     { label: "Home", href: "/club", icon: Home },
-    { label: "Discover", href: "/club/search", icon: Search },
+    { label: "Discover", href: "/discover", icon: Search },
+    { label: "Calendar", href: `/user/profile/${userId}/calendar`, icon: CalendarDays },
+    { label: "Applications", href: `/user/profile/${userId}/applications`, icon: FileText },
     { label: "My Clubs", href: `/user/profile/${userId}/clubs`, icon: Users },
     { label: "Profile", href: `/user/profile/${userId}`, icon: User },
   ];

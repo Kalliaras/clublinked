@@ -47,6 +47,7 @@ export default function ClubDashboardClient({
   usesApplications,
   applicationsClosed,
   hasApplied,
+  hasDraft,
   children,
 }: {
   clubId: string;
@@ -62,6 +63,7 @@ export default function ClubDashboardClient({
   usesApplications: boolean;
   applicationsClosed: boolean;
   hasApplied: boolean;
+  hasDraft: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -170,7 +172,11 @@ export default function ClubDashboardClient({
               </Button>
             ) : (
               usesApplications ? (
-                hasApplied ? (
+                hasDraft ? (
+                  <Button className="rounded-xl px-7 py-3 text-base" asChild>
+                    <Link href={`/club/${clubId}/apply`}>Continue application</Link>
+                  </Button>
+                ) : hasApplied ? (
                   <Button
                     className="rounded-xl px-7 py-3 text-base bg-blue-400 text-white border-0 opacity-75 cursor-not-allowed"
                     disabled

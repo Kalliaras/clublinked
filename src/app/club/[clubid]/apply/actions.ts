@@ -1,79 +1,80 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
 
 export type SubmitAnswerInput = {
   questionId: string;
   answerText: string;
 };
 
-export async function submitApplicationAction(
+const answersSchema = z.array(
+  z.object({
+    questionId: z.string().uuid(),
+    answerText: z.string().max(20_000),
+  })
+).max(100);
+
+export async function saveApplicationAction(
   applicationId: string,
   clubId: string,
-  answers: SubmitAnswerInput[]
+  answers: SubmitAnswerInput[],
+  submit: boolean
 ): Promise<{ errorMessage?: string; applicationsClosed?: boolean } | null> {
+  const parsed = answersSchema.safeParse(answers);
+  const idsAreValid = z.string().uuid().safeParse(applicationId).success
+    && z.string().uuid().safeParse(clubId).success;
+
+  if (!parsed.success || !idsAreValid) {
+    return { errorMessage: "The application answers are invalid." };
+  }
+
   try {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     if (!user) {
       return { errorMessage: "You must be logged in to apply." };
     }
 
-    // The RPC locks the application row and checks its active flag and the
-    // club deadline in the same transaction that creates the submission.
-    const { data: submissionId, error: submissionError } = await supabase.rpc(
-      "create_application_submission_if_open",
-      { p_application_id: applicationId, p_club_id: clubId }
-    );
+    const { error } = await supabase.rpc("save_student_application", {
+      p_application_id: applicationId,
+      p_club_id: clubId,
+      p_answers: parsed.data.map((answer) => ({
+        question_id: answer.questionId,
+        answer_text: answer.answerText,
+      })),
+      p_submit: submit,
+    });
 
-    if (submissionError) {
-      if (submissionError.message.includes("APPLICATION_CLOSED")) {
-        return {
-          errorMessage: "Applications for this club are closed.",
-          applicationsClosed: true,
-        };
-      }
-      if (submissionError.message.includes("ALREADY_SUBMITTED")) {
-        return { errorMessage: "You have already submitted an application for this club." };
-      }
-      if (submissionError.message.includes("APPLICATION_NOT_FOUND")) {
-        return { errorMessage: "Application not found." };
-      }
-      throw submissionError;
-    }
-
-    // Insert answers (skip blanks for optional questions)
-    const answerRows = answers
-      .filter((a) => a.answerText.trim() !== "")
-      .map((a) => ({
-        submission_id: submissionId,
-        question_id: a.questionId,
-        answer_text: a.answerText,
-      }));
-
-    if (answerRows.length > 0) {
-      const { error: answersError } = await supabase
-        .from("application_answers")
-        .insert(answerRows);
-      if (answersError) {
-        // Roll back the submission so the student can retry
-        await supabase
-          .from("application_submissions")
-          .delete()
-          .eq("id", submissionId);
-        return { errorMessage: "Failed to save your answers. Please try again." };
-      }
+    if (error?.message.includes("APPLICATION_CLOSED")) {
+      return {
+        errorMessage: "Applications for this club are closed.",
+        applicationsClosed: true,
+      };
+    } else if (error?.message.includes("ALREADY_SUBMITTED")) {
+      return { errorMessage: "This application has already been submitted." };
+    } else if (error?.message.includes("REQUIRED_ANSWERS_MISSING")) {
+      return { errorMessage: "Please answer every required question before submitting." };
+    } else if (error) {
+      throw error;
     }
 
     revalidatePath(`/club/${clubId}`);
+    revalidatePath(`/club/${clubId}/apply`);
+    revalidatePath(`/user/profile/${user.id}/applications`);
     return null;
   } catch (error) {
-    console.error("Error submitting application:", error);
-    const message = error instanceof Error ? error.message : "An unexpected error occurred.";
-    return { errorMessage: message };
+    console.error("Error saving application:", error);
+    return { errorMessage: "We could not save your application. Please try again." };
   }
+}
+
+export async function submitApplicationAction(
+  applicationId: string,
+  clubId: string,
+  answers: SubmitAnswerInput[]
+) {
+  return saveApplicationAction(applicationId, clubId, answers, true);
 }
