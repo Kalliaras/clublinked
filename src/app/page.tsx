@@ -7,7 +7,7 @@ import LandingClient from "./_components/landing-client";
 export default async function Home() {
   const user = await getUser();
   if (user) {
-    redirect("/club/search");
+    redirect("/home");
   }
 
   const supabase = await createClient();

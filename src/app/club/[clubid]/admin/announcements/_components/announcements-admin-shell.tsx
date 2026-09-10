@@ -10,6 +10,7 @@ import {
   Menu,
   Settings,
   Users,
+  Vote,
   Wrench,
 } from "lucide-react";
 
@@ -28,6 +29,7 @@ function AdminNavigation({ clubId, mobile = false }: { clubId: string; mobile?: 
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
+    { href: `${adminBase}/elections`, label: "Elections", icon: Vote },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
 
@@ -67,7 +69,7 @@ export function AnnouncementsAdminShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#F7F8FA]">
+    <div className="clublinked-page-background min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] flex-col border-r border-slate-200 bg-white md:flex">
         <div className="px-5 pb-4 pt-6">
           <Link href="/" className="flex items-center gap-2 text-base font-bold text-primary">

@@ -125,7 +125,7 @@ export default function StudentCalendar({
   const monthLabel = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "long", year: "numeric" }).format(monthAnchor);
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] px-4 py-8 sm:px-7 lg:px-10">
+    <main className="clublinked-page-background min-h-screen px-4 py-8 sm:px-7 lg:px-10">
       <div className="mx-auto max-w-[1440px]">
         <header className="mb-8">
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Your campus <span className="text-primary">calendar.</span></h1>

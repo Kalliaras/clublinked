@@ -155,7 +155,7 @@ export default function ApplicationForm({
   ).length;
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] flex flex-col">
+    <div className="clublinked-page-background min-h-screen flex flex-col">
 
       {/* ── Top bar ── */}
       <header className="sticky top-0 z-50 bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between">

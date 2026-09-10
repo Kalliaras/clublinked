@@ -20,7 +20,7 @@ export default async function Sidebar({ user }: { user: User }) {
     <aside className="w-64 shrink-0 border-r border-border bg-white flex flex-col h-screen sticky top-0">
       {/* Brand row */}
       <div className="px-4 pt-6 pb-6 flex items-center gap-3">
-        <Link href="/club" className="flex items-center gap-2.5">
+        <Link href="/home" aria-label="Go to ClubLinked home" className="flex items-center gap-2.5">
           <Logo size={36} />
           <span className="text-base font-bold text-primary">ClubLinked</span>
         </Link>

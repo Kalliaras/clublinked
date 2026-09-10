@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Settings,
   Users,
+  Vote,
   Wrench,
 } from "lucide-react";
 
@@ -40,11 +41,12 @@ export function MembersAdminShell({
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
+    { href: `${adminBase}/elections`, label: "Elections", icon: Vote },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
 
   return (
-    <div className="flex min-h-screen bg-[#F7F8FA]">
+    <div className="clublinked-page-background flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-40 flex w-[260px] shrink-0 flex-col border-r border-slate-200 bg-white">
         <div className="px-5 pb-4 pt-6">
           <Link href="/" className="flex items-center gap-2 text-base font-bold text-primary">

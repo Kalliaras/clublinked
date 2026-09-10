@@ -65,7 +65,7 @@ export async function createAnnouncementAction(
 
   revalidatePath(`/club/${clubId}/admin/announcements`);
   revalidatePath(`/club/${clubId}/announcements`);
-  revalidatePath("/club");
+  revalidatePath("/home");
 
   return { success: true };
 }

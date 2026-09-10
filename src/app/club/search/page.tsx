@@ -8,7 +8,7 @@ export default async function ClubDiscoveryPage() {
   const { clubs, interests, skills } = await getClubDiscoveryData();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="clublinked-page-background min-h-screen">
       <main className="mx-auto w-full max-w-[1280px] px-5 pb-20 pt-10 sm:px-8 lg:px-12 xl:px-16">
         <header className="mb-9">
           <h1 className="text-4xl font-extrabold leading-tight tracking-[-0.03em] text-slate-950 sm:text-[42px]">

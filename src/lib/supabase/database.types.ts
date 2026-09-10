@@ -768,6 +768,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_election_candidate: {
+        Args: { p_position_id: string; p_statement: string; p_user_id: string }
+        Returns: string
+      }
+      add_election_position: {
+        Args: { p_current_holder_id: string; p_description: string; p_election_id: string }
+        Returns: string
+      }
+      cast_election_vote: {
+        Args: { p_candidate_id: string; p_position_id: string }
+        Returns: undefined
+      }
       change_club_member_role: {
         Args: { p_club_id: string; p_role: string; p_user_id: string }
         Returns: undefined
@@ -820,8 +832,41 @@ export type Database = {
           user_id: string
         }[]
       }
+      create_club_election: {
+        Args: {
+          p_closes_at: string
+          p_club_id: string
+          p_description: string
+          p_title: string
+        }
+        Returns: string
+      }
+      create_club_with_owner: {
+        Args: {
+          p_application_deadline: string | null
+          p_attendance_required: number
+          p_club_banner_image: string
+          p_club_image: string
+          p_description: string
+          p_history: string
+          p_interest_ids: string[]
+          p_name: string
+          p_skill_ids: string[]
+          p_type: string
+          p_uses_applications: boolean
+        }
+        Returns: string
+      }
+      finalize_club_election: {
+        Args: { p_election_id: string }
+        Returns: undefined
+      }
       get_club_application_builder: {
         Args: { p_club_id: string }
+        Returns: Json
+      }
+      get_club_election: {
+        Args: { p_club_id: string; p_history?: boolean; p_manage?: boolean }
         Returns: Json
       }
       get_club_viewer_state: { Args: { p_club_id: string }; Returns: Json }
@@ -837,6 +882,18 @@ export type Database = {
       get_student_applications: {
         Args: { p_profile_id: string }
         Returns: Json
+      }
+      open_club_election: {
+        Args: { p_election_id: string }
+        Returns: undefined
+      }
+      remove_election_candidate: {
+        Args: { p_candidate_id: string }
+        Returns: undefined
+      }
+      set_new_club_branding: {
+        Args: { p_club_banner_image: string; p_club_id: string; p_club_image: string }
+        Returns: undefined
       }
       get_recent_club_member_activities: {
         Args: { p_club_id: string }

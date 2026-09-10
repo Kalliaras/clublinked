@@ -1,3 +1,3 @@
 export default function DiscoverLoading() {
-  return <div className="min-h-screen animate-pulse bg-slate-950" />;
+  return <div className="clublinked-page-background min-h-screen animate-pulse" />;
 }

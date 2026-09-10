@@ -55,7 +55,7 @@ export default function ApplicationsTracker({ applications, activeFilter }: {
   const featured = drafts[0] ?? waiting[0] ?? accepted[0];
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] px-5 py-10 sm:px-8 lg:px-14">
+    <main className="clublinked-page-background min-h-screen px-5 py-10 sm:px-8 lg:px-14">
       <div className="mx-auto max-w-6xl">
         <header className="mb-8">
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-950">Your <span className="text-primary">applications.</span></h1>

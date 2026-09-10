@@ -18,7 +18,7 @@ export default function SignupPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (user) router.push("/");
+      if (user) router.replace("/home");
     };
     checkUser();
   }, [router]);
@@ -47,12 +47,12 @@ export default function SignupPage() {
         return;
       }
       toast.success("Signed Up: Please check your email to verify your account.");
-      router.push("/");
+      router.replace("/home");
     });
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="clublinked-page-background min-h-screen">
       <main className="mx-auto flex min-h-screen max-w-6xl items-center px-6 py-12">
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2">
           {/* LEFT TEXT — hidden on mobile, visible on desktop */}

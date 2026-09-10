@@ -17,20 +17,18 @@ export async function joinWithAccessCodeAction(accessCode: string): Promise<
   if (!user) return { errorMessage: "You must be signed in to join a club." };
 
   const { data, error } = await supabase.rpc("join_club_with_access_code", {
-    p_access_code: parsed.data,
+    p_access_code: parsed.data.toUpperCase(),
   });
 
   if (error?.message.includes("CODE_NOT_FOUND")) {
     return { errorMessage: "Invite code not found." };
-  } else if (error?.code === "23505") {
-    return { errorMessage: "You are already a member of this club." };
   } else if (error || !data) {
     console.error("[discover/join]", error?.message);
     return { errorMessage: "Could not join the club. Please try again." };
   }
 
   revalidatePath("/", "layout");
-  revalidatePath("/club");
+  revalidatePath("/home");
   revalidatePath(`/user/profile/${user.id}/clubs`);
   return { clubId: data };
 }

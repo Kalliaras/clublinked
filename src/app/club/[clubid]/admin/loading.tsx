@@ -1,6 +1,6 @@
 export default function AdminDashboardLoading() {
   return (
-    <div className="flex min-h-screen bg-[#F7F8FA]">
+    <div className="clublinked-page-background flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 w-[260px] border-r border-slate-200 bg-white p-5">
         <div className="h-8 w-32 animate-pulse rounded-lg bg-slate-100" />
         <div className="mt-7 h-16 animate-pulse rounded-xl bg-slate-100" />

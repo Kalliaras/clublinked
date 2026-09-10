@@ -80,7 +80,7 @@ function normalizeInput(input: EventInput): NormalizedEventResult {
 }
 
 function revalidateEventPages(clubId: string) {
-  revalidatePath("/club");
+  revalidatePath("/home");
   revalidatePath(`/club/${clubId}/admin/events`);
   revalidatePath(`/club/${clubId}/events`);
   revalidatePath(`/club/${clubId}/overview`);

@@ -92,7 +92,7 @@ export default function SetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="clublinked-page-background min-h-screen">
       <div className="mx-auto max-w-2xl px-6 py-12">
         {/* Header */}
         <div className="mb-10 text-center">

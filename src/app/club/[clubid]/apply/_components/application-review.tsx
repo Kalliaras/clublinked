@@ -125,7 +125,7 @@ export default function ApplicationReviewView({
   const isAccepted = review.submission.status === "accepted";
 
   return (
-    <div className={`min-h-screen bg-[#F7F8FA] ${isAccepted ? "pb-10" : "pb-28"}`}>
+    <div className={`clublinked-page-background min-h-screen ${isAccepted ? "pb-10" : "pb-28"}`}>
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-8">
         <div className="flex min-w-0 items-center gap-4">
           <Link

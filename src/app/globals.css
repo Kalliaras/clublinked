@@ -155,3 +155,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+.clublinked-page-background {
+  position: relative;
+  isolation: isolate;
+  background-color: #f7f9ff;
+  background-image:
+    radial-gradient(circle at 82% 12%, rgba(14, 74, 230, 0.14), transparent 30%),
+    radial-gradient(circle at 10% 48%, rgba(61, 199, 214, 0.11), transparent 28%),
+    linear-gradient(180deg, #eef4ff 0%, #f7f9ff 58%, #ffffff 100%);
+}
+
+.clublinked-page-background::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 620px;
+  pointer-events: none;
+  content: "";
+  opacity: 0.3;
+  background-image: radial-gradient(#0e4ae6 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  mask-image: linear-gradient(to bottom, black, transparent);
+}

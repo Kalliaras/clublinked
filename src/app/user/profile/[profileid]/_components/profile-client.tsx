@@ -81,7 +81,7 @@ export default function ProfileClient({
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="clublinked-page-background min-h-screen">
       <main className="mx-auto w-full max-w-6xl px-6 py-8">
         <Card className="p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">

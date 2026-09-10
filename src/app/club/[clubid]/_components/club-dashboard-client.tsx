@@ -96,11 +96,11 @@ export default function ClubDashboardClient({
       );
     }
 
-    return normalizedPath === normalizedTarget;
+    return normalizedPath === normalizedTarget || normalizedPath.startsWith(`${normalizedTarget}/`);
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="clublinked-page-background min-h-screen">
 
       {/* ── Banner ── */}
       <div className="h-[280px] bg-primary relative overflow-hidden">
@@ -244,6 +244,7 @@ export default function ClubDashboardClient({
           <TabLink href={`${basePath}/members`} label="Members" active={isActive(`${basePath}/members`)} />
           <TabLink href={`${basePath}/announcements`} label="Announcements" active={isActive(`${basePath}/announcements`)} />
           <TabLink href={`${basePath}/events`} label="Events" active={isActive(`${basePath}/events`)} />
+          {isMember && <TabLink href={`${basePath}/elections`} label="Elections" active={isActive(`${basePath}/elections`)} />}
         </div>
 
         {/* ── Tab content ── */}

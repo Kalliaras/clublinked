@@ -66,7 +66,7 @@ export default function LandingClient({ stats }: { stats: Stat[] }) {
       {/* ── University Search Section ─────────────────────────────────── */}
       <section
         id="find-university"
-        className="border-y bg-gray-50 py-16 md:py-20"
+        className="clublinked-page-background border-y py-16 md:py-20"
       >
         <div className="mx-auto max-w-6xl px-6">
           <BlurFade delay={0.1} inView>
@@ -149,7 +149,7 @@ export default function LandingClient({ stats }: { stats: Stat[] }) {
       </section>
 
       {/* ── Features Section ──────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 bg-gray-50/50">
+      <section className="clublinked-page-background py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-6">
           <BlurFade delay={0.1} inView>
             <div className="mb-12 text-center">

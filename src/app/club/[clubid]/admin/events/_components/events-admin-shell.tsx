@@ -10,6 +10,7 @@ import {
   Menu,
   Settings,
   Users,
+  Vote,
   Wrench,
 } from "lucide-react";
 
@@ -18,7 +19,7 @@ import { cn } from "@/lib/utils/tailwind";
 
 type AdminClub = { club_id: string; name: string };
 
-function AdminNavigation({ clubId, mobile = false }: { clubId: string; mobile?: boolean }) {
+function AdminNavigation({ clubId, activePage = "events", mobile = false }: { clubId: string; activePage?: string; mobile?: boolean }) {
   const adminBase = `/club/${clubId}/admin`;
   const navItems = [
     { href: adminBase, label: "Dashboard", icon: LayoutDashboard },
@@ -28,13 +29,14 @@ function AdminNavigation({ clubId, mobile = false }: { clubId: string; mobile?: 
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
+    { href: `${adminBase}/elections`, label: "Elections", icon: Vote },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
 
   return (
     <nav className={cn("flex gap-0.5", mobile ? "flex-col py-2" : "flex-1 flex-col overflow-y-auto px-3 py-2")}>
       {navItems.map(({ href, label, icon: Icon }) => {
-        const active = href === `${adminBase}/events`;
+        const active = href === `${adminBase}/${activePage}`;
         return (
           <Link
             key={href}
@@ -59,15 +61,17 @@ export function EventsAdminShell({
   clubId,
   clubName,
   adminClubs,
+  activePage = "events",
   children,
 }: {
   clubId: string;
   clubName: string;
   adminClubs: AdminClub[];
+  activePage?: string;
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#F7F8FA]">
+    <div className="clublinked-page-background min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] flex-col border-r border-slate-200 bg-white md:flex">
         <div className="px-5 pb-4 pt-6">
           <Link href="/" className="flex items-center gap-2 text-base font-bold text-primary">
@@ -90,7 +94,7 @@ export function EventsAdminShell({
                 {adminClubs.map((club) => (
                   <Link
                     key={club.club_id}
-                    href={`/club/${club.club_id}/admin/events`}
+                    href={`/club/${club.club_id}/admin/${activePage}`}
                     className={cn(
                       "block px-3 py-2 text-sm font-medium hover:bg-slate-50",
                       club.club_id === clubId ? "bg-blue-50 text-blue-700" : "text-slate-700"
@@ -104,7 +108,7 @@ export function EventsAdminShell({
           </details>
         </div>
 
-        <AdminNavigation clubId={clubId} />
+        <AdminNavigation clubId={clubId} activePage={activePage} />
 
       </aside>
 
@@ -119,7 +123,7 @@ export function EventsAdminShell({
           </summary>
           <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
             <p className="px-3 pb-1 pt-2 text-xs font-medium text-slate-500">Managing {clubName}</p>
-            <AdminNavigation clubId={clubId} mobile />
+            <AdminNavigation clubId={clubId} activePage={activePage} mobile />
           </div>
         </details>
       </header>

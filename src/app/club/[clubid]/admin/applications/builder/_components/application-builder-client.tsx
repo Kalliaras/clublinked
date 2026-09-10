@@ -157,7 +157,7 @@ export default function ApplicationBuilderClient({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="clublinked-page-background min-h-screen">
       <header className="sticky top-0 z-40 flex min-h-[72px] items-center gap-4 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:px-6">
         <Button variant="outline" size="icon" className="shrink-0 rounded-xl" asChild>
           <Link href={`/club/${clubId}/admin/applications`} aria-label="Back to applications">

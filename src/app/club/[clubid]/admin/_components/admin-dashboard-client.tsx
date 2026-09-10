@@ -8,6 +8,7 @@ import {
   Bell,
   Settings,
   Wrench,
+  Vote,
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
@@ -152,11 +153,12 @@ export default function AdminDashboardClient({
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
+    { href: `${adminBase}/elections`, label: "Elections", icon: Vote },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
 
   return (
-    <div className="flex min-h-screen bg-[#F7F8FA]">
+    <div className="clublinked-page-background flex min-h-screen">
       {/* Sidebar */}
       <aside className="w-[260px] shrink-0 bg-white border-r border-slate-200 flex flex-col fixed top-0 left-0 h-screen z-40">
         {/* Brand */}

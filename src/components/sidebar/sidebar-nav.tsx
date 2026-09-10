@@ -19,7 +19,7 @@ export default function SidebarNav({ userId }: SidebarNavProps) {
   const pathname = usePathname();
 
   const navItems: NavItem[] = [
-    { label: "Home", href: "/club", icon: Home },
+    { label: "Home", href: "/home", icon: Home },
     { label: "Discover", href: "/discover", icon: Search },
     { label: "Calendar", href: `/user/profile/${userId}/calendar`, icon: CalendarDays },
     { label: "Applications", href: `/user/profile/${userId}/applications`, icon: FileText },
@@ -30,7 +30,7 @@ export default function SidebarNav({ userId }: SidebarNavProps) {
     .filter(
       (item) =>
         pathname === item.href ||
-        (item.href !== "/club" && pathname.startsWith(`${item.href}/`))
+        pathname.startsWith(`${item.href}/`)
     )
     .toSorted((left, right) => right.href.length - left.href.length)[0]?.href;
 

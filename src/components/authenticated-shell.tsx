@@ -19,7 +19,7 @@ export default function AuthenticatedShell({
   }
 
   return (
-    <div className="flex">
+    <div className="clublinked-page-background flex min-h-screen">
       {sidebar}
       <main className="flex-1 min-w-0">{children}</main>
     </div>

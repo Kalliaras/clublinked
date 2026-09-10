@@ -224,7 +224,7 @@ export function UserProfileEditor({
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA]">
+    <div className="clublinked-page-background min-h-screen">
       <div className="flex flex-col gap-4 border-b border-slate-200 bg-white px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-7 lg:px-9">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">Profile settings</p>

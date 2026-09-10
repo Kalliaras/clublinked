@@ -1,6 +1,6 @@
 export default function ClubDiscoveryLoading() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="clublinked-page-background min-h-screen">
       <main className="mx-auto w-full max-w-[1280px] animate-pulse px-5 pb-20 pt-10 sm:px-8 lg:px-12 xl:px-16">
         <div className="h-12 w-72 rounded-xl bg-slate-100" />
         <div className="mt-3 h-6 w-full max-w-xl rounded-lg bg-slate-100" />

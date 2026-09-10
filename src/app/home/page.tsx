@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/supabase/get-user";
 import { createClient } from "@/lib/supabase/server";
-import StudentHome, { type StudentHomeData } from "./_components/student-home";
+import StudentHome, { type StudentHomeData } from "../club/_components/student-home";
 
 export default async function StudentHomePage() {
   const supabase = await createClient();

@@ -18,7 +18,7 @@ export default function LoginPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (user) router.push("/");
+      if (user) router.replace("/home");
     };
     checkUser();
   }, [router]);
@@ -33,12 +33,12 @@ export default function LoginPage() {
         return;
       }
       toast.success("Logged in successfully!");
-      router.push("/");
+      router.replace("/home");
     });
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="clublinked-page-background min-h-screen">
       <main className="mx-auto flex min-h-screen max-w-6xl items-center px-6 py-12">
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2">
           {/* LEFT TEXT — hidden on mobile, visible on desktop */}

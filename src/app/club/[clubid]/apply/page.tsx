@@ -48,7 +48,7 @@ export default async function ApplyPage({ params, searchParams }: {
   const workspace = workspaceResult.data as unknown as Workspace;
   if (workspace.submission?.application_complete) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FA] px-6">
+      <div className="clublinked-page-background flex min-h-screen items-center justify-center px-6">
         <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-10 text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50"><CheckCircle2 className="h-8 w-8 text-emerald-500" /></div>
           <h1 className="mb-3 text-2xl font-extrabold text-slate-950">Application submitted</h1>

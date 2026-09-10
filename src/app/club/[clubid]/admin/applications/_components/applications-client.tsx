@@ -17,6 +17,7 @@ import {
   Inbox,
   Pencil,
   Plus,
+  Vote,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,7 @@ export default function ApplicationsClient({
     { href: `${adminBase}/members`, label: "Members", icon: Users },
     { href: `${adminBase}/events`, label: "Events", icon: CalendarDays },
     { href: `${adminBase}/announcements`, label: "Announcements", icon: Bell },
+    { href: `${adminBase}/elections`, label: "Elections", icon: Vote },
     { href: `${adminBase}/settings`, label: "Settings", icon: Settings },
   ];
 
@@ -88,7 +90,7 @@ export default function ApplicationsClient({
     : submissions;
 
   return (
-    <div className="flex min-h-screen bg-[#F7F8FA]">
+    <div className="clublinked-page-background flex min-h-screen">
       {/* Overlay — closes any open card menu when clicking outside */}
       {openMenuId !== null && (
         <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />

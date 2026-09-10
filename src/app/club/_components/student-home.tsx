@@ -153,8 +153,8 @@ export default function StudentHome({ data, now }: { data: StudentHomeData; now:
   ].filter((action): action is NonNullable<typeof action> => Boolean(action));
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] px-5 py-10 sm:px-8 lg:px-12 xl:px-16">
-      <div className="mx-auto max-w-7xl">
+    <main className="clublinked-page-background min-h-screen overflow-hidden px-5 py-10 sm:px-8 lg:px-12 xl:px-16">
+      <div className="relative mx-auto max-w-7xl">
         <header className="mb-12">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{data.profile?.university_name ?? "Your campus"}</p>
           <h1 className="mt-2 text-4xl font-extrabold tracking-[-0.035em] text-slate-950">Welcome back, <span className="text-primary">{firstName}</span></h1>

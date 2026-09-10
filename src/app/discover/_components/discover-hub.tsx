@@ -28,10 +28,7 @@ export default function DiscoverHub({ universityName }: { universityName: string
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F9FF]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_12%,rgba(14,74,230,0.14),transparent_30%),radial-gradient(circle_at_10%_48%,rgba(61,199,214,0.11),transparent_28%),linear-gradient(180deg,#EEF4FF_0%,#F7F9FF_58%,#FFFFFF_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[620px] opacity-30 [background-image:radial-gradient(#0E4AE6_1px,transparent_1px)] [background-size:28px_28px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
-
+    <main className="clublinked-page-background min-h-screen overflow-hidden">
       <section className="relative px-5 pb-16 pt-16 sm:px-8 lg:px-14 lg:pb-20 lg:pt-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.25fr_0.75fr]">
           <div>
@@ -50,8 +47,11 @@ export default function DiscoverHub({ universityName }: { universityName: string
             <form onSubmit={join} className="mt-5 space-y-3">
               <Input
                 value={code}
-                onChange={(event) => setCode(event.target.value)}
+                onChange={(event) => setCode(event.target.value.toUpperCase())}
                 placeholder="Enter invite code"
+                autoCapitalize="characters"
+                autoComplete="off"
+                spellCheck={false}
                 disabled={isPending}
                 aria-invalid={Boolean(error)}
                 className="h-12 border-slate-200 bg-white text-slate-950 shadow-none placeholder:text-slate-400 focus-visible:border-primary/50 focus-visible:ring-primary/15"

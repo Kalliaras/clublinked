@@ -1,6 +1,6 @@
 export default function ApplicationBuilderLoading() {
   return (
-    <div className="min-h-screen animate-pulse bg-slate-50">
+    <div className="clublinked-page-background min-h-screen animate-pulse">
       <div className="h-[72px] border-b border-slate-200 bg-white" />
       <div className="grid min-h-[calc(100vh-72px)] lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]">
         <div className="space-y-5 border-r border-slate-200 p-8">
