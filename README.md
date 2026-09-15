@@ -22,17 +22,12 @@ Students use ClubLinked to discover clubs, view club profiles, save organization
 
 Club admins use ClubLinked to manage their club profile, applications, applicant pipeline, interviews, members, roles, announcements, events, elections, onboarding, and internal operations.
 
-### University Admins
-
-University admins can eventually use ClubLinked to manage organization approvals, compliance, event visibility, engagement analytics, officer verification, and campus wide student organization oversight.
-
 ## Core Product Structure
 
-ClubLinked has three main product areas:
+ClubLinked has two main product areas:
 
 1. Student App
 2. Club Admin App
-3. University Admin App
 
 ## Student App Features
 
@@ -568,28 +563,6 @@ Workspace features:
 8. Meeting notes
 9. Officer handoff documents
 
-## University Admin App Features
-
-The university admin app is a future institutional layer.
-
-University features can include:
-
-1. Campus organization directory
-2. Club approval workflows
-3. New club registration
-4. Officer verification
-5. Compliance tracking
-6. Event visibility
-7. Engagement analytics
-8. Student involvement data
-9. Risk documentation
-10. Policy documentation
-11. Funding request workflows
-12. Club renewal process
-13. University branding
-14. Single sign on integration
-15. Data exports
-
 ## AI Features
 
 AI should assist users, not replace human decision making.
@@ -698,16 +671,6 @@ Join. Manage. Grow.
 8. Elections
 9. Settings
 
-### University Admin Navigation
-
-1. Overview
-2. Organizations
-3. Approvals
-4. Events
-5. Compliance
-6. Analytics
-7. Settings
-
 ## Suggested Database Objects
 
 Core objects:
@@ -767,24 +730,23 @@ MVP features:
 
 Future features:
 
-1. University admin portal
-2. Single sign on
-3. Advanced analytics
-4. AI recommendations
-5. AI application support
-6. AI admin drafting tools
-7. Elections
-8. Onboarding workflows
-9. Internal workspace
-10. Alumni network
-11. Payments or dues tracking
-12. Funding requests
-13. Compliance management
-14. Mobile app
-15. Calendar sync
-16. Advanced permission system
-17. Data retention settings
-18. Campus wide engagement insights
+1. Single sign on
+2. Advanced analytics
+3. AI recommendations
+4. AI application support
+5. AI admin drafting tools
+6. Elections
+7. Onboarding workflows
+8. Internal workspace
+9. Alumni network
+10. Payments or dues tracking
+11. Funding requests
+12. Compliance management
+13. Mobile app
+14. Calendar sync
+15. Advanced permission system
+16. Data retention settings
+17. Campus wide engagement insights
 
 ## Example Student Journey
 
