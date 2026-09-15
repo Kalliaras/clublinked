@@ -27,9 +27,9 @@ export default async function ClubMembersPage({ params }: { params: Promise<{ cl
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <h2 className="text-lg font-semibold text-foreground">Members ({members.length})</h2>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {members.map((member) => {
           const initials = [member.first_name, member.last_name]
             .filter(Boolean)

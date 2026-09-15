@@ -1,16 +1,25 @@
-import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function TabLoading() {
   return (
-    <div className="space-y-4" aria-busy="true" aria-label="Loading club content">
-      <Card className="border-slate-200 p-6">
-        <div className="h-5 w-40 animate-pulse rounded bg-slate-200" />
-        <div className="mt-5 space-y-3">
-          <div className="h-4 w-full animate-pulse rounded bg-slate-100" />
-          <div className="h-4 w-5/6 animate-pulse rounded bg-slate-100" />
-          <div className="h-4 w-2/3 animate-pulse rounded bg-slate-100" />
+    <div
+      className="grid gap-7 lg:grid-cols-2"
+      aria-busy="true"
+      aria-label="Loading club content"
+    >
+      {[0, 1].map((item) => (
+        <div
+          key={item}
+          className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200/80 sm:p-7"
+        >
+          <Skeleton className="h-6 w-40 bg-slate-200" />
+          <div className="mt-5 space-y-3">
+            <Skeleton className="h-4 w-full bg-slate-100" />
+            <Skeleton className="h-4 w-5/6 bg-slate-100" />
+            <Skeleton className="h-4 w-2/3 bg-slate-100" />
+          </div>
         </div>
-      </Card>
+      ))}
     </div>
   );
 }

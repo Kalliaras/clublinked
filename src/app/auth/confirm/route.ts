@@ -39,20 +39,32 @@ export async function GET(request: NextRequest) {
     if (user) {
       const { data: existingProfile } = await supabase
         .from("profiles")
-        .select("id")
+        .select("id, first_name, last_name, major, academic_year, university_id")
         .eq("id", user.id)
         .maybeSingle();
 
+      const metadata = user.user_metadata;
+      const signupProfile = {
+        first_name: typeof metadata.first_name === "string" ? metadata.first_name.slice(0, 80) || null : null,
+        last_name: typeof metadata.last_name === "string" ? metadata.last_name.slice(0, 80) || null : null,
+        major: typeof metadata.major === "string" ? metadata.major.slice(0, 120) || null : null,
+        academic_year: typeof metadata.academic_year === "string" ? metadata.academic_year.slice(0, 40) || null : null,
+        university_id: typeof metadata.university_id === "string" ? metadata.university_id : null,
+      };
+
       const profileResult = existingProfile
-        ? await supabase.from("profiles").update({ email: user.email ?? null }).eq("id", user.id)
+        ? await supabase.from("profiles").update({
+            email: user.email ?? null,
+            first_name: existingProfile.first_name ?? signupProfile.first_name,
+            last_name: existingProfile.last_name ?? signupProfile.last_name,
+            major: existingProfile.major ?? signupProfile.major,
+            academic_year: existingProfile.academic_year ?? signupProfile.academic_year,
+            university_id: existingProfile.university_id ?? signupProfile.university_id,
+          }).eq("id", user.id)
         : await supabase.from("profiles").insert({
             id: user.id,
             email: user.email ?? null,
-            first_name: typeof user.user_metadata.first_name === "string" ? user.user_metadata.first_name.slice(0, 80) : null,
-            last_name: typeof user.user_metadata.last_name === "string" ? user.user_metadata.last_name.slice(0, 80) : null,
-            major: typeof user.user_metadata.major === "string" ? user.user_metadata.major.slice(0, 120) || null : null,
-            academic_year: typeof user.user_metadata.academic_year === "string" ? user.user_metadata.academic_year.slice(0, 40) || null : null,
-            university_id: typeof user.user_metadata.university_id === "string" ? user.user_metadata.university_id : null,
+            ...signupProfile,
           });
 
       if (profileResult.error) {

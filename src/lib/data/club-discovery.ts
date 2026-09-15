@@ -12,21 +12,27 @@ type ClubQueryRow = Omit<DiscoveryClub, "name" | "interests" | "skills"> & {
   club_skills: Array<{ skill_tags: DiscoveryTag | null }>;
 };
 
-async function loadClubDiscoveryData() {
+async function loadClubDiscoveryData(universityId: string | null) {
   const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { auth: { persistSession: false, autoRefreshToken: false } }
   );
 
-  const [clubsResult, interestsResult, skillsResult] = await Promise.all([
-    supabase
+  let clubsQuery = supabase
       .from("clubs")
       .select(
         "id, name, description, type, club_image, club_banner_image, member_count, created_at, uses_applications, application_deadline, club_interests(interest_tags(id, name)), club_skills(skill_tags(id, name))"
       )
       .order("name")
-      .limit(120),
+      .limit(120);
+
+  if (universityId) {
+    clubsQuery = clubsQuery.eq("university_id", universityId);
+  }
+
+  const [clubsResult, interestsResult, skillsResult] = await Promise.all([
+    clubsQuery,
     supabase.from("interest_tags").select("id, name").order("name"),
     supabase.from("skill_tags").select("id, name").order("name"),
   ]);
@@ -66,6 +72,6 @@ async function loadClubDiscoveryData() {
 
 export const getClubDiscoveryData = unstable_cache(
   loadClubDiscoveryData,
-  ["club-discovery-v1", process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""],
+  ["club-discovery-v2", process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""],
   { revalidate: 60, tags: ["club-discovery"] }
 );

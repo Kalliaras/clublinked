@@ -38,10 +38,10 @@ export default function SidebarProfileChip({
   };
 
   return (
-    <div className="mx-3 mb-4 p-3 rounded-2xl border border-border flex items-center gap-3">
+    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/70 p-2 shadow-xs group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-transparent group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-1 group-data-[collapsible=icon]:shadow-none">
       <Link
         href={profileHref}
-        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group-data-[collapsible=icon]:flex-none"
         aria-label="View your profile"
       >
         {/* Initials avatar */}
@@ -50,7 +50,7 @@ export default function SidebarProfileChip({
         </div>
 
         {/* Name */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
           <p className="text-[13px] font-bold text-foreground leading-tight truncate">
             {fullName}
           </p>
@@ -62,6 +62,7 @@ export default function SidebarProfileChip({
         variant="ghost"
         size="icon"
         className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+        data-collapsed-hidden
         onClick={handleLogout}
         disabled={loading}
         aria-label="Log out"

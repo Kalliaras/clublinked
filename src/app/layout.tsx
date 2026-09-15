@@ -7,6 +7,7 @@ import AuthenticatedShell from "@/components/authenticated-shell";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Header from "@/components/header/header";
 import { getUser } from "@/lib/supabase/get-user";
+import { cookies } from "next/headers";
 
 const openSauceSans = localFont({
   src: [
@@ -28,7 +29,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getUser();
+  const [user, cookieStore] = await Promise.all([getUser(), cookies()]);
+  const sidebarStartsOpen =
+    cookieStore.get("sidebar_state")?.value !== "false";
 
   return (
     <html lang="en">
@@ -38,7 +41,10 @@ export default async function RootLayout({
         <SpeedInsights />
         <Toaster />
         {user ? (
-          <AuthenticatedShell sidebar={<Sidebar user={user} />}>
+          <AuthenticatedShell
+            sidebar={<Sidebar user={user} />}
+            defaultSidebarOpen={sidebarStartsOpen}
+          >
             {children}
           </AuthenticatedShell>
         ) : (

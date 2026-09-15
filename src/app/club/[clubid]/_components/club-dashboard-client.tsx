@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Users, CalendarDays } from "lucide-react";
+import { Users, CalendarDays, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { joinClubAction } from "../actions";
 
@@ -21,14 +21,11 @@ function TabLink({
   return (
     <Link
       href={href}
-      className={`relative px-4 py-4 text-sm font-semibold transition-colors ${
-        active ? "text-primary" : "text-slate-500 hover:text-slate-800"
+      className={`shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors ${
+        active ? "bg-white text-primary shadow-sm" : "text-slate-500 hover:bg-white/70 hover:text-slate-800"
       }`}
     >
       {label}
-      {active && (
-        <span className="absolute bottom-0 left-0 h-[2px] w-full rounded bg-primary" />
-      )}
     </Link>
   );
 }
@@ -100,10 +97,10 @@ export default function ClubDashboardClient({
   };
 
   return (
-    <div className="clublinked-page-background min-h-screen">
+    <div className="clublinked-page-background club-page-layout min-h-screen">
 
       {/* ── Banner ── */}
-      <div className="h-[280px] bg-primary relative overflow-hidden">
+      <div className="relative h-[220px] overflow-hidden bg-primary sm:h-[280px]">
         {clubBannerImageUrl && (
           <Image
             src={clubBannerImageUrl}
@@ -132,13 +129,13 @@ export default function ClubDashboardClient({
       </div>
 
       {/* ── Hero ── */}
-      <div className="mx-auto w-full max-w-5xl px-16 pt-8 relative">
+      <div className="relative mx-auto w-full max-w-5xl px-5 pt-8 sm:px-8 lg:px-12">
 
         {/* Logo + name + actions — all in one bottom-aligned row */}
-        <div className="flex items-end gap-7 mb-6">
+        <div className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:gap-7">
 
           {/* Logo */}
-          <div className="relative h-[120px] w-[120px] rounded-full border-4 border-white bg-primary shadow-lg shrink-0 overflow-hidden">
+          <div className="relative size-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-primary shadow-lg sm:size-[120px]">
             <Image
               src={clubImageUrl ?? "/App_icon_no_name.png"}
               alt={clubName ?? "Club logo"}
@@ -151,53 +148,56 @@ export default function ClubDashboardClient({
           </div>
 
           {/* Name — flex-1, sits next to logo */}
-          <div className="flex-1 min-w-0 pb-3">
+          <div className="min-w-0 flex-1 sm:pb-3">
             {universityName && (
               <p className="text-sm font-medium text-slate-500 mb-2">{universityName}</p>
             )}
-            <h1 className="text-[40px] font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+            <h1 className="text-3xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-[40px]">
               {clubName}
             </h1>
           </div>
 
           {/* Action buttons — right side, bottom-aligned */}
-          <div className="flex items-center gap-3 pb-3 shrink-0">
+          <div className="flex shrink-0 items-center gap-3 sm:pb-3">
             {isAdmin ? (
-              <Button className="rounded-xl px-7 py-3 text-base bg-blue-600 hover:bg-blue-700 text-white border-0" asChild>
+              <Button size="lg" className="h-11 min-w-28 rounded-xl border-0 bg-blue-600 text-white hover:bg-blue-700" asChild>
                 <Link href={`/club/${clubId}/admin`}>Edit</Link>
               </Button>
             ) : isMember ? (
-              <Button variant="secondary" className="rounded-xl px-7 py-3 text-base" disabled>
+              <Button size="lg" variant="secondary" className="h-11 min-w-28 rounded-xl" disabled>
                 Joined
               </Button>
             ) : (
               usesApplications ? (
                 hasDraft ? (
-                  <Button className="rounded-xl px-7 py-3 text-base" asChild>
+                  <Button size="lg" className="h-11 min-w-28 rounded-xl" asChild>
                     <Link href={`/club/${clubId}/apply`}>Continue application</Link>
                   </Button>
                 ) : hasApplied ? (
                   <Button
-                    className="rounded-xl px-7 py-3 text-base bg-blue-400 text-white border-0 opacity-75 cursor-not-allowed"
+                    size="lg"
+                    className="h-11 min-w-28 cursor-not-allowed rounded-xl border-0 bg-blue-400 text-white opacity-75"
                     disabled
                   >
                     Submitted
                   </Button>
                 ) : applicationsClosed ? (
                   <Button
-                    className="cursor-not-allowed rounded-xl border-0 bg-slate-400 px-7 py-3 text-base text-white"
+                    size="lg"
+                    className="h-11 min-w-28 cursor-not-allowed rounded-xl border-0 bg-slate-400 text-white"
                     disabled
                   >
                     Applications closed
                   </Button>
                 ) : (
-                  <Button className="rounded-xl px-7 py-3 text-base" asChild>
+                  <Button size="lg" className="h-11 min-w-28 rounded-xl" asChild>
                     <Link href={`/club/${clubId}/apply`}>Apply</Link>
                   </Button>
                 )
               ) : (
                 <Button
-                  className="rounded-xl px-7 py-3 text-base"
+                  size="lg"
+                  className="h-11 min-w-28 rounded-xl"
                   disabled={joining}
                   onClick={async () => {
                     setJoining(true);
@@ -209,7 +209,7 @@ export default function ClubDashboardClient({
                     finally { setJoining(false); }
                   }}
                 >
-                  {joining ? "Joining..." : "Join"}
+                  {joining ? <><Loader2 className="size-4 animate-spin" />Joining…</> : "Join"}
                 </Button>
               )
             )}
@@ -217,7 +217,7 @@ export default function ClubDashboardClient({
         </div>
 
         {/* ── Meta strip ── */}
-        <div className="flex flex-wrap gap-8 py-5 border-t border-b border-slate-200 mb-6 text-[14px] text-slate-700 font-medium">
+        <div className="mb-7 flex flex-wrap gap-x-8 gap-y-3 rounded-2xl bg-white/70 px-5 py-4 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200/70 backdrop-blur">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-slate-400" />
             {members ?? 0} members
@@ -237,7 +237,7 @@ export default function ClubDashboardClient({
         </div>
 
         {/* ── Tabs ── */}
-        <div className="flex gap-1 border-b border-slate-200">
+        <div className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100/80 p-1.5" aria-label="Club sections">
           <TabLink href={basePath} label="Overview" active={isActive(basePath)} />
           <TabLink href={`${basePath}/history`} label="History" active={isActive(`${basePath}/history`)} />
           <TabLink href={`${basePath}/projects`} label="Projects" active={isActive(`${basePath}/projects`)} />
@@ -248,7 +248,7 @@ export default function ClubDashboardClient({
         </div>
 
         {/* ── Tab content ── */}
-        <div className="py-10">{children}</div>
+        <div className="py-10 sm:py-12">{children}</div>
       </div>
 
     </div>

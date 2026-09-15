@@ -50,11 +50,11 @@ export function EventsCalendar({ events }: { events: ClubEvent[] }) {
 
   return (
     <div className="space-y-6">
-      <Card className="border-slate-200 p-6">
-        <div className="flex flex-col gap-4">
+      <Card className="border-slate-200/80 p-6 shadow-sm sm:p-7">
+        <div className="flex flex-col gap-5">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Club Events</h2>
-            <p className="text-sm text-slate-600">Tap an event badge to view its details, location, and visibility.</p>
+            <p className="mt-2 text-sm text-slate-600">Tap an event badge to view its details, location, and visibility.</p>
           </div>
           <Calendar defaultMonth={new Date()} eventsByDay={eventsByDay} />
         </div>

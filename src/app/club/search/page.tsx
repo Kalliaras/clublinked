@@ -1,11 +1,30 @@
 import { connection } from "next/server";
 
 import { getClubDiscoveryData } from "@/lib/data/club-discovery";
+import { getUser } from "@/lib/supabase/get-user";
+import { createClient } from "@/lib/supabase/server";
 import { ClubSearchClient } from "./_components/club-search-client";
 
 export default async function ClubDiscoveryPage() {
   await connection();
-  const { clubs, interests, skills } = await getClubDiscoveryData();
+  const user = await getUser();
+  let universityId: string | null = null;
+
+  if (user) {
+    const supabase = await createClient();
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("university_id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`[club/search] Failed to load the user's university: ${error.message}`);
+    }
+    universityId = profile?.university_id ?? null;
+  }
+
+  const { clubs, interests, skills } = await getClubDiscoveryData(universityId);
 
   return (
     <div className="clublinked-page-background min-h-screen">

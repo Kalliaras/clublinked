@@ -112,11 +112,32 @@ export const SignUpAction = async (
   }
 };
 
-export async function resendVerificationAction(email: string): Promise<{ errorMessage?: string }> {
+export async function resendVerificationAction(email: string): Promise<{
+  errorMessage?: string;
+  verified?: boolean;
+  redirectTo?: "/home" | "/user/login";
+}> {
   const parsed = emailSchema.safeParse(email);
   if (!parsed.success) return { errorMessage: "Enter a valid email address." };
 
   const supabase = await createClient();
+  const [{ data: profile }, { data: authData }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, first_name")
+      .eq("email", parsed.data.toLowerCase())
+      .limit(1)
+      .maybeSingle(),
+    supabase.auth.getUser(),
+  ]);
+
+  if (profile?.first_name != null) {
+    return {
+      verified: true,
+      redirectTo: authData.user?.id === profile.id ? "/home" : "/user/login",
+    };
+  }
+
   const { error } = await supabase.auth.resend({
     type: "signup",
     email: parsed.data,

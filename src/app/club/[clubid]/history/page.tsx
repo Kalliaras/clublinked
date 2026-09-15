@@ -24,9 +24,9 @@ export default async function ClubHistoryPage({ params }: { params: Promise<{ cl
   }
 
   return (
-    <Card className="border-slate-200 p-6">
-      <h2 className="mb-4 text-lg font-semibold text-slate-900">Club History</h2>
-      <div className="prose prose-sm max-w-none text-slate-700">
+    <Card className="border-slate-200/80 p-6 shadow-sm sm:p-7">
+      <h2 className="text-lg font-semibold text-slate-900">Club History</h2>
+      <div className="prose prose-sm mt-5 max-w-none text-slate-700">
         {history.split("\n").map((paragraph, index) => (
           <p key={index} className="mb-4 last:mb-0">{paragraph}</p>
         ))}

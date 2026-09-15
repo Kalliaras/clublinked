@@ -2,11 +2,13 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { resendVerificationAction } from "@/lib/actions/auth";
 
 export function VerificationCard({ email }: { email: string }) {
+  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -16,6 +18,10 @@ export function VerificationCard({ email }: { email: string }) {
     setError(null);
     startTransition(async () => {
       const result = await resendVerificationAction(email);
+      if (result.verified) {
+        router.replace(result.redirectTo ?? "/home");
+        return;
+      }
       if (result.errorMessage) {
         setError(result.errorMessage);
         return;

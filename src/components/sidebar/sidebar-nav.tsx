@@ -4,6 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarDays, FileText, Home, Search, Users, User } from "lucide-react";
 import { cn } from "@/lib/utils/tailwind";
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 
 interface NavItem {
   label: string;
@@ -35,25 +43,39 @@ export default function SidebarNav({ userId }: SidebarNavProps) {
     .toSorted((left, right) => right.href.length - left.href.length)[0]?.href;
 
   return (
-    <nav className="flex flex-col gap-1 px-3 flex-1">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = item.href === activeHref;
+    <SidebarGroup className="px-3 py-5 group-data-[collapsible=icon]:px-2">
+      <SidebarGroupLabel className="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
+        Workspace
+      </SidebarGroupLabel>
+      <SidebarGroupContent>
+        <nav aria-label="Main navigation">
+          <SidebarMenu className="gap-1.5">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = item.href === activeHref;
 
-        return (
-          <Link
-            key={item.label}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors",
-              isActive && "bg-primary/10 text-primary font-semibold"
-            )}
-          >
-            <Icon className="h-4 w-4 shrink-0" />
-            {item.label}
-          </Link>
-        );
-      })}
-    </nav>
+              return (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.label}
+                    className={cn(
+                      "h-10 rounded-xl px-3 font-semibold text-slate-600 hover:bg-blue-50 hover:text-primary",
+                      isActive && "bg-blue-50 text-primary"
+                    )}
+                  >
+                    <Link href={item.href}>
+                      <Icon className="size-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
+        </nav>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 }

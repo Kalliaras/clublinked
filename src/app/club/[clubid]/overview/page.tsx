@@ -39,17 +39,17 @@ export default async function ClubOverviewPage({
   const highlights = club.interests;
 
   return (
-    <div className="space-y-6">
-      <Card className="border-slate-200 p-6">
+    <div className="space-y-7">
+      <Card className="border-slate-200/80 p-6 shadow-sm sm:p-7">
         <h2 className="text-lg font-semibold text-slate-900">About</h2>
-        <p className="mt-4 text-sm leading-6 text-slate-700">
+        <p className="mt-5 text-sm leading-6 text-slate-700">
           {club.description || "This club has no description yet."}
         </p>
       </Card>
 
-      <Card className="border-slate-200 p-6">
+      <Card className="border-slate-200/80 p-6 shadow-sm sm:p-7">
         <h2 className="text-lg font-semibold text-slate-900">Key highlights</h2>
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-5 flex flex-wrap gap-3">
           {highlights.length === 0 ? (
             <p className="text-sm leading-6 text-slate-700">
               No key highlights available for this club yet.
@@ -69,8 +69,8 @@ export default async function ClubOverviewPage({
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="border-slate-200 p-6 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-7 lg:grid-cols-2">
+        <Card className="border-slate-200/80 p-6 shadow-sm sm:p-7 lg:col-span-2">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-sm font-semibold text-slate-900">Featured Events</div>
@@ -128,7 +128,7 @@ export default async function ClubOverviewPage({
           )}
         </Card>
 
-        <Card className="border-slate-200 p-6">
+        <Card className="border-slate-200/80 p-6 shadow-sm sm:p-7">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-sm font-semibold text-slate-900">Featured Projects</div>
