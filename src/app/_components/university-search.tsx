@@ -87,7 +87,7 @@ export default function UniversitySearch() {
       </div>
 
       {isOpen && (
-        <div className="absolute top-full z-50 mt-2 w-full rounded-lg border bg-white shadow-lg">
+        <div className="relative z-10 mt-2 w-full rounded-lg border bg-white shadow-lg">
           {isLoading ? (
             <div className="px-4 py-3 text-sm text-muted-foreground">
               Searching...
