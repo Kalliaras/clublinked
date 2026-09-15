@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, FileText, Home, Search, Users, User } from "lucide-react";
+import { CalendarDays, FileText, Home, Search, Users } from "lucide-react";
 import { cn } from "@/lib/utils/tailwind";
 import {
   SidebarGroup,
@@ -32,7 +32,6 @@ export default function SidebarNav({ userId }: SidebarNavProps) {
     { label: "Calendar", href: `/user/profile/${userId}/calendar`, icon: CalendarDays },
     { label: "Applications", href: `/user/profile/${userId}/applications`, icon: FileText },
     { label: "My Clubs", href: `/user/profile/${userId}/clubs`, icon: Users },
-    { label: "Profile", href: `/user/profile/${userId}`, icon: User },
   ];
   const activeHref = navItems
     .filter(

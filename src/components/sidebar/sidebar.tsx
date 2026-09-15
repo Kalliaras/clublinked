@@ -29,7 +29,7 @@ export default async function Sidebar({ user }: { user: User }) {
     <ShadcnSidebar collapsible="icon" className="border-sidebar-border">
       <SidebarHeader className="gap-0 bg-white p-0">
         <div className="flex h-[76px] items-center gap-2 px-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
-          <Link href="/home" aria-label="Go to ClubLinked home" className="flex min-w-0 flex-1 items-center gap-2.5 group-data-[collapsible=icon]:invisible group-data-[collapsible=icon]:flex-none">
+          <Link href="/home" aria-label="Go to ClubLinked home" className="flex min-w-0 flex-1 items-center gap-2.5 group-data-[collapsible=icon]:flex-none">
             <Logo size={34} />
             <span className="truncate text-base font-extrabold tracking-tight text-primary group-data-[collapsible=icon]:hidden">ClubLinked</span>
           </Link>
@@ -43,6 +43,7 @@ export default async function Sidebar({ user }: { user: User }) {
       </SidebarContent>
 
       <SidebarFooter className="bg-white p-2">
+        <SidebarTrigger className="mx-auto hidden size-9 rounded-lg border border-slate-200 bg-white text-slate-500 shadow-xs hover:bg-blue-50 hover:text-primary group-data-[collapsible=icon]:flex" />
         <SidebarProfileChip
           firstName={firstName}
           lastName={lastName}

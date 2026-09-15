@@ -33,7 +33,6 @@ export default function AuthenticatedShell({
       {sidebar}
       <SidebarInset className="min-w-0 bg-transparent">
         <SidebarTrigger className="fixed left-4 top-4 z-50 size-10 rounded-xl border border-slate-200 bg-white/95 shadow-sm backdrop-blur md:hidden" />
-        <SidebarTrigger className="fixed left-1.5 top-5 z-50 hidden size-9 rounded-lg border border-slate-200 bg-white/95 text-slate-500 shadow-sm backdrop-blur md:flex md:peer-data-[state=expanded]:hidden" />
         {children}
       </SidebarInset>
     </SidebarProvider>
