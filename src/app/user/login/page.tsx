@@ -13,6 +13,10 @@ export default function LoginPage() {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    const authError = new URLSearchParams(window.location.search).get("authError");
+    if (authError === "invalid_or_expired_link") toast.error("That authentication link is invalid or has expired.");
+    if (authError === "recovery_session_required") toast.error("Request a new password reset link to continue.");
+
     const checkUser = async () => {
       const supabase = createClient();
       const {

@@ -54,7 +54,12 @@ export function Infobox({ onSubmitProp, isPending }: InfoboxProps) {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor="password">Password</Label>
+                <Link href="/user/forgot-password" className="text-xs font-semibold text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <Input
                 id="password"
                 name="password"

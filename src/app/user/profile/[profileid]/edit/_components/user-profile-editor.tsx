@@ -8,9 +8,11 @@ import {
   FileText,
   Github,
   Instagram,
+  KeyRound,
   Linkedin,
   LinkIcon,
   Loader2,
+  Mail,
   RotateCcw,
   UploadCloud,
 } from "lucide-react";
@@ -20,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { requestEmailChangeAction, requestOwnPasswordResetAction } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils/tailwind";
 import { updateUserProfileAction } from "../actions";
@@ -145,6 +148,8 @@ export function UserProfileEditor({
   const [removeResume, setRemoveResume] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [saveError, setSaveError] = React.useState<string | null>(null);
+  const [newEmail, setNewEmail] = React.useState(profile.email);
+  const [accountPending, startAccountTransition] = React.useTransition();
 
   const setField = <K extends keyof EditableValues>(key: K, value: EditableValues[K]) =>
     setValues((current) => ({ ...current, [key]: value }));
@@ -172,6 +177,28 @@ export function UserProfileEditor({
     setResumeFile(file);
     setRemoveResume(false);
     setResumeError(null);
+  };
+
+  const requestEmailChange = () => {
+    startAccountTransition(async () => {
+      const result = await requestEmailChangeAction(newEmail);
+      if (result.errorMessage) {
+        toast.error(result.errorMessage);
+        return;
+      }
+      toast.success("Check both email addresses to confirm the change.");
+    });
+  };
+
+  const requestPasswordReset = () => {
+    startAccountTransition(async () => {
+      const result = await requestOwnPasswordResetAction();
+      if (result.errorMessage) {
+        toast.error(result.errorMessage);
+        return;
+      }
+      toast.success("Password reset link sent. Check your inbox.");
+    });
   };
 
   const save = async () => {
@@ -323,12 +350,20 @@ export function UserProfileEditor({
         </section>
 
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-100 px-5 py-4"><h2 className="text-sm font-bold text-slate-950">Account</h2><p className="mt-0.5 text-xs text-slate-500">Account credentials are read-only here</p></div>
+          <div className="border-b border-slate-100 px-5 py-4"><h2 className="text-sm font-bold text-slate-950">Account security</h2><p className="mt-0.5 text-xs text-slate-500">Manage your verified email and password</p></div>
           <div className="grid gap-5 p-5 sm:grid-cols-2">
-            <div className="space-y-2"><Label htmlFor="email">Email</Label><Input id="email" value={profile.email} readOnly aria-readonly="true" className="bg-slate-50 text-slate-500" /><p className="text-xs text-slate-500">Your email cannot be changed from this page.</p></div>
-            <div className="space-y-2">
-              <Label htmlFor="password-display">Password</Label>
-              <Input id="password-display" value="••••••••••••" readOnly aria-readonly="true" className="bg-slate-50 text-slate-500" />
+            <div className="rounded-xl border border-slate-200 p-4">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600"><Mail className="size-4" /></span>
+              <Label htmlFor="account-email" className="mt-4 block">Email address</Label>
+              <Input id="account-email" type="email" autoComplete="email" value={newEmail} onChange={(event) => setNewEmail(event.target.value)} className="mt-2" />
+              <p className="mt-2 text-xs leading-relaxed text-slate-500">Secure email change may require confirmation from both your current and new addresses.</p>
+              <Button type="button" variant="outline" disabled={accountPending || newEmail.trim().toLowerCase() === profile.email.toLowerCase()} onClick={requestEmailChange} className="mt-4 w-full">Request email change</Button>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-4">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600"><KeyRound className="size-4" /></span>
+              <h3 className="mt-4 text-sm font-semibold text-slate-900">Password</h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-500">We’ll email a secure recovery link to {profile.email}. The link opens the new password page.</p>
+              <Button type="button" variant="outline" disabled={accountPending} onClick={requestPasswordReset} className="mt-4 w-full">{accountPending ? <><Loader2 className="size-4 animate-spin" />Sending…</> : "Email password reset link"}</Button>
             </div>
           </div>
         </section>

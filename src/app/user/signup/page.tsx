@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -46,7 +46,11 @@ export default function SignupPage() {
         toast.error("Error: " + result.errorMessage);
         return;
       }
-      toast.success("Signed Up: Please check your email to verify your account.");
+      if (result?.requiresEmailConfirmation) {
+        router.replace(`/user/verify-email?email=${encodeURIComponent(result.email ?? data.email)}`);
+        return;
+      }
+      toast.success("Account created successfully.");
       router.replace("/home");
     });
   };
@@ -76,7 +80,7 @@ export default function SignupPage() {
           {/* RIGHT: INFOBOX */}
           <section className="flex justify-center lg:justify-end">
             <div className="w-full max-w-sm">
-              <Infobox onSubmitProp={handleSubmit} />
+              <Infobox onSubmitProp={handleSubmit} isPending={isPending} />
             </div>
           </section>
         </div>
