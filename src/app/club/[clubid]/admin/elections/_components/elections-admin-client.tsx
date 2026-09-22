@@ -53,7 +53,25 @@ export function ElectionsAdminClient({ clubId, clubName, snapshot }: { clubId: s
     <div className="mx-auto max-w-6xl">
       <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Governance</p><h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">Elections<span className="text-primary">.</span></h1><p className="mt-2 text-sm text-slate-500">Create a fair officer transition for {clubName}.</p></div>
-        <Button variant="outline" asChild><Link href={`/club/${clubId}/elections/history`}><History className="size-4" />Past elections</Link></Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild><Link href={`/club/${clubId}/elections/history`}><History className="size-4" />Past elections</Link></Button>
+          {snapshot.viewer.is_owner && election && (
+            <Button
+              disabled={pending}
+              variant="destructive"
+              onClick={() => {
+                const message = election.status === "active"
+                  ? "End this election, archive it in election history, and apply the winning role changes? This cannot be undone."
+                  : "Archive this election draft? It will be moved to election history and cannot be reopened.";
+                if (window.confirm(message)) {
+                  run(() => finalizeElectionAction(clubId, election.id), "Election ended and archived");
+                }
+              }}
+            >
+              End Election
+            </Button>
+          )}
+        </div>
       </header>
 
       {!election ? (
@@ -77,7 +95,7 @@ export function ElectionsAdminClient({ clubId, clubName, snapshot }: { clubId: s
               <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-300">{election.status === "draft" ? "Election setup" : "Active election"}</p><h2 className="mt-2 text-2xl font-extrabold">{election.title}</h2><p className="mt-2 max-w-2xl text-sm text-blue-100">{election.description || `Voting closes ${dateLabel(election.closes_at)}.`}</p></div>
               <div className="flex gap-6"><div><p className="text-2xl font-extrabold">{election.positions.length}</p><p className="text-xs text-blue-200">Positions</p></div><div><p className="text-2xl font-extrabold text-cyan-300">{election.ballots_cast}</p><p className="text-xs text-blue-200">Ballots cast</p></div><div><p className="text-2xl font-extrabold">{election.eligible_voters}</p><p className="text-xs text-blue-200">Eligible voters</p></div></div>
             </div>
-            <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-white/15 pt-5 text-sm text-blue-100"><Clock3 className="size-4" />Closes {dateLabel(election.closes_at)}<span className="flex-1" />{election.status === "active" && <Button variant="secondary" asChild><Link href={`/club/${clubId}/elections`}>View ballot<ArrowRight className="size-4" /></Link></Button>}{snapshot.viewer.is_owner && election.status === "draft" && <Button disabled={pending} className="bg-cyan-300 text-slate-950 hover:bg-cyan-200" onClick={() => run(() => openElectionAction(clubId, election.id), "Voting is now open")}>Open voting</Button>}{snapshot.viewer.is_owner && election.status === "active" && <Button disabled={pending} className="bg-cyan-300 text-slate-950 hover:bg-cyan-200" onClick={() => { if (window.confirm("End voting now and apply the winning role changes? This cannot be undone.")) run(() => finalizeElectionAction(clubId, election.id), "Election finalized"); }}>End and apply results</Button>}</div>
+            <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-white/15 pt-5 text-sm text-blue-100"><Clock3 className="size-4" />Closes {dateLabel(election.closes_at)}<span className="flex-1" />{election.status === "active" && <Button variant="secondary" asChild><Link href={`/club/${clubId}/elections/${election.id}/vote`}>View ballot<ArrowRight className="size-4" /></Link></Button>}{snapshot.viewer.is_owner && election.status === "draft" && <Button disabled={pending} className="bg-cyan-300 text-slate-950 hover:bg-cyan-200" onClick={() => run(() => openElectionAction(clubId, election.id), "Voting is now open")}>Open voting</Button>}</div>
           </section>
 
           {election.status === "active" && <div className="mt-6 flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800"><LockKeyhole className="mt-0.5 size-4 shrink-0" /><div><strong>Results stay locked while voting is active.</strong><p className="mt-1 text-blue-700">Only turnout is shown. Finalizing applies each uncontested winner to the corresponding club role; ties retain the current holder.</p></div></div>}

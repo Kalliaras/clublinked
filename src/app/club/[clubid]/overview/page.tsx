@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Clock3, FolderKanban, MapPin } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock3, FolderKanban, MapPin, Vote } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getClubPublicData } from "@/lib/data/club-page";
 import { createClient } from "@/lib/supabase/server";
+import type { ElectionSnapshot } from "../elections/types";
 
 function formatEventLabel(value: string) {
   return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -23,7 +24,7 @@ export default async function ClubOverviewPage({
   params: Promise<{ clubid: string }>;
 }) {
   const [{ clubid }, supabase] = await Promise.all([params, createClient()]);
-  const [publicData, projectsResult] = await Promise.all([
+  const [publicData, projectsResult, electionsResult] = await Promise.all([
     getClubPublicData(clubid),
     supabase
       .from("club_projects")
@@ -31,11 +32,18 @@ export default async function ClubOverviewPage({
       .eq("club_id", clubid)
       .order("created_at", { ascending: false })
       .limit(3),
+    supabase.rpc("get_club_election", {
+      p_club_id: clubid,
+      p_manage: false,
+      p_history: false,
+    }),
   ]);
   if (!publicData) notFound();
 
   const { club, events: featuredEvents } = publicData;
   const featuredProjects = projectsResult.data ?? [];
+  const electionSnapshot = electionsResult.data as ElectionSnapshot | null;
+  const currentElection = electionSnapshot?.elections[0];
   const highlights = club.interests;
 
   return (
@@ -70,6 +78,33 @@ export default async function ClubOverviewPage({
       </Card>
 
       <div className="grid grid-cols-1 gap-7 lg:grid-cols-2">
+        {currentElection && (
+          <Card className="overflow-hidden border-blue-200 bg-gradient-to-br from-blue-950 to-blue-800 p-0 text-white shadow-sm lg:col-span-2">
+            <div className="flex flex-col gap-6 p-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-cyan-300">
+                  <Vote className="size-4" /> Current election
+                </div>
+                <h2 className="mt-3 text-2xl font-bold">{currentElection.title}</h2>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-blue-100">
+                  {currentElection.description || "Voting is open for this club's current election."}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-blue-200">
+                  <span>{currentElection.positions.length} position{currentElection.positions.length === 1 ? "" : "s"}</span>
+                  <span>{currentElection.ballots_cast} ballot{currentElection.ballots_cast === 1 ? "" : "s"} cast</span>
+                  <span className="inline-flex items-center gap-1.5"><Clock3 className="size-3.5" />Closes {eventDateFormatter.format(new Date(currentElection.closes_at))}</span>
+                </div>
+              </div>
+              <Link
+                href={`/club/${clubid}/elections/${currentElection.id}/vote`}
+                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-blue-900 transition hover:bg-blue-50"
+              >
+                View election <ArrowRight className="size-4" />
+              </Link>
+            </div>
+          </Card>
+        )}
+
         <Card className="border-slate-200/80 p-6 shadow-sm sm:p-7 lg:col-span-2">
           <div className="flex items-center justify-between gap-3">
             <div>

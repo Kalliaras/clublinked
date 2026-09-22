@@ -861,6 +861,10 @@ export type Database = {
         Args: { p_election_id: string }
         Returns: undefined
       }
+      end_club_election: {
+        Args: { p_election_id: string }
+        Returns: undefined
+      }
       get_club_application_builder: {
         Args: { p_club_id: string }
         Returns: Json

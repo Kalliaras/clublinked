@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import type { ElectionSnapshot } from "../../elections/types";
 
 type Result = { success: true } | { errorMessage: string };
 
@@ -103,7 +104,22 @@ export async function finalizeElectionAction(clubId: string, electionId: string)
   const parsed = uuidSchema.safeParse(electionId);
   if (!parsed.success) return { errorMessage: "Invalid election." };
   const supabase = await createClient();
-  const { error } = await supabase.rpc("finalize_club_election", { p_election_id: parsed.data });
+  const { data: snapshotData, error: snapshotError } = await supabase.rpc("get_club_election", {
+    p_club_id: clubId,
+    p_manage: true,
+    p_history: false,
+  });
+  const snapshot = snapshotData as unknown as ElectionSnapshot | null;
+  if (snapshotError || !snapshot?.viewer.is_owner) {
+    return { errorMessage: "Only the club owner can end an election." };
+  }
+  const election = snapshot.elections.find((item) => item.id === parsed.data);
+  if (!election) {
+    return { errorMessage: "This election has already been archived." };
+  }
+  const { error } = election.status === "active"
+    ? await supabase.rpc("finalize_club_election", { p_election_id: parsed.data })
+    : await supabase.rpc("end_club_election", { p_election_id: parsed.data });
   if (error) return { errorMessage: friendlyError(error.message) };
   refresh(clubId);
   return { success: true };

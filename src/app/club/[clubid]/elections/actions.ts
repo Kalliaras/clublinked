@@ -14,6 +14,7 @@ export async function castVoteAction(clubId: string, positionId: string, candida
   });
   if (error?.message.includes("VOTING_CLOSED")) return { errorMessage: "Voting has closed." };
   if (error) return { errorMessage: "Your vote could not be saved. Please try again." };
-  revalidatePath(`/club/${clubId}/elections`);
+  revalidatePath(`/club/${clubId}/elections`, "layout");
+  revalidatePath(`/club/${clubId}`);
   return { success: true };
 }
